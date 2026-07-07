@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ebikabyaffe Foundation — App Structure Overview</title>
+  <style>
+    :root {
+      --green-dark:   #1a3d2b;
+      --green-mid:    #2d6a4f;
+      --green-light:  #52b788;
+      --gold:         #c8973a;
+      --gold-light:   #f4c66a;
+      --cream:        #faf7f0;
+      --cream-dark:   #f0ebe0;
+      --text:         #1c1c1c;
+      --text-muted:   #5a5a5a;
+      --border:       #ddd5c4;
+      --white:        #ffffff;
+      --red:          #c0392b;
+      --badge-public: #e8f5ee;
+      --badge-public-text: #1a6640;
+      --badge-auth:   #fff3e0;
+      --badge-auth-text: #a05c00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 48px 40px 40px;
+      border-bottom: 4px solid var(--gold);
+    }
+    header .kicker {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 12px;
+    }
+    header h1 {
+      font-size: 34px;
+      font-weight: normal;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    header .subtitle {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .header-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .header-meta span {
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+    }
+    .header-meta strong { color: rgba(255,255,255,0.8); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: normal;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+    }
+
+    section { margin-bottom: 60px; }
+
+    /* ── GOAL PILLS ── */
+    .goals {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .goal {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      padding: 14px 18px;
+      border-radius: 4px;
+      flex: 1;
+      min-width: 220px;
+    }
+    .goal .num {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .goal p { font-size: 14px; color: var(--text); }
+
+    /* ── AUDIENCE SPLIT ── */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .audience-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 22px;
+    }
+    .audience-card h3 {
+      font-size: 15px;
+      color: var(--green-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .audience-card ul {
+      list-style: none;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .audience-card ul li { padding: 3px 0; padding-left: 14px; position: relative; }
+    .audience-card ul li::before { content: '—'; position: absolute; left: 0; color: var(--green-light); }
+
+    /* ── IA GRID (6 sections) ── */
+    .ia-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .ia-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .ia-card-header {
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 14px 18px;
+    }
+    .ia-card-header .ia-num {
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gold-light);
+      margin-bottom: 2px;
+    }
+    .ia-card-header h3 { font-size: 17px; font-weight: normal; }
+    .ia-card-header .ia-luganda {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      font-style: italic;
+      margin-top: 2px;
+    }
+    .ia-card-body { padding: 14px 18px; }
+    .access-badge {
+      display: inline-block;
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+    }
+    .public { background: var(--badge-public); color: var(--badge-public-text); }
+    .auth   { background: var(--badge-auth);   color: var(--badge-auth-text); }
+    .mixed  { background: #e8eaf6; color: #303f9f; }
+    .ia-card-body p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+    .ia-card-body ul {
+      list-style: none;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .ia-card-body ul li { padding: 2px 0 2px 12px; position: relative; }
+    .ia-card-body ul li::before { content: '·'; position: absolute; left: 0; color: var(--green-light); font-size: 16px; line-height: 1.2; }
+
+    /* ── SITEMAP ── */
+    .sitemap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .sitemap-group h3 {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .url-list { list-style: none; }
+    .url-list li {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .url-list li .url { color: var(--green-mid); }
+    .url-list li .desc { font-family: 'Georgia', serif; font-size: 12px; color: var(--text-muted); font-style: italic; }
+
+    /* ── FLOWS ── */
+    .flow-list { display: flex; flex-direction: column; gap: 20px; margin-top: 16px; }
+    .flow-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 22px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .flow-label {}
+    .flow-label .flow-num {
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .flow-label h3 { font-size: 15px; color: var(--green-dark); margin-bottom: 6px; }
+    .flow-label .flow-kpi {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--cream-dark);
+      padding: 3px 8px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .flow-steps {
+      display: flex;
+      gap: 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .step {
+      background: var(--cream-dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .arrow {
+      font-size: 16px;
+      color: var(--green-light);
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+
+    /* ── VERIFICATION CHAIN ── */
+    .verify-chain {
+      display: flex;
+      gap: 0;
+      margin-top: 16px;
+      align-items: stretch;
+    }
+    .verify-step {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+    }
+    .verify-step:not(:last-child)::after {
+      content: '▶';
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold);
+      font-size: 18px;
+      z-index: 1;
+    }
+    .verify-step:first-child  { border-radius: 6px 0 0 6px; }
+    .verify-step:last-child   { border-radius: 0 6px 6px 0; }
+    .verify-badge {
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .v1 { background: #e3f2fd; color: #1565c0; }
+    .v2 { background: #fff3e0; color: #e65100; }
+    .v3 { background: var(--badge-public); color: var(--badge-public-text); }
+    .verify-step h3 { font-size: 14px; color: var(--green-dark); margin-bottom: 6px; }
+    .verify-step p  { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .verify-step ul {
+      list-style: none;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .verify-step ul li { padding: 2px 0 2px 12px; position: relative; }
+    .verify-step ul li::before { content: '✓'; position: absolute; left: 0; color: var(--green-light); font-size: 11px; }
+
+    /* ── DONOR TIERS ── */
+    .tiers {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .tier-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .tier-card .tier-top {
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 16px 12px;
+    }
+    .tier-card .tier-top h3 { font-size: 14px; font-weight: normal; margin-bottom: 2px; }
+    .tier-card .tier-top .tier-trans { font-size: 11px; color: rgba(255,255,255,0.5); font-style: italic; }
+    .tier-card .tier-body { padding: 14px 12px; }
+    .tier-card .tier-amount {
+      font-family: 'Arial', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .tier-card .tier-perk {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── ENTITIES ── */
+    .entities-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .entity-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+    }
+    .entity-card h3 {
+      font-size: 13px;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .entity-count {
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      color: var(--text-muted);
+      background: var(--cream-dark);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .entity-card ul {
+      list-style: none;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .entity-card ul li { padding: 2px 0; border-bottom: 1px dashed #eee; }
+    .entity-card ul li:last-child { border-bottom: none; }
+
+    /* ── TECH STACK ── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .tech-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 18px;
+    }
+    .tech-card h3 {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .tech-card ul {
+      list-style: none;
+      font-size: 13px;
+    }
+    .tech-card ul li { padding: 3px 0; padding-left: 14px; position: relative; }
+    .tech-card ul li::before { content: '▸'; position: absolute; left: 0; color: var(--green-light); }
+
+    /* ── RISKS ── */
+    .risk-list { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .risk-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 13px;
+    }
+    .risk-row .rnum {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      padding-top: 1px;
+    }
+    .risk-row .risk-text { color: var(--text); }
+    .risk-row .risk-mit { color: var(--text-muted); font-style: italic; }
+
+    /* ── PHASES ── */
+    .phase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .phase-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .phase-card .phase-header {
+      padding: 14px 18px;
+      background: var(--green-dark);
+      color: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .phase-card .phase-header h3 { font-size: 15px; font-weight: normal; }
+    .phase-card .phase-header .phase-time {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      color: var(--gold-light);
+    }
+    .phase-card ul {
+      list-style: none;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .phase-card ul li {
+      padding: 4px 0 4px 16px;
+      position: relative;
+      border-bottom: 1px dashed var(--border);
+    }
+    .phase-card ul li:last-child { border-bottom: none; }
+    .phase-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--green-light); }
+
+    /* ── OPEN QUESTIONS ── */
+    .oq-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .oq-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: 4px;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+    .oq-item .oq-num {
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--green-dark);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 24px;
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      border-top: 3px solid var(--gold);
+    }
+
+    @media (max-width: 800px) {
+      .ia-grid, .tiers, .entities-grid, .tech-grid, .audience-grid { grid-template-columns: 1fr 1fr; }
+      .flow-card { grid-template-columns: 1fr; }
+      .verify-chain { flex-direction: column; }
+      .verify-step:not(:last-child)::after { display: none; }
+      .sitemap, .phase-grid, .oq-list { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .ia-grid, .tiers, .entities-grid, .tech-grid, .audience-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Ebikabyaffe Foundation · App Structure Overview</div>
+  <h1>Member Mobilization Web App</h1>
+  <p class="subtitle">"Reclaim who you are — discover your clan, your roots, your people."</p>
+  <div class="header-meta">
+    <span><strong>Endorsed by</strong> Buganda Council of Clan Heads (Olukiiko lw'Abataka)</span>
+    <span><strong>Audiences</strong> Baganda in Uganda + Diaspora (52 clans)</span>
+    <span><strong>Spec date</strong> 10 May 2026 · Status: Draft for Foundation review</span>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- ── GOALS ── -->
+  <section>
+    <div class="section-title">Foundation Goals</div>
+    <div class="goals">
+      <div class="goal">
+        <div class="num">GOAL 01</div>
+        <p><strong>Mobilize members at scale</strong> — recruit a credible base of self-identified clan members across all 52 clans for lobbying authority.</p>
+      </div>
+      <div class="goal">
+        <div class="num">GOAL 02</div>
+        <p><strong>Generate sustainable funding</strong> — convert engaged members into recurring Busuulu donors funding the school, Bataka, and operations.</p>
+      </div>
+      <div class="goal">
+        <div class="num">GOAL 03</div>
+        <p><strong>Strengthen the Bataka</strong> — give clan heads a digital channel to verify members, reach their clan, and be publicly visible as authorities.</p>
+      </div>
+      <div class="goal">
+        <div class="num">GOAL 04 · IMPLICIT</div>
+        <p><strong>Earn Kingdom endorsement</strong> — produce a product so dignified and accurate that Mengo wants its name associated with it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AUDIENCES ── -->
+  <section>
+    <div class="section-title">Dual Audiences</div>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <h3>🇺🇬 Baganda in Uganda · Ages 20–55</h3>
+        <ul>
+          <li>Smartphone-using, mobile-money-comfortable</li>
+          <li>Pay in UGX via MTN MoMo / Airtel Money</li>
+          <li>Default language: Luganda</li>
+          <li>Mobile-first, often on 3G — data is cost-sensitive</li>
+          <li>Know their clan; may not know siga or mutuba</li>
+          <li>Give smaller amounts, more frequently</li>
+          <li>Respond to concrete causes (school roof, clan event)</li>
+        </ul>
+      </div>
+      <div class="audience-card">
+        <h3>🌍 Diaspora Baganda · UK / US / CA / Gulf / SA</h3>
+        <ul>
+          <li>Earn in foreign currency (USD, GBP, EUR)</li>
+          <li>Pay by card, Apple Pay, Google Pay, PayPal</li>
+          <li>Default language: English (children rarely speak Luganda)</li>
+          <li>Excellent connectivity</li>
+          <li>Emotionally invested in heritage; disconnected from daily clan life</li>
+          <li>Give larger amounts episodically</li>
+          <li>Respond strongly to identity narratives</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── IA: 6 SECTIONS ── -->
+  <section>
+    <div class="section-title">Information Architecture — 6 Top-Level Destinations</div>
+    <div class="ia-grid">
+
+      <div class="ia-card">
+        <div class="ia-card-header">
+          <div class="ia-num">01</div>
+          <h3>Home</h3>
+          <div class="ia-luganda">Awaka</div>
+        </div>
+        <div class="ia-card-body">
+          <span class="access-badge mixed">Public + Auth</span>
+          <p>Pre-login: landing with clan picker and live membership counter. Post-login: personal dashboard.</p>
+          <ul>
+            <li>Live member counter in footer (all pages)</li>
+            <li>Bataka calls to action (pinned)</li>
+            <li>Active fundraising tile with progress bar</li>
+            <li>Cultural learning of the week</li>
+            <li>Clan-specific posts from Omutaka</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ia-card">
+        <div class="ia-card-header">
+          <div class="ia-num">02</div>
+          <h3>Clans</h3>
+          <div class="ia-luganda">Ebika</div>
+        </div>
+        <div class="ia-card-body">
+          <span class="access-badge public">Fully Public</span>
+          <p>Browseable grid of all 52 clans. Each clan has a deep public page. SEO-discoverable and shareable.</p>
+          <ul>
+            <li>Omuziro &amp; akabbiro (totems)</li>
+            <li>Sigas and mutubas</li>
+            <li>Taboos, sacred sites, origin story</li>
+            <li>Current Omutaka with photo</li>
+            <li>Notable historical members</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ia-card">
+        <div class="ia-card-header">
+          <div class="ia-num">03</div>
+          <h3>Roots</h3>
+          <div class="ia-luganda">Ennono</div>
+        </div>
+        <div class="ia-card-body">
+          <span class="access-badge auth">Auth Only</span>
+          <p>Personal lineage profile, family tree builder, and cultural learning library. Progressive — not a form.</p>
+          <ul>
+            <li>Siga and mutuba discovery</li>
+            <li>Family tree builder (private by default)</li>
+            <li>Proverbs, folktales, customs library</li>
+            <li>Verification request to Omutaka</li>
+            <li>Heritage contributor submissions</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ia-card">
+        <div class="ia-card-header">
+          <div class="ia-num">04</div>
+          <h3>Give</h3>
+          <div class="ia-luganda">Wereeza</div>
+        </div>
+        <div class="ia-card-body">
+          <span class="access-badge mixed">Public + Auth (history)</span>
+          <p>Donation hub with one-time, recurring Busuulu, and earmark options. Public transparency dashboard.</p>
+          <ul>
+            <li>UGX presets: 5K / 10K / 25K / 50K</li>
+            <li>Foreign presets: $10 / $25 / $50 / $100</li>
+            <li>Busuulu (recurring) tier signup</li>
+            <li>Per-campaign impact logs</li>
+            <li>Public transparency dashboard</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ia-card">
+        <div class="ia-card-header">
+          <div class="ia-num">05</div>
+          <h3>Bataka</h3>
+          <div class="ia-luganda">Abataka</div>
+        </div>
+        <div class="ia-card-body">
+          <span class="access-badge public">Fully Public</span>
+          <p>Public directory of all clan heads with territory, work, and contact. Builds Bataka authority by making them visible.</p>
+          <ul>
+            <li>Individual Omutaka profiles</li>
+            <li>Calls to action and events</li>
+            <li>RSVP and Support-this-work buttons</li>
+            <li>Follow-up posts that close the loop</li>
+            <li>"Honored by X donors" recognition</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ia-card">
+        <div class="ia-card-header">
+          <div class="ia-num">06</div>
+          <h3>Profile</h3>
+          <div class="ia-luganda">Profile</div>
+        </div>
+        <div class="ia-card-body">
+          <span class="access-badge auth">Auth Only</span>
+          <p>Account settings, language toggle, notification preferences, verification status, donation history.</p>
+          <ul>
+            <li>Language toggle (Luganda ↔ English)</li>
+            <li>Verification status and Clan ID card</li>
+            <li>Donation and subscription history</li>
+            <li>Notification preferences</li>
+            <li>Account export and deletion (GDPR)</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── URL STRUCTURE ── -->
+  <section>
+    <div class="section-title">URL Structure</div>
+    <div class="sitemap">
+      <div class="sitemap-group">
+        <h3>Public Pages</h3>
+        <ul class="url-list">
+          <li><span class="url">/</span><span class="desc">Landing page</span></li>
+          <li><span class="url">/clans</span><span class="desc">Clan grid (all 52)</span></li>
+          <li><span class="url">/clans/mmamba</span><span class="desc">Individual clan page</span></li>
+          <li><span class="url">/clans/mmamba/sigas/nkima</span><span class="desc">Siga deep dive</span></li>
+          <li><span class="url">/bataka</span><span class="desc">Clan heads directory</span></li>
+          <li><span class="url">/bataka/[name]</span><span class="desc">Individual Omutaka</span></li>
+          <li><span class="url">/give</span><span class="desc">Donation hub</span></li>
+          <li><span class="url">/give/wakivule-school</span><span class="desc">Campaign page</span></li>
+          <li><span class="url">/give/transparency</span><span class="desc">Public dashboard</span></li>
+        </ul>
+      </div>
+      <div class="sitemap-group">
+        <h3>Authenticated Pages</h3>
+        <ul class="url-list">
+          <li><span class="url">/home</span><span class="desc">Personal dashboard</span></li>
+          <li><span class="url">/roots</span><span class="desc">Lineage &amp; learning</span></li>
+          <li><span class="url">/me</span><span class="desc">Profile &amp; settings</span></li>
+          <li><span class="url">/calls/[id]</span><span class="desc">Call to action page</span></li>
+          <li><span class="url">/admin</span><span class="desc">Bataka + Foundation admin</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5 KEY FLOWS ── -->
+  <section>
+    <div class="section-title">5 Key User Flows</div>
+    <div class="flow-list">
+
+      <div class="flow-card">
+        <div class="flow-label">
+          <div class="flow-num">FLOW 01 · MOST IMPORTANT</div>
+          <h3>Curiosity → Claimed Clan</h3>
+          <span class="flow-kpi">Target: ≥8% clan-page → sign-up</span>
+        </div>
+        <div class="flow-steps">
+          <div class="step">Landing /</div><div class="arrow">→</div>
+          <div class="step">Clan Grid</div><div class="arrow">→</div>
+          <div class="step">Clan Page</div><div class="arrow">→</div>
+          <div class="step">"Save your clan" prompt</div><div class="arrow">→</div>
+          <div class="step">Light sign-up (phone OTP)</div><div class="arrow">→</div>
+          <div class="step">Welcome screen</div>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-label">
+          <div class="flow-num">FLOW 02</div>
+          <h3>Returning Member Dashboard</h3>
+          <span class="flow-kpi">Always something new in 10s</span>
+        </div>
+        <div class="flow-steps">
+          <div class="step">Clan card</div><div class="arrow">→</div>
+          <div class="step">Bataka call pinned</div><div class="arrow">→</div>
+          <div class="step">Fundraising tile</div><div class="arrow">→</div>
+          <div class="step">Learning of the week</div><div class="arrow">→</div>
+          <div class="step">From your clan</div>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-label">
+          <div class="flow-num">FLOW 03</div>
+          <h3>Donation (One-time &amp; Busuulu)</h3>
+          <span class="flow-kpi">UGX + foreign currency</span>
+        </div>
+        <div class="flow-steps">
+          <div class="step">Amount + designation</div><div class="arrow">→</div>
+          <div class="step">Recognition options</div><div class="arrow">→</div>
+          <div class="step">MoMo / Card payment</div><div class="arrow">→</div>
+          <div class="step">Receipt</div><div class="arrow">→</div>
+          <div class="step">"Make this Busuulu?" prompt</div>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-label">
+          <div class="flow-num">FLOW 04</div>
+          <h3>Progressive Sign-up (Roots)</h3>
+          <span class="flow-kpi">Learning, not form-filling</span>
+        </div>
+        <div class="flow-steps">
+          <div class="step">Siga discovery</div><div class="arrow">→</div>
+          <div class="step">Mutuba discovery</div><div class="arrow">→</div>
+          <div class="step">Family tree (optional)</div><div class="arrow">→</div>
+          <div class="step">Verify with Omutaka</div><div class="arrow">→</div>
+          <div class="step">Bataka-verified badge</div>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-label">
+          <div class="flow-num">FLOW 05</div>
+          <h3>Bataka Call to Action</h3>
+          <span class="flow-kpi">Convening into action</span>
+        </div>
+        <div class="flow-steps">
+          <div class="step">Omutaka posts call</div><div class="arrow">→</div>
+          <div class="step">Push + email to members</div><div class="arrow">→</div>
+          <div class="step">/calls/[id] page</div><div class="arrow">→</div>
+          <div class="step">RSVP or Donate</div><div class="arrow">→</div>
+          <div class="step">Follow-up closes loop</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── VERIFICATION CHAIN ── -->
+  <section>
+    <div class="section-title">Verification Chain — 3 States</div>
+    <div class="verify-chain">
+      <div class="verify-step">
+        <span class="verify-badge v1">Self-Declared</span>
+        <h3>Automatic at sign-up</h3>
+        <p>Member picks a clan. No further action needed. Counts toward total membership.</p>
+        <ul>
+          <li>Full content access</li>
+          <li>Can donate</li>
+          <li>Dashboard and clan page</li>
+          <li>Private family tree</li>
+        </ul>
+      </div>
+      <div class="verify-step">
+        <span class="verify-badge v2">Lineage-Provided</span>
+        <h3>Auto-upgraded by system</h3>
+        <p>Member fills siga, mutuba, and father's name. No human approval needed. Realistic cap for diaspora.</p>
+        <ul>
+          <li>Everything in Self-Declared</li>
+          <li>Eligible to request Bataka verification</li>
+          <li>Deeper cultural content unlocked</li>
+        </ul>
+      </div>
+      <div class="verify-step">
+        <span class="verify-badge v3">Bataka-Verified ✓</span>
+        <h3>Approved by Omutaka</h3>
+        <p>Omutaka reviews and approves the lineage claim. Gold standard. Auditable — stored permanently.</p>
+        <ul>
+          <li>Verified badge on public profile</li>
+          <li>Downloadable Clan ID card</li>
+          <li>Vote in clan polls</li>
+          <li>Connected family trees</li>
+          <li>Heritage contributor status</li>
+          <li>Priority RSVP at events</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DONOR TIERS ── -->
+  <section>
+    <div class="section-title">Busuulu — Recurring Donor Tiers</div>
+    <div class="tiers">
+      <div class="tier-card">
+        <div class="tier-top">
+          <h3>Omwana w'Ekika</h3>
+          <div class="tier-trans">Child of the Clan</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-amount">UGX 5,000 / mo (~$1.50)</div>
+          <div class="tier-perk">Tier badge on profile</div>
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-top">
+          <h3>Omugabo</h3>
+          <div class="tier-trans">The Contributor</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-amount">UGX 20,000 / mo (~$5)</div>
+          <div class="tier-perk">Tier badge + named on monthly donor list</div>
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-top">
+          <h3>Mukulu w'Ekika</h3>
+          <div class="tier-trans">Elder of the Clan</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-amount">UGX 50,000 / mo (~$13)</div>
+          <div class="tier-perk">Name on permanent digital + physical donor wall at Foundation premises</div>
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-top" style="background: var(--gold); color: var(--green-dark);">
+          <h3>Olukiiko lw'Ebikabyaffe</h3>
+          <div class="tier-trans" style="color: rgba(0,0,0,0.5);">Council of Our Heritage</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-amount">UGX 200,000 / mo (~$55)</div>
+          <div class="tier-perk">Inner circle · Named in impact reports · Annual hand-signed letter from Council of Clan Heads</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DATA ENTITIES ── -->
+  <section>
+    <div class="section-title">Data Model — 8 Core Entities</div>
+    <div class="entities-grid">
+      <div class="entity-card">
+        <h3>Clan <span class="entity-count">~52 records</span></h3>
+        <ul>
+          <li>slug, name_luganda, name_english</li>
+          <li>omuziro, akabbiro (totems)</li>
+          <li>origin_story, notable_history</li>
+          <li>sigas → mutubas (nested)</li>
+          <li>sacred_sites, taboos</li>
+          <li>current_omutaka_id</li>
+          <li>member_count, verified_count</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Member</h3>
+        <ul>
+          <li>phone (E.164, primary ID)</li>
+          <li>name_full, email (optional)</li>
+          <li>clan_id (req. at sign-up)</li>
+          <li>siga_id, mutuba_id (progressive)</li>
+          <li>verification_status (enum)</li>
+          <li>donor_tier (computed)</li>
+          <li>locale, country_detected</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Donation</h3>
+        <ul>
+          <li>amount, currency, usd_equivalent</li>
+          <li>designation (enum)</li>
+          <li>recognition_mode</li>
+          <li>payment_method (enum)</li>
+          <li>subscription_id (if recurring)</li>
+          <li>status (pending/succeeded/…)</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Subscription</h3>
+        <ul>
+          <li>monthly_amount, currency</li>
+          <li>tier (computed enum)</li>
+          <li>payment_provider_token</li>
+          <li>status (active/paused/…)</li>
+          <li>next_charge_at</li>
+          <li>total_lifetime_value</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Bataka</h3>
+        <ul>
+          <li>name_full, title, clan_id</li>
+          <li>bio, photo</li>
+          <li>years_serving, notable_work</li>
+          <li>contact_for_clan_matters</li>
+          <li>is_active</li>
+          <li>BatakaUser (separate — for admin login)</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Call to Action</h3>
+        <ul>
+          <li>title, body (rich text)</li>
+          <li>posted_by (foundation / bataka_id)</li>
+          <li>audience (kingdom_wide / clan_ids)</li>
+          <li>cta_type (rsvp/donate/attend)</li>
+          <li>event_date, event_location</li>
+          <li>follow_up_post (closes loop)</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Campaign</h3>
+        <ul>
+          <li>name, description, cover_image</li>
+          <li>target_amount, total_raised</li>
+          <li>start_date, end_date</li>
+          <li>transparency_log (append-only)</li>
+          <li>status (active/completed/paused)</li>
+        </ul>
+      </div>
+      <div class="entity-card">
+        <h3>Cultural Content</h3>
+        <ul>
+          <li>type (proverb/folktale/custom/…)</li>
+          <li>title, body (rich text)</li>
+          <li>audio_url, video_url</li>
+          <li>clan_ids (null = kingdom-wide)</li>
+          <li>featured_until (weekly rotation)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PAYMENT STACK ── -->
+  <section>
+    <div class="section-title">Technical Shape</div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <h3>Suggested Stack</h3>
+        <ul>
+          <li>Next.js (web + API routes)</li>
+          <li>PostgreSQL (hosted, PITR enabled)</li>
+          <li>Tailwind CSS</li>
+          <li>Resend or Postmark (email)</li>
+          <li>Web Push (PWA — no native app v1)</li>
+          <li>S3-compatible storage (photos, audio)</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h3>Payment Rails</h3>
+        <ul>
+          <li><strong>Flutterwave</strong> — MTN MoMo, Airtel Money, UGX card</li>
+          <li><strong>Stripe</strong> — diaspora card, Apple/Google Pay, recurring</li>
+          <li><strong>PayPal</strong> — secondary for older diaspora donors</li>
+          <li>⚠ Stripe needs Uganda fiscal sponsor entity — solve in parallel</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h3>Infrastructure</h3>
+        <ul>
+          <li>CDN with African edge nodes (Cloudflare)</li>
+          <li>SSR/SSG for clan + campaign pages (SEO)</li>
+          <li>Target: &lt;3s FMP on 3G Uganda mobile</li>
+          <li>Bilingual from day one (lg / en)</li>
+          <li>6 components, independently deployable</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RISKS ── -->
+  <section>
+    <div class="section-title">Key Risks &amp; Mitigations</div>
+    <div class="risk-list">
+      <div class="risk-row">
+        <div class="rnum">R1</div>
+        <div class="risk-text"><strong>Clan content incomplete at launch</strong> — empty clan pages destroy the value proposition.</div>
+        <div class="risk-mit">8–12 week pre-launch content sprint. Six "showcase" clans go deep; the rest get minimum-viable pages. Completeness indicator invites member contributions.</div>
+      </div>
+      <div class="risk-row">
+        <div class="rnum">R2</div>
+        <div class="risk-text"><strong>Bataka don't engage the admin panel</strong> — no verifications, no calls, app loses convening power.</div>
+        <div class="risk-mit">Phased onboarding: start with 6–10 willing Bataka. Foundation posts as proxy for slow adopters. Queues auto-escalate to Foundation after 14 days.</div>
+      </div>
+      <div class="risk-row">
+        <div class="rnum">R3</div>
+        <div class="risk-text"><strong>Stripe / fiscal sponsor not solved</strong> — diaspora donations are critical revenue.</div>
+        <div class="risk-mit">Solve entity question in parallel with development. If unresolved by month 3, launch with Flutterwave-only; add Stripe as v1.5.</div>
+      </div>
+      <div class="risk-row">
+        <div class="rnum">R4</div>
+        <div class="risk-text"><strong>Recurring mobile money is fragile</strong> — MTN/Airtel auto-debit reliability is lower than cards; members see "payment failed" and churn.</div>
+        <div class="risk-mit">Expect re-approval in the UX. Send "tap to confirm" nudge 2 days before charge. Treat failures as soft. Offer bank standing order for high-tier sustainers.</div>
+      </div>
+      <div class="risk-row">
+        <div class="rnum">R5</div>
+        <div class="risk-text"><strong>Privacy / data protection complaint</strong> — Uganda PDPO or GDPR complaint would be painful.</div>
+        <div class="risk-mit">Conservative defaults (no member directory, lineage private). Bilingual privacy policy. Named Data Protection Officer. Maintained data flow document.</div>
+      </div>
+      <div class="risk-row">
+        <div class="rnum">R6</div>
+        <div class="risk-text"><strong>Cultural content disputes</strong> — contested clan origin stories invite pushback from elders.</div>
+        <div class="risk-mit">Every clan page reviewed and signed off by the relevant Omutaka. Where genuine dispute exists, the page acknowledges it openly.</div>
+      </div>
+      <div class="risk-row">
+        <div class="rnum">R7</div>
+        <div class="risk-text"><strong>Buganda Kingdom never endorses</strong> — or actively distances from the app.</div>
+        <div class="risk-mit">Design works fully on Bataka endorsement alone. Kingdom endorsement is additive. No Kabaka imagery or royal seals until formally cleared by Mengo.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PHASES ── -->
+  <section>
+    <div class="section-title">Phasing</div>
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="phase-header">
+          <h3>v1 — Launch</h3>
+          <span class="phase-time">6–9 months development</span>
+        </div>
+        <ul>
+          <li>All 6 top-level destinations</li>
+          <li>All 52 clan pages (6 deep, rest minimum-viable)</li>
+          <li>Progressive sign-up + all 3 verification states</li>
+          <li>Donations: one-time + Busuulu (UGX + foreign)</li>
+          <li>Calls to action with RSVP + Support buttons</li>
+          <li>Public transparency dashboard + campaign logs</li>
+          <li>Bataka admin panel + Foundation super-admin</li>
+          <li>Bilingual (Luganda + English) with auto-detection</li>
+          <li>Verified Clan ID card + permanent donor wall</li>
+          <li>"In honor of Omutaka" donation flow</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header">
+          <h3>v2 — Growth</h3>
+          <span class="phase-time">Months 9–15 post-launch</span>
+        </div>
+        <ul>
+          <li>Send-a-letter to MPs (calls to action v2)</li>
+          <li>Tax deductibility for diaspora (501c3 / UK charity)</li>
+          <li>Operational ratio disclosure (programs vs. ops)</li>
+          <li>Native Android wrapper (if traction warrants)</li>
+          <li>Multi-clan and kingdom-wide polls</li>
+          <li>In-app event ticketing</li>
+          <li>Deeper governance features</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPEN QUESTIONS ── -->
+  <section>
+    <div class="section-title">Open Questions for Foundation Decision — Blockers for Build</div>
+    <div class="oq-list">
+      <div class="oq-item">
+        <div class="oq-num">DECISION 01</div>
+        Formally bless the <strong>donor tier names</strong>: Omwana / Omugabo / Mukulu / Olukiiko lw'Ebikabyaffe — or propose alternatives.
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 02</div>
+        Confirm the <strong>6 showcase clans</strong> for deep launch content (suggested: Mmamba, Ngabi, Mbogo, Lugave, Nkima, Ndiga).
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 03 · URGENT</div>
+        <strong>Stripe / fiscal sponsor entity</strong> — initiate immediately. Appoint a board member to lead this in parallel with development.
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 04</div>
+        Identify the <strong>6–10 Bataka onboarding cohort</strong> — willing clan heads for the first wave of admin-panel users.
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 05</div>
+        Staff the <strong>pre-launch content team</strong>: 1 senior cultural editor + 2 researchers + Bataka liaison for the 8–12 week clan content sprint.
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 06</div>
+        Confirm <strong>NGO Bureau registration status</strong> and provide the exact language for tax-deductibility statements on donation receipts.
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 07</div>
+        Commission <strong>privacy policy legal review</strong> — Uganda PDPO counsel + GDPR-aware reviewer for both Luganda and English versions.
+      </div>
+      <div class="oq-item">
+        <div class="oq-num">DECISION 08</div>
+        Board agrees on the <strong>year-one public membership target</strong> before launch — this becomes the public lobbying commitment.
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Ebikabyaffe Foundation · Endorsed by the Buganda Council of Clan Heads (Olukiiko lw'Abataka) · Spec: 10 May 2026 · Status: Draft
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ebikabyaffe Foundation — Heritage Platform v3</title>
+<style>
+:root{
+  --gd:#1a3d2b;--gm:#2d6a4f;--gl:#52b788;--g0:#e8f5ee;
+  --gold:#c8973a;--gold2:#f4c66a;--gold3:#fff8e7;
+  --royal:#1a3d8f;--royal2:#2451b8;--royal3:#e8edf8;
+  --cream:#faf7f0;--cream2:#f0ebe0;--cream3:#e5ddd0;
+  --text:#1c1c1c;--muted:#5a5a5a;--border:#ddd5c4;
+  --white:#fff;--red:#c0392b;
+  --r:6px;--shadow:0 2px 12px rgba(0,0,0,.10);
+  --nav-h:68px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--cream);color:var(--text);font-size:15px}
+
+/* ── NAV ── */
+#nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--gd);border-bottom:3px solid var(--gold);display:flex;align-items:center;padding:0 16px;z-index:100;gap:10px}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.nav-logo-svg{width:44px;height:44px;flex-shrink:0}
+.nav-brand-text{color:var(--white);font-family:Georgia,serif;font-size:14px;font-weight:normal;white-space:nowrap;line-height:1.2}
+.nav-brand-text span{color:var(--gold2);font-size:10px;display:block;letter-spacing:2px;text-transform:uppercase}
+.nav-brand-text em{color:var(--gold);font-size:9px;font-style:normal;display:block;letter-spacing:.5px;opacity:.8}
+#nav-links{display:flex;gap:2px;flex:1;overflow-x:auto}
+#nav-links button{background:none;border:none;color:rgba(255,255,255,.65);font-size:13px;padding:6px 12px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;line-height:1.3}
+#nav-links button:hover{background:rgba(255,255,255,.08);color:var(--white)}
+#nav-links button.active{background:rgba(255,255,255,.12);color:var(--white);border-bottom:2px solid var(--gold)}
+.nav-link-sub{display:block;font-size:9px;letter-spacing:.5px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-top:2px}
+#nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.lang-toggle{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--white);font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.5px}
+.lang-toggle:hover{background:rgba(255,255,255,.2)}
+#auth-btn{background:var(--gold);color:var(--gd);border:none;padding:7px 16px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+#auth-btn:hover{background:var(--gold2)}
+#user-pill{display:none;align-items:center;gap:8px;color:var(--white);font-size:13px}
+#user-pill .avatar{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--gd);font-size:13px}
+#user-pill button{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.6);font-size:11px;padding:3px 8px;border-radius:3px;cursor:pointer}
+
+/* ── SECTIONS ── */
+.section{display:none;min-height:calc(100vh - var(--nav-h) - 52px);margin-top:var(--nav-h);padding-bottom:88px}
+.section.active{display:block}
+
+/* ── HERO ── */
+#home-landing{display:block}
+#home-dashboard{display:none}
+.hero{background:var(--gd);min-height:calc(100vh - var(--nav-h));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 35%,rgba(82,183,136,.18) 0%,transparent 60%)}
+.hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(200,151,58,.03) 0,rgba(200,151,58,.03) 1px,transparent 1px,transparent 60px);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,151,58,.15);border:1px solid rgba(200,151,58,.4);border-radius:20px;padding:5px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:20px}
+.hero h1{font-family:Georgia,serif;font-size:clamp(32px,5.5vw,60px);color:var(--white);font-weight:normal;line-height:1.15;margin-bottom:16px;max-width:720px}
+.hero h1 em{color:var(--gold2);font-style:normal}
+.hero-lede{font-size:17px;color:rgba(255,255,255,.65);max-width:500px;margin-bottom:36px;line-height:1.6}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:40px}
+.btn-primary{background:var(--gold);color:var(--gd);border:none;padding:14px 28px;border-radius:5px;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.3);padding:14px 28px;border-radius:5px;font-size:15px;cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:rgba(255,255,255,.7)}
+.hero-stats{display:flex;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;overflow:hidden;margin-bottom:36px}
+.hero-stat{padding:14px 22px;border-right:1px solid rgba(255,255,255,.1);text-align:center}
+.hero-stat:last-child{border-right:none}
+.hero-stat .hs-num{font-family:Georgia,serif;font-size:26px;color:var(--white);display:block}
+.hero-stat .hs-lbl{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.5px;display:block;margin-top:2px;white-space:nowrap}
+.trust-bar{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;opacity:.45}
+.trust-bar span{font-size:10px;color:var(--white);letter-spacing:.5px}
+.hero-motto{font-family:Georgia,serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.5);margin-top:20px}
+
+/* ── DASHBOARD ── */
+.dash-wrap{max-width:740px;margin:0 auto;padding:28px 20px}
+.dash-greeting h2{font-family:Georgia,serif;font-size:24px;font-weight:normal;color:var(--gd);margin-bottom:4px}
+.dash-greeting p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.dash-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.dash-card-header{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.clan-totem{font-size:28px;line-height:1}
+.clan-card-info h3{font-size:16px;color:var(--gd);margin-bottom:2px}
+.clan-card-info p{font-size:12px;color:var(--muted)}
+.clan-card-info .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--g0);color:var(--gm);margin-top:4px;letter-spacing:.5px}
+.dash-card-body{padding:14px 18px}
+.cta-card{background:var(--gd);color:var(--white)}
+.cta-card .dash-card-header{border-color:rgba(255,255,255,.1)}
+.cta-card .dash-card-header span{font-size:11px;color:var(--gold2);letter-spacing:1px;text-transform:uppercase}
+.cta-card h3{font-size:15px;color:var(--white);margin-bottom:6px}
+.cta-card p{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:14px;line-height:1.5}
+.cta-actions{display:flex;gap:10px}
+.btn-sm{padding:8px 16px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-gold{background:var(--gold);color:var(--gd)}
+.btn-gold:hover{background:var(--gold2)}
+.btn-green{background:var(--gm);color:var(--white)}
+.btn-green:hover{background:var(--gd)}
+.btn-outline-white{background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--white)}
+.progress-bar-wrap{margin-bottom:12px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.progress-bar{height:8px;background:var(--cream2);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gm),var(--gl));border-radius:4px;transition:width .5s}
+.proverb{font-family:Georgia,serif;font-style:italic;font-size:16px;color:var(--gd);margin-bottom:6px;line-height:1.5;border-left:3px solid var(--gold);padding-left:14px}
+.proverb-trans{font-size:13px;color:var(--muted);padding-left:17px}
+
+/* ── EMPANGO ── */
+.empango-card{background:linear-gradient(135deg,var(--royal) 0%,#0d2660 100%);border:2px solid var(--gold);border-radius:var(--r);padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.empango-card::after{content:'👑';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.18}
+.empango-label{font-size:10px;letter-spacing:2px;color:var(--gold2);text-transform:uppercase;margin-bottom:8px}
+.empango-card h3{font-family:Georgia,serif;font-size:18px;color:var(--white);font-weight:normal;margin-bottom:4px}
+.empango-card p{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:14px;line-height:1.5}
+.empango-countdown{display:flex;gap:10px;margin-bottom:14px}
+.ec-unit{text-align:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:8px 12px}
+.ec-unit .ec-num{font-family:Georgia,serif;font-size:24px;color:var(--gold2);display:block;line-height:1}
+.ec-unit .ec-lbl{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;display:block;margin-top:3px}
+
+/* ── CLANS ── */
+#clan-grid-view{display:block}
+#clan-detail-view{display:none}
+.section-head{background:var(--gd);padding:36px 24px 0;text-align:center}
+.section-head h2{font-family:Georgia,serif;font-size:28px;color:var(--white);font-weight:normal;margin-bottom:6px}
+.section-head p{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:0}
+.clan-search{max-width:420px;margin:16px auto 0;position:relative}
+.clan-search input{width:100%;padding:10px 16px 10px 38px;border-radius:5px;border:none;font-size:14px;background:rgba(255,255,255,.12);color:var(--white);outline:none}
+.clan-search input::placeholder{color:rgba(255,255,255,.4)}
+.clan-search::before{content:'🔍';position:absolute;left:12px;top:10px;font-size:14px}
+/* Origin wave filter tabs */
+.wave-tabs{display:flex;gap:0;background:var(--gd);border-top:1px solid rgba(255,255,255,.08);overflow-x:auto}
+.wave-tab{padding:10px 16px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;transition:all .15s;font-weight:500}
+.wave-tab.active{color:var(--gold2);border-bottom-color:var(--gold2)}
+.wave-tab:hover:not(.active){color:rgba(255,255,255,.8)}
+/* Clan tabs */
+.clans-view-tabs{display:flex;background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.08)}
+.clans-view-tab{padding:10px 18px;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-weight:500;flex-shrink:0}
+.clans-view-tab.active{color:var(--white);border-bottom-color:var(--gold)}
+.clans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;padding:24px;max-width:1060px;margin:0 auto}
+.clan-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px 14px;text-align:center;cursor:pointer;transition:all .18s;position:relative}
+.clan-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--gold)}
+.clan-tile .totem{font-size:36px;margin-bottom:8px;display:block}
+.clan-tile h3{font-size:14px;color:var(--gd);margin-bottom:2px;font-weight:600}
+.clan-tile .luganda-name{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px}
+.clan-tile .clan-head-title{font-size:10px;color:var(--gold);font-weight:600;margin-bottom:3px}
+.clan-tile .member-count{font-size:11px;color:var(--muted)}
+.clan-tile .deep-badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;background:var(--gold);color:var(--gd);padding:2px 5px;border-radius:3px}
+.clan-tile .wave-badge{position:absolute;top:8px;left:8px;font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.3px;text-transform:uppercase}
+.wave-nansangwa{background:#1a3d2b;color:#52b788}
+.wave-kintu{background:#1a3d8f;color:#a0b8f4}
+.wave-kimera{background:#6b2f00;color:#f4c66a}
+.wave-later{background:#3d3d3d;color:#ccc}
+
+/* ── AMASAZA ── */
+#amasaza-view{display:none}
+.amasaza-head{background:var(--royal);padding:32px 24px 24px;text-align:center}
+.amasaza-head h2{font-family:Georgia,serif;font-size:26px;color:var(--white);font-weight:normal;margin-bottom:6px}
+.amasaza-head p{font-size:13px;color:rgba(255,255,255,.6)}
+.amasaza-sub{font-size:12px;color:var(--gold2);margin-top:4px;letter-spacing:.5px}
+.amasaza-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:24px;max-width:1000px;margin:0 auto}
+.ssaza-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .15s}
+.ssaza-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--royal2)}
+.ssaza-tile .ssaza-num{font-size:10px;font-weight:700;color:var(--royal2);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.ssaza-tile h3{font-size:15px;color:var(--gd);margin-bottom:3px;font-family:Georgia,serif;font-weight:normal}
+.ssaza-tile .ssaza-chief{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:3px}
+.ssaza-tile .ssaza-note{font-size:11px;color:var(--muted)}
+
+/* ── CLAN DETAIL ── */
+.clan-hero{background:var(--gd);padding:44px 24px;text-align:center;border-bottom:4px solid var(--gold);position:relative;overflow:hidden}
+.clan-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(200,151,58,.04) 0,rgba(200,151,58,.04) 1px,transparent 1px,transparent 50px)}
+.clan-hero .big-totem{font-size:80px;margin-bottom:12px;display:block}
+.clan-hero h1{font-family:Georgia,serif;font-size:34px;color:var(--white);font-weight:normal;margin-bottom:4px}
+.clan-hero .clan-hero-luganda{font-size:15px;color:var(--gold2);font-family:Georgia,serif;font-style:italic;margin-bottom:6px}
+.clan-hero .clan-hero-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:16px}
+.clan-hero .member-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;font-size:12px;color:rgba(255,255,255,.8)}
+.clan-hero .member-pill strong{color:var(--gold2)}
+.clan-hero .gabunga-banner{display:inline-block;background:var(--gold);color:var(--gd);font-size:11px;font-weight:700;padding:5px 14px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;margin-top:12px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;cursor:pointer;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--white)}
+.back-link:hover{color:var(--gd)}
+.clan-content{max-width:780px;margin:0 auto;padding:28px 24px}
+.info-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.info-chip{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;display:flex;align-items:center;gap:6px}
+.info-chip .chip-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block}
+.info-chip .chip-val{font-size:13px;color:var(--gd)}
+.clan-section{margin-bottom:28px}
+.clan-section h3{font-family:Georgia,serif;font-size:18px;color:var(--gd);font-weight:normal;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.clan-section p{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:10px}
+.siga-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.siga-item{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:12px 14px}
+.siga-item h4{font-size:14px;color:var(--gd);margin-bottom:3px}
+.siga-item p{font-size:12px;color:var(--muted)}
+.taboo-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.taboo-list li{font-size:14px;padding:8px 12px;background:var(--cream2);border-radius:4px;display:flex;align-items:center;gap:8px}
+.taboo-list li::before{content:'⚑';font-size:12px;color:var(--gold)}
+.omutaka-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:16px;align-items:start}
+.omutaka-avatar{width:52px;height:52px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.omutaka-info h4{font-size:15px;color:var(--gd);margin-bottom:2px}
+.omutaka-info .title{font-size:12px;color:var(--muted);margin-bottom:6px}
+.omutaka-info p{font-size:13px;color:var(--text)}
+.gabunga-card{background:linear-gradient(135deg,var(--royal) 0%,#0d2660 100%);border:1px solid var(--gold);border-radius:var(--r);padding:20px;margin-bottom:20px;position:relative;overflow:hidden}
+.gabunga-card::after{content:'⚓';position:absolute;right:16px;bottom:12px;font-size:40px;opacity:.18}
+.gabunga-card .gc-label{font-size:10px;letter-spacing:2px;color:var(--gold2);text-transform:uppercase;margin-bottom:8px}
+.gabunga-card h4{font-family:Georgia,serif;font-size:17px;color:var(--white);font-weight:normal;margin-bottom:6px}
+.gabunga-card p{font-size:13px;color:rgba(255,255,255,.7);line-height:1.6}
+.sacred-sites{display:flex;flex-direction:column;gap:8px}
+.sacred-site{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:12px 14px;display:flex;align-items:start;gap:10px}
+.sacred-site .ss-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.sacred-site h4{font-size:14px;color:var(--gd);margin-bottom:2px}
+.sacred-site p{font-size:12px;color:var(--muted);line-height:1.5}
+.clan-join-cta{background:var(--gd);border-radius:var(--r);padding:24px;text-align:center;margin:28px 0}
+.clan-join-cta p{color:rgba(255,255,255,.7);font-size:14px;margin-bottom:16px;line-height:1.5}
+.clan-join-cta strong{color:var(--gold2)}
+.clan-join-cta h3{font-family:Georgia,serif;font-size:20px;color:var(--white);font-weight:normal;margin-bottom:8px}
+
+/* ── ROOTS — 8-STEP ── */
+.roots-wrap{max-width:680px;margin:0 auto;padding:28px 20px}
+.roots-clan-card{background:var(--gd);border-radius:var(--r);padding:18px;display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.roots-clan-card .totem{font-size:40px}
+.roots-clan-card h3{font-family:Georgia,serif;font-size:20px;color:var(--white);font-weight:normal;margin-bottom:4px}
+.roots-clan-card p{font-size:13px;color:rgba(255,255,255,.6)}
+/* 8-step progress bar */
+.roots-progress{display:flex;gap:0;margin-bottom:20px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rp-step{flex:1;text-align:center;padding:9px 4px;font-size:10px;color:var(--muted);border-right:1px solid var(--border);position:relative}
+.rp-step:last-child{border-right:none}
+.rp-step.done{background:var(--g0);color:var(--gm);font-weight:600}
+.rp-step.active-step{background:var(--gold3);color:var(--gold);font-weight:600}
+.rp-step .rp-icon{display:block;font-size:14px;margin-bottom:3px}
+.roots-steps{display:flex;flex-direction:column;gap:10px}
+.roots-step-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.roots-step-card.locked{opacity:.5;pointer-events:none}
+.roots-step-card.done .rsc-header{background:var(--g0)}
+.rsc-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s}
+.rsc-header:hover{background:var(--cream2)}
+.rsc-header-left{display:flex;align-items:center;gap:10px}
+.rsc-icon{font-size:20px}
+.rsc-title{font-size:14px;font-weight:600;color:var(--gd);margin-bottom:2px}
+.rsc-sub{font-size:12px;color:var(--muted)}
+.rsc-status{font-size:12px;padding:3px 8px;border-radius:3px;font-weight:600}
+.status-done{background:var(--g0);color:var(--gm)}
+.status-todo{background:var(--cream2);color:var(--muted)}
+.status-active{background:var(--gold3);color:var(--gold)}
+.rsc-body{display:none;padding:14px 18px;border-top:1px solid var(--border);background:var(--cream)}
+.rsc-body.open{display:block}
+.siga-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.siga-option{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:10px 12px;cursor:pointer;transition:all .15s;font-size:13px}
+.siga-option:hover{border-color:var(--gm);background:var(--g0)}
+.siga-option.selected{border-color:var(--gm);background:var(--g0);font-weight:600;color:var(--gd)}
+.siga-option .so-name{font-weight:600;color:var(--gd);margin-bottom:2px}
+.siga-option .so-desc{font-size:11px;color:var(--muted)}
+.btn-confirm{background:var(--gm);color:var(--white);border:none;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-confirm:hover{background:var(--gd)}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.3px}
+.modal-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:4px;font-size:14px;outline:none}
+.modal-field input:focus{border-color:var(--gm)}
+.verified-screen{text-align:center;padding:24px}
+.verified-screen .badge-big{font-size:48px;margin-bottom:12px}
+.verified-screen h3{font-family:Georgia,serif;font-size:20px;color:var(--gd);font-weight:normal;margin-bottom:8px}
+.verified-screen p{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+/* ── GIVE ── */
+.give-wrap{max-width:720px;margin:0 auto;padding:28px 20px}
+.campaign-card{background:var(--gd);border-radius:var(--r);padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
+.campaign-card::after{content:'🏫';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:64px;opacity:.15}
+.campaign-card h3{font-family:Georgia,serif;font-size:20px;color:var(--white);font-weight:normal;margin-bottom:4px}
+.campaign-card .camp-sub{font-size:11px;color:var(--gold2);letter-spacing:.5px;margin-bottom:10px}
+.campaign-card p{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:16px;line-height:1.5}
+.camp-stats{display:flex;gap:20px;margin-bottom:14px}
+.camp-stat .val{font-size:20px;font-weight:700;color:var(--gold2);display:block}
+.camp-stat .lbl{font-size:11px;color:rgba(255,255,255,.5)}
+.camp-thermometer{height:10px;background:rgba(255,255,255,.12);border-radius:5px;overflow:hidden;margin-top:4px}
+.camp-fill{height:100%;width:39%;background:linear-gradient(90deg,var(--gl),var(--gold2));border-radius:5px}
+.camp-milestones{display:flex;gap:12px;margin-top:6px;font-size:10px;color:rgba(255,255,255,.45)}
+.give-tabs{display:flex;gap:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.give-tab{flex:1;padding:11px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;border-right:1px solid var(--border)}
+.give-tab:last-child{border-right:none}
+.give-tab.active{background:var(--gd);color:var(--white)}
+.give-tab:hover:not(.active){background:var(--cream2)}
+#give-onetime,#give-busuulu{display:none}
+#give-onetime.show,#give-busuulu.show{display:block}
+.give-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.give-card h3{font-size:15px;color:var(--gd);margin-bottom:14px}
+.amount-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.amount-btn{padding:11px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--text)}
+.amount-btn:hover{border-color:var(--gm);background:var(--g0)}
+.amount-btn.selected{border-color:var(--gm);background:var(--g0);color:var(--gm)}
+.custom-amount{width:100%;padding:10px;border:1px solid var(--border);border-radius:4px;font-size:14px;margin-bottom:14px;outline:none}
+.custom-amount:focus{border-color:var(--gm)}
+.pay-section-label{font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.payment-methods{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pay-btn{padding:8px 14px;border:1px solid var(--border);border-radius:4px;background:var(--white);font-size:12px;cursor:pointer;transition:all .15s;color:var(--text);display:flex;align-items:center;gap:5px}
+.pay-btn.selected{border-color:var(--gm);background:var(--g0)}
+.phone-row{background:var(--cream2);border-radius:4px;padding:12px 14px;margin-bottom:14px}
+.phone-row label{font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px}
+.phone-row input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:4px;font-size:14px;outline:none}
+.give-submit{width:100%;padding:13px;background:var(--gm);color:var(--white);border:none;border-radius:5px;font-size:15px;font-weight:700;cursor:pointer}
+.give-submit:hover{background:var(--gd)}
+.give-submit:disabled{opacity:.5;cursor:not-allowed}
+.tier-cards{display:flex;flex-direction:column;gap:10px}
+.tier-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .15s}
+.tier-card:hover{border-color:var(--gold)}
+.tier-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,151,58,.2)}
+.tier-card.selected.olukiiko-tier{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,151,58,.3)}
+.tier-card-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.tier-name{font-size:15px;font-weight:600;color:var(--gd)}
+.tier-trans{font-size:11px;color:var(--muted);margin-top:2px}
+.tier-amount{font-size:14px;font-weight:700;color:var(--gold);white-space:nowrap}
+.tier-detail{display:none;padding:12px 18px;border-top:1px solid var(--border);background:var(--cream);font-size:13px;color:var(--muted);line-height:1.5}
+.tier-card.selected .tier-detail{display:block}
+.tier-card.selected .tier-card-header{background:var(--gold3)}
+.tier-phone-row{margin-top:12px;padding:12px;background:var(--g0);border-radius:4px;display:none}
+.tier-phone-row.show{display:block}
+.tier-phone-row label{font-size:12px;color:var(--gm);font-weight:600;display:block;margin-bottom:6px}
+.tier-phone-row input{width:100%;padding:9px 12px;border:1px solid var(--gl);border-radius:4px;font-size:14px;outline:none;background:var(--white)}
+.donate-success{display:none;text-align:center;padding:32px;background:var(--white);border:1px solid var(--border);border-radius:var(--r)}
+.donate-success.show{display:block}
+.donate-success .success-icon{font-size:48px;margin-bottom:12px}
+.donate-success h3{font-family:Georgia,serif;font-size:20px;color:var(--gd);font-weight:normal;margin-bottom:8px}
+.donate-success p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.transparency-link{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;font-size:13px;color:var(--gm);cursor:pointer;border:1px dashed var(--border);border-radius:var(--r);margin-top:20px}
+.transparency-link:hover{background:var(--g0);border-color:var(--gm)}
+
+/* ── BATAKA ── */
+.kingdom-context{background:linear-gradient(135deg,var(--royal) 0%,#0d2660 100%);border-bottom:3px solid var(--gold);padding:24px}
+.kingdom-context-inner{max-width:1040px;margin:0 auto;display:flex;gap:20px;flex-wrap:wrap;align-items:start}
+.kc-crown{font-size:48px;flex-shrink:0}
+.kc-content{flex:1;min-width:200px}
+.kc-label{font-size:10px;letter-spacing:2px;color:var(--gold2);text-transform:uppercase;margin-bottom:8px}
+.kc-content h3{font-family:Georgia,serif;font-size:18px;color:var(--white);font-weight:normal;margin-bottom:8px}
+.kc-content p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:10px}
+.kc-facts{display:flex;gap:12px;flex-wrap:wrap}
+.kc-fact{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:8px 12px}
+.kc-fact .kf-label{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:3px}
+.kc-fact .kf-val{font-size:13px;color:var(--white);font-weight:500}
+.bataka-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:20px 24px;max-width:1040px;margin:0 auto}
+.bataka-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;gap:14px;cursor:pointer;transition:all .15s}
+.bataka-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--gold)}
+.bataka-card.royal-card{border-color:var(--royal2);background:var(--royal3)}
+.bataka-card.royal-card:hover{border-color:var(--royal)}
+.bataka-avatar{width:48px;height:48px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.bataka-avatar.royal-av{background:var(--royal)}
+.bataka-totem{width:48px;height:48px;border-radius:50%;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border)}
+.bataka-info h3{font-size:14px;color:var(--gd);margin-bottom:2px}
+.bataka-info .btitle{font-size:12px;color:var(--gold);margin-bottom:4px}
+.bataka-info .btitle.royal-title{color:var(--royal2)}
+.bataka-info p{font-size:12px;color:var(--muted);line-height:1.4}
+.bataka-info .bdots{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.bataka-info .bdot{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px}
+.bataka-section-label{padding:16px 24px 4px;max-width:1040px;margin:0 auto;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.lukiiko-note{background:var(--royal3);border:1px solid rgba(26,61,143,.2);border-radius:var(--r);padding:14px 18px;font-size:13px;color:var(--royal);line-height:1.6;margin:0 24px}
+.call-card{background:var(--gd);border-radius:var(--r);padding:16px;color:var(--white);margin-bottom:12px}
+.call-card .call-label{font-size:10px;letter-spacing:2px;color:var(--gold2);text-transform:uppercase;margin-bottom:6px}
+.call-card h4{font-size:15px;font-weight:normal;font-family:Georgia,serif;margin-bottom:6px}
+.call-card p{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:14px;line-height:1.5}
+.call-actions{display:flex;gap:8px}
+
+/* ── PROFILE ── */
+.profile-wrap{max-width:620px;margin:0 auto;padding:28px 20px}
+.profile-header{background:var(--gd);border-radius:var(--r);padding:24px;display:flex;gap:16px;align-items:center;margin-bottom:20px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:var(--gd);flex-shrink:0}
+.profile-info h2{font-family:Georgia,serif;font-size:20px;color:var(--white);font-weight:normal;margin-bottom:4px}
+.profile-info p{font-size:13px;color:rgba(255,255,255,.6)}
+.profile-info .verify-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;margin-top:6px;letter-spacing:.5px}
+.vb-self{background:#e3f2fd;color:#1565c0}
+.vb-verified{background:var(--g0);color:var(--gm)}
+.profile-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.profile-section-title{padding:12px 18px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:var(--cream2);border-bottom:1px solid var(--border)}
+.profile-row{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);font-size:14px}
+.profile-row:last-child{border-bottom:none}
+.profile-row .row-label{color:var(--muted);font-size:13px}
+.profile-row .row-val{color:var(--text);font-weight:500}
+/* Lineage tree */
+.lineage-tree{padding:16px 18px}
+.lineage-level{display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--cream2);border-radius:4px;margin-bottom:6px;position:relative}
+.lineage-level::before{content:'';position:absolute;left:26px;bottom:-6px;width:2px;height:6px;background:var(--border)}
+.lineage-level:last-child::before{display:none}
+.ll-step{font-size:10px;font-weight:700;color:var(--muted);width:60px;flex-shrink:0;letter-spacing:.5px;text-transform:uppercase}
+.ll-icon{font-size:18px;flex-shrink:0}
+.ll-info strong{font-size:14px;color:var(--gd);display:block;margin-bottom:1px}
+.ll-info span{font-size:11px;color:var(--muted)}
+.toggle-switch{position:relative;display:inline-block;width:40px;height:22px}
+.toggle-switch input{display:none}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:11px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;background:var(--white);border-radius:50%;transition:.2s}
+.toggle-switch input:checked+.toggle-slider{background:var(--gm)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(18px)}
+.donor-history{list-style:none;padding:0}
+.donor-history li{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px}
+.donor-history li:last-child{border-bottom:none}
+.donor-history .dh-amt{font-weight:700;color:var(--gd)}
+.donor-history .dh-date{color:var(--muted);font-size:12px}
+.donor-history .dh-tag{font-size:10px;background:var(--g0);color:var(--gm);padding:2px 6px;border-radius:3px;font-weight:600}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--white);border-radius:var(--r);max-width:400px;width:100%;padding:28px;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1}
+.modal h2{font-family:Georgia,serif;font-size:20px;color:var(--gd);font-weight:normal;margin-bottom:6px}
+.modal .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.clan-prefilled{background:var(--g0);border:1px solid var(--border);border-radius:4px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.clan-prefilled .totem{font-size:20px}
+.clan-prefilled .pf-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.clan-prefilled .pf-name{font-size:14px;font-weight:600;color:var(--gd)}
+.otp-note{font-size:12px;color:var(--muted);margin-bottom:20px;background:var(--cream2);padding:8px 12px;border-radius:4px}
+.modal-submit{width:100%;padding:12px;background:var(--gm);color:var(--white);border:none;border-radius:5px;font-size:15px;font-weight:700;cursor:pointer}
+.modal-submit:hover{background:var(--gd)}
+#modal-welcome .welcome-totem{font-size:56px;text-align:center;margin-bottom:12px}
+#modal-welcome h2{text-align:center}
+#modal-welcome .welcome-omuziro{font-size:14px;color:var(--muted);text-align:center;margin-bottom:20px;font-style:italic}
+.welcome-choices{display:flex;flex-direction:column;gap:8px}
+.wc-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:var(--white);font-size:14px;color:var(--gd);text-align:left;transition:all .15s}
+.wc-btn:hover{background:var(--g0);border-color:var(--gm)}
+.wc-btn .wc-icon{font-size:22px;flex-shrink:0}
+.wc-btn .wc-text strong{display:block;font-size:14px;margin-bottom:1px}
+.wc-btn .wc-text span{font-size:12px;color:var(--muted)}
+
+/* ── TOAST + FOOTER ── */
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gd);color:var(--white);padding:12px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;border:1px solid var(--gold);white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#site-footer{background:var(--gd);color:rgba(255,255,255,.5);text-align:center;padding:12px 16px;font-size:11px;border-top:3px solid var(--gold);position:fixed;bottom:0;left:0;right:0;z-index:90;line-height:1.6}
+#site-footer strong{color:var(--gold2)}
+#site-footer .footer-contact{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px}
+#site-footer .footer-motto{font-size:11px;color:var(--gold);font-style:italic;font-family:Georgia,serif}
+.auth-gate{text-align:center;padding:60px 24px}
+.auth-gate h3{font-family:Georgia,serif;font-size:22px;color:var(--gd);font-weight:normal;margin-bottom:8px}
+.auth-gate p{font-size:14px;color:var(--muted);margin-bottom:20px;max-width:320px;margin-left:auto;margin-right:auto}
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:.5px}
+.pill-green{background:var(--g0);color:var(--gm)}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <a class="nav-logo" href="#" onclick="navigate('home');return false">
+    <svg class="nav-logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="19" fill="#c8973a"/>
+      <circle cx="20" cy="20" r="16" fill="#1a3d8f"/>
+      <circle cx="20" cy="20" r="16" fill="none" stroke="#f4c66a" stroke-width=".8"/>
+      <polygon points="20,7 28,21 12,21" fill="none" stroke="#fff" stroke-width="1.2"/>
+      <line x1="14" y1="18" x2="26" y2="18" stroke="#fff" stroke-width="1"/>
+      <line x1="16.5" y1="14.5" x2="23.5" y2="14.5" stroke="#fff" stroke-width="1"/>
+      <path d="M17,21 L17,27 Q20,29.5 23,27 L23,21 Z" fill="#c8973a" stroke="#f4c66a" stroke-width=".6"/>
+      <line x1="17" y1="23.5" x2="23" y2="23.5" stroke="#1a3d8f" stroke-width="1"/>
+      <line x1="17" y1="25.5" x2="23" y2="25.5" stroke="#1a3d8f" stroke-width="1"/>
+      <line x1="14" y1="30" x2="26" y2="22" stroke="#f4c66a" stroke-width=".9"/>
+      <line x1="26" y1="30" x2="14" y2="22" stroke="#f4c66a" stroke-width=".9"/>
+      <rect x="8" y="31" width="24" height="5" rx="1.5" fill="#c8973a"/>
+      <text x="20" y="35" font-size="3.8" fill="#1a3d8f" font-weight="700" text-anchor="middle" font-family="Arial,sans-serif" letter-spacing=".3">EBIKABYAFFE</text>
+    </svg>
+    <div class="nav-brand-text">Ebikabyaffe<span>FOUNDATION</span><em>Agali awamu</em></div>
+  </a>
+  <div id="nav-links">
+    <button onclick="navigate('home')" id="nav-home" class="active">Home<span class="nav-link-sub">Dashboard</span></button>
+    <button onclick="navigate('clans')" id="nav-clans">Clans<span class="nav-link-sub">43 Ebika</span></button>
+    <button onclick="navigate('roots')" id="nav-roots">Roots<span class="nav-link-sub">Lineage</span></button>
+    <button onclick="navigate('give')" id="nav-give">Give<span class="nav-link-sub">Busuulu</span></button>
+    <button onclick="navigate('bataka')" id="nav-bataka">Bataka<span class="nav-link-sub">Clan Heads</span></button>
+    <button onclick="navigate('profile')" id="nav-profile">Profile<span class="nav-link-sub">My Account</span></button>
+  </div>
+  <div id="nav-right">
+    <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">🇬🇧 EN</button>
+    <button id="auth-btn" onclick="login()">Sign in</button>
+    <div id="user-pill">
+      <div class="avatar">SK</div>
+      <span id="user-name-nav">Simon</span>
+      <button onclick="logout()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<div class="section active" id="section-home">
+  <div id="home-landing">
+    <div class="hero">
+      <div class="hero-badge">👑 Endorsed by Olukiiko lw'Abataka · Buganda Kingdom</div>
+      <h1>Reclaim <em>who you are.</em><br>Discover your clan, your roots,<br>your Buganda heritage.</h1>
+      <p class="hero-lede">43 Buganda clans. 18 Amasaza. One foundation. Your lineage, traced in 8 steps — from Akasolya to Enju.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="navigate('clans')">Find your clan →</button>
+        <button class="btn-ghost" onclick="login()">Sign in to your account</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hs-num">847K+</span><span class="hs-lbl">Baganda registered</span></div>
+        <div class="hero-stat"><span class="hs-num">43</span><span class="hs-lbl">Ebika bya Buganda</span></div>
+        <div class="hero-stat"><span class="hs-num">18</span><span class="hs-lbl">Amasaza</span></div>
+        <div class="hero-stat"><span class="hs-num">12,847</span><span class="hs-lbl">Bataka-verified</span></div>
+      </div>
+      <div class="trust-bar">
+        <span>NGO BUREAU REG. 003/NGOB/2024</span><span>·</span>
+        <span>KABAKA RONALD MUWENDA MUTEBI II</span><span>·</span>
+        <span>BILINGUAL: LUGANDA + ENGLISH</span>
+      </div>
+      <div class="hero-motto">"Agali awamu" — Enkulaakulana mu mbeera ne mu byenfuna</div>
+    </div>
+  </div>
+
+  <div id="home-dashboard">
+    <div class="dash-wrap">
+      <div class="dash-greeting">
+        <h2 id="dash-greeting-text">Mwasuze otya, Simon.</h2>
+        <p id="dash-greeting-sub">Your clan is waiting. Here's what's happening today.</p>
+      </div>
+      <div class="empango-card">
+        <div class="empango-label">Upcoming Kingdom Event</div>
+        <h3>Empango — 33rd Coronation Anniversary</h3>
+        <p>Kabaka Ronald Muwenda Mutebi II, the 36th Kabaka of Buganda, was enthroned 31 July 1993 at Naggalabi, Buddo. The Empango ceremony marks this historic day annually.</p>
+        <div class="empango-countdown">
+          <div class="ec-unit"><span class="ec-num" id="ec-days">36</span><span class="ec-lbl">Days</span></div>
+          <div class="ec-unit"><span class="ec-num" id="ec-hours">0</span><span class="ec-lbl">Hours</span></div>
+          <div class="ec-unit"><span class="ec-num" id="ec-mins">0</span><span class="ec-lbl">Mins</span></div>
+        </div>
+        <button class="btn-sm btn-gold" onclick="toast('You\'re signed up for Empango 2026 updates!')">Get Empango updates →</button>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="clan-totem">🐟</div>
+          <div class="clan-card-info">
+            <h3>Mmamba — The Lungfish Clan</h3>
+            <p>Omuziro: Lungfish · Akabbiro: Muguya (Kob antelope) · <strong style="color:var(--royal2)">Gabunga — Admiral of the Royal Navy</strong></p>
+            <span class="badge">SELF-DECLARED</span>
+          </div>
+          <div style="margin-left:auto"><span style="font-size:13px;color:var(--muted)">23,481 members</span></div>
+        </div>
+      </div>
+      <div class="dash-card cta-card">
+        <div class="dash-card-header"><span>ACTIVE CALL · PARLIAMENT · MAY 15, 2026</span></div>
+        <div class="dash-card-body">
+          <h3>Bataka present on land law — add your voice</h3>
+          <p>The Olukiiko lw'Abataka, coordinated with Katikkiro Owek. Charles Peter Mayiga, presents to Uganda's Land Affairs Committee. Sign as a registered clan member.</p>
+          <div class="cta-actions">
+            <button class="btn-sm btn-gold" onclick="toast('RSVP recorded! Details sent by SMS.')">RSVP →</button>
+            <button class="btn-sm btn-outline-white" onclick="navigate('give')">Support this work</button>
+          </div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header" style="border-bottom:none">
+          <div>
+            <h3 style="font-size:15px;color:var(--gd);margin-bottom:2px">🏫 Wakivule School — Bulemeezi, Luwero</h3>
+            <p style="font-size:12px;color:var(--muted)">Bulemeezi Ssaza · Saza Chief: Kangawo · 1,832 donors this month</p>
+          </div>
+          <button class="btn-sm btn-gold" style="margin-left:auto" onclick="navigate('give')">Give now</button>
+        </div>
+        <div class="dash-card-body" style="padding-top:0">
+          <div class="progress-bar-wrap">
+            <div class="progress-label"><span>UGX 47M raised</span><span>Goal: UGX 120M</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:39%"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--muted)">39% · Roof construction begins at 60% · A <em>Bulungi Bwansi</em> community effort</p>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <span style="font-size:20px">📖</span>
+          <div class="clan-card-info"><h3>Cultural learning of the week</h3><p>Luganda proverb · Updated every Monday</p></div>
+        </div>
+        <div class="dash-card-body">
+          <div class="proverb">"Agali awamu gaggya ennyuma."</div>
+          <div class="proverb-trans">Hands united pull a load. — The motto of Ebikabyaffe Foundation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLANS ═══ -->
+<div class="section" id="section-clans">
+  <div id="clan-grid-view">
+    <div class="section-head">
+      <h2 id="clans-head-title">The 43 Clans of Buganda</h2>
+      <p id="clans-head-sub">Every Muganda belongs to one of 43 ebika. Each clan has a unique totem, taboos, court role, and origin story.</p>
+      <div class="clan-search" id="clan-search-wrap">
+        <input type="text" placeholder="Search by name, totem, or court title…" oninput="filterClans(this.value)" id="clan-search-input"/>
+      </div>
+    </div>
+    <div class="clans-view-tabs" style="background:var(--gd)">
+      <div class="clans-view-tab active" id="tab-clans" onclick="switchClanView('clans')">🐟 43 Clans</div>
+      <div class="clans-view-tab" id="tab-amasaza" onclick="switchClanView('amasaza')">🗺 Amasaza (18 Counties)</div>
+    </div>
+    <div class="wave-tabs" id="wave-filter-tabs">
+      <div class="wave-tab active" onclick="filterWave('all')">All (43)</div>
+      <div class="wave-tab" onclick="filterWave('nansangwa')">🌿 Nansangwa · Indigenous</div>
+      <div class="wave-tab" onclick="filterWave('kintu')">🌊 Kintu era · c.1200–1400</div>
+      <div class="wave-tab" onclick="filterWave('kimera')">🏹 Kimera era · c.1370</div>
+      <div class="wave-tab" onclick="filterWave('later')">📜 Later recognised</div>
+    </div>
+    <div id="clans-grid-panel">
+      <div class="clans-grid" id="clans-grid">
+        <!-- Correct 43-clan list — Nkere removed (it is Ffumbe's akabbiro, not a clan) -->
+        <div class="clan-tile" data-wave="nansangwa" onclick="showClan('ffumbe')"><span class="wave-badge wave-nansangwa">Indigenous</span><span class="totem">🦡</span><h3>Ffumbe</h3><div class="luganda-name">Ekika kya Ffumbe</div><div class="clan-head-title">Clan Head: Walusimbi</div><div class="member-count">9,240 members</div></div>
+        <div class="clan-tile" data-wave="nansangwa" onclick="showClan('lugave')"><span class="wave-badge wave-nansangwa">Indigenous</span><span class="totem">🦔</span><h3>Lugave</h3><div class="luganda-name">Ekika kya Lugave</div><div class="clan-head-title">Clan Head: Ndugwa</div><div class="member-count">12,390 members</div></div>
+        <div class="clan-tile" data-wave="nansangwa" onclick="showClan('ngonge')"><span class="wave-badge wave-nansangwa">Indigenous</span><span class="totem">🦦</span><h3>Ngonge</h3><div class="luganda-name">Ekika kya Ngonge</div><div class="clan-head-title">Clan Head: Mubiru</div><div class="member-count">3,947 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('mmamba')"><div class="deep-badge">DEEP</div><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🐟</span><h3>Mmamba</h3><div class="luganda-name">Ekika kya Mmamba</div><div class="clan-head-title">⚓ Gabunga · Ndiwalana</div><div class="member-count">23,481 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('ngabi')"><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🦌</span><h3>Ngabi</h3><div class="luganda-name">Ekika kya Ngabi</div><div class="clan-head-title">Clan Head: Mubiru</div><div class="member-count">18,209 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('mbogo')"><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🐃</span><h3>Mbogo</h3><div class="luganda-name">Ekika kya Mbogo</div><div class="clan-head-title">Clan Head: Kiyimba</div><div class="member-count">15,774 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('nkima')"><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🐒</span><h3>Nkima</h3><div class="luganda-name">Ekika kya Nkima</div><div class="clan-head-title">Clan Head: Kiggundu</div><div class="member-count">21,044 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('ndiga')"><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🐑</span><h3>Ndiga</h3><div class="luganda-name">Ekika kya Ndiga</div><div class="clan-head-title">Clan Head: Namagembe</div><div class="member-count">9,811 members</div></div>
+        <div class="clan-tile" data-wave="kimera" onclick="showClan('njaza')"><span class="wave-badge wave-kimera">Kimera era</span><span class="totem">🐆</span><h3>Njaza</h3><div class="luganda-name">Ekika kya Njaza</div><div class="clan-head-title">Clan Head: Ssebwato</div><div class="member-count">8,301 members</div></div>
+        <div class="clan-tile" data-wave="kimera" onclick="showClan('njovu')"><span class="wave-badge wave-kimera">Kimera era</span><span class="totem">🐘</span><h3>Njovu</h3><div class="luganda-name">Ekika kya Njovu</div><div class="clan-head-title">Clan Head: Kayima</div><div class="member-count">7,820 members</div></div>
+        <div class="clan-tile" data-wave="kimera" onclick="showClan('nnyonyi')"><span class="wave-badge wave-kimera">Kimera era</span><span class="totem">🦅</span><h3>Nnyonyi Ennume</h3><div class="luganda-name">Ekika kya Nnyonyi</div><div class="clan-head-title">Clan Head: Kakembo</div><div class="member-count">7,203 members</div></div>
+        <div class="clan-tile" data-wave="kimera" onclick="showClan('nseenene')"><span class="wave-badge wave-kimera">Kimera era</span><span class="totem">🦗</span><h3>Nseenene</h3><div class="luganda-name">Ekika kya Nseenene</div><div class="clan-head-title">Clan Head: Mutebi</div><div class="member-count">5,129 members</div></div>
+        <div class="clan-tile" data-wave="later" onclick="showClan('musu')"><span class="wave-badge wave-later">Later</span><span class="totem">🐭</span><h3>Musu</h3><div class="luganda-name">Ekika kya Musu</div><div class="clan-head-title">Clan Head: Wangusa</div><div class="member-count">4,812 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('nswaswa')"><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🦎</span><h3>Nswaswa</h3><div class="luganda-name">Ekika kya Nswaswa</div><div class="clan-head-title">Clan Head: Kaweesa</div><div class="member-count">4,210 members</div></div>
+        <div class="clan-tile" data-wave="kintu" onclick="showClan('nkejje')"><span class="wave-badge wave-kintu">Kintu era</span><span class="totem">🐡</span><h3>Nkejje</h3><div class="luganda-name">Ekika kya Nkejje</div><div class="clan-head-title">Clan Head: Kyebanakyenga</div><div class="member-count">3,600 members</div></div>
+      </div>
+      <p style="text-align:center;font-size:13px;color:var(--muted);padding-bottom:20px">Showing 15 of 43 clans · All 43 active at launch · <em>Nkere is Ffumbe's akabbiro, not a separate clan</em></p>
+    </div>
+    <div id="amasaza-view" style="display:none">
+      <div class="amasaza-head">
+        <h2>Amasaza — The 18 Counties of Buganda</h2>
+        <p>Each Ssaza (county) has a hereditary Saza Chief with a traditional title dating back centuries.</p>
+        <div class="amasaza-sub">Under Kabaka Ronald Muwenda Mutebi II · 36th Kabaka of Buganda</div>
+      </div>
+      <div class="amasaza-grid">
+        <div class="ssaza-tile" onclick="toast('Busiro deep page at launch.')"><div class="ssaza-num">Ssaza 01</div><h3>Busiro</h3><div class="ssaza-chief">Saza Chief: Mugema</div><div class="ssaza-note">Home of Kasubi Tombs · Central Buganda</div></div>
+        <div class="ssaza-tile" onclick="toast('Kyaddondo deep page at launch.')"><div class="ssaza-num">Ssaza 02</div><h3>Kyaddondo</h3><div class="ssaza-chief">Saza Chief: Kago</div><div class="ssaza-note">Includes Kampala · Most urbanised</div></div>
+        <div class="ssaza-tile" onclick="toast('Kyaggwe deep page at launch.')"><div class="ssaza-num">Ssaza 03</div><h3>Kyaggwe</h3><div class="ssaza-chief">Saza Chief: Sekibobo</div><div class="ssaza-note">Eastern Buganda · Mukono District</div></div>
+        <div class="ssaza-tile" onclick="toast('Buddu deep page at launch.')"><div class="ssaza-num">Ssaza 04</div><h3>Buddu</h3><div class="ssaza-chief">Saza Chief: Pokino</div><div class="ssaza-note">Southern Buganda · Masaka District</div></div>
+        <div class="ssaza-tile" onclick="toast('Bulemeezi — home of Wakivule School.')"><div class="ssaza-num">Ssaza 05</div><h3>Bulemeezi</h3><div class="ssaza-chief">Saza Chief: Kangawo</div><div class="ssaza-note">Luwero District · Home of Wakivule School</div></div>
+        <div class="ssaza-tile" onclick="toast('Singo deep page at launch.')"><div class="ssaza-num">Ssaza 06</div><h3>Singo</h3><div class="ssaza-chief">Saza Chief: Mukwenda</div><div class="ssaza-note">Northwestern · Mityana / Mubende</div></div>
+        <div class="ssaza-tile" onclick="toast('Mawokota deep page at launch.')"><div class="ssaza-num">Ssaza 07</div><h3>Mawokota</h3><div class="ssaza-chief">Saza Chief: Kayima</div><div class="ssaza-note">Mpigi District · Lake Victoria western shore</div></div>
+        <div class="ssaza-tile" onclick="toast('Ssese — sacred to the Mmamba clan.')"><div class="ssaza-num">Ssaza 17</div><h3>Ssese</h3><div class="ssaza-chief">Saza Chief: Kweba</div><div class="ssaza-note">Ssese Islands · Sacred to Mmamba</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="clan-detail-view" style="display:none">
+    <div class="back-link" onclick="backToClans()">← Back to all clans</div>
+    <div id="clan-mmamba">
+      <div class="clan-hero">
+        <span class="big-totem">🐟</span>
+        <h1>Mmamba</h1>
+        <div class="clan-hero-luganda">Ekika kya Mmamba</div>
+        <div class="clan-hero-sub">The Lungfish Clan · Kintu era · Olukiiko lw'Abataka member</div>
+        <div class="member-pill"><strong>23,481</strong>&nbsp;registered · 1,204 Bataka-verified</div>
+        <div class="gabunga-banner">⚓ Gabunga — Admiral of the Royal Navy of Buganda</div>
+      </div>
+      <div class="clan-content">
+        <div class="info-chips">
+          <div class="info-chip"><span class="chip-label">Omuziro (primary totem)</span><span class="chip-val">🐟 Lungfish — Mmamba</span></div>
+          <div class="info-chip"><span class="chip-label">Akabbiro (secondary totem)</span><span class="chip-val">🦌 Muguya — Kob antelope</span></div>
+          <div class="info-chip"><span class="chip-label">Royal Court Title</span><span class="chip-val">⚓ Gabunga · Kweba</span></div>
+          <div class="info-chip"><span class="chip-label">Origin wave</span><span class="chip-val">🌊 Kintu era · c. 1200 AD</span></div>
+        </div>
+        <div class="gabunga-card">
+          <div class="gc-label">Royal Court Distinction · Kingdom of Buganda</div>
+          <h4>The Gabunga — Admiral of the Royal Navy</h4>
+          <p>The Mmamba clan holds the hereditary court title of <strong style="color:var(--gold2)">Gabunga</strong> — Admiral of the Kabaka's royal navy on Lake Victoria. Historically the Gabunga commanded royal canoes (Enyanja), protected the King's waterways, and controlled trade across Lake Victoria and the Sese Islands.</p>
+        </div>
+        <div class="clan-section">
+          <h3>Origin Story</h3>
+          <p>The Mmamba clan traces its origin to Kintu, the first Kabaka of Buganda, through the lineage of Nambi. The lungfish — which can survive both in water and on land, enduring long dry seasons buried in earth — became the clan's totem as a symbol of resilience and enduring life.</p>
+          <p>The Mmamba are historically associated with Lake Victoria's shores and the Sese Islands (Sseze Ssaza), where the lungfish is found in abundance. As the clan of the Gabunga, the Mmamba commanded the Kingdom's most vital waterway.</p>
+        </div>
+        <div class="clan-section">
+          <h3>Sigas (Sub-clan branches)</h3>
+          <ul class="siga-list">
+            <li class="siga-item"><h4>Nkima</h4><p>The Monkey siga — central Buganda, historically connected to the royal court.</p></li>
+            <li class="siga-item"><h4>Kasimba</h4><p>The Genet Cat siga — Masaka and Rakai districts.</p></li>
+            <li class="siga-item"><h4>Nkerebwe</h4><p>The Crocodile siga — warriors and navigators; associated with the Sese Islands and the Gabunga's fleet.</p></li>
+          </ul>
+        </div>
+        <div class="clan-section">
+          <h3>Taboos (Mizizo)</h3>
+          <ul class="taboo-list">
+            <li>A Mmamba may not eat the lungfish (omuziro)</li>
+            <li>A Mmamba may not eat Muguya (kob antelope — akabbiro)</li>
+            <li>A Mmamba may not kill or mistreat a lungfish; if found on land, return it to water</li>
+            <li>A Mmamba may not marry another Mmamba — exogamy is strictly observed</li>
+          </ul>
+        </div>
+        <div class="clan-section">
+          <h3>Omutaka</h3>
+          <div class="omutaka-card">
+            <div class="omutaka-avatar">👴</div>
+            <div class="omutaka-info">
+              <h4>Ssabataka Hannington Ndiwalana</h4>
+              <div class="title">Omutaka of Mmamba · Serving since 2008 · Member, Olukiiko lw'Abataka</div>
+              <p>Presides over annual clan gatherings at Munyonyo. Represents Mmamba at the Lukiiko. Custodian of the Gabunga heritage traditions and the Mmamba verification process.</p>
+            </div>
+          </div>
+        </div>
+        <div class="clan-join-cta">
+          <h3>This is your clan.</h3>
+          <p>Join <strong>23,481 Mmamba</strong> already registered. Sign up and begin your roots journey — Akasolya to Enju in 8 steps.</p>
+          <button class="btn-primary" onclick="openSignupModal()">Save your clan →</button>
+        </div>
+      </div>
+    </div>
+    <div id="clan-generic" style="display:none">
+      <div class="clan-hero" id="generic-hero">
+        <span class="big-totem" id="generic-totem">🦌</span>
+        <h1 id="generic-name">Ngabi</h1>
+        <div class="clan-hero-luganda" id="generic-luganda">Ekika kya Ngabi</div>
+        <div class="clan-hero-sub" id="generic-sub">The Bushbuck Clan</div>
+        <div class="member-pill" id="generic-count"><strong>18,209</strong>&nbsp;registered members</div>
+      </div>
+      <div class="clan-content">
+        <div style="text-align:center;padding:40px 20px;background:var(--white);border:1px solid var(--border);border-radius:var(--r)">
+          <div style="font-size:40px;margin-bottom:12px">🌿</div>
+          <h3 style="font-family:Georgia,serif;font-size:18px;color:var(--gd);font-weight:normal;margin-bottom:8px">Heritage page being curated</h3>
+          <p style="font-size:14px;color:var(--muted);max-width:380px;margin:0 auto 16px;line-height:1.6">We're working with the Omutaka to build a full encyclopedic heritage page. Sign up to be notified and to contribute your clan knowledge.</p>
+          <button class="btn-primary" onclick="openSignupModal()">Save your clan →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ROOTS — 8 STEPS ═══ -->
+<div class="section" id="section-roots">
+  <div id="roots-gate" class="auth-gate">
+    <div style="font-size:48px;margin-bottom:16px">🌱</div>
+    <h3>Your lineage is waiting</h3>
+    <p>Sign in to trace your lineage in 8 steps: from Akasolya all the way to Enju — and request Bataka verification.</p>
+    <button class="btn-primary" onclick="login();navigate('roots')">Sign in to continue</button>
+  </div>
+  <div id="roots-content" style="display:none">
+    <div class="roots-wrap">
+      <div class="roots-clan-card">
+        <div class="totem">🐟</div>
+        <div>
+          <h3>Mmamba</h3>
+          <p>Your registered clan · <span id="roots-verify-label">Self-Declared</span> · Gabunga lineage</p>
+        </div>
+        <div style="margin-left:auto"><span class="pill" id="roots-pill" style="background:#e3f2fd;color:#1565c0">SELF-DECLARED</span></div>
+      </div>
+      <!-- 8-step progress bar -->
+      <div class="roots-progress">
+        <div class="rp-step done" id="rp-1"><span class="rp-icon">✓</span>Clan</div>
+        <div class="rp-step" id="rp-2"><span class="rp-icon">○</span>Akasolya</div>
+        <div class="rp-step" id="rp-3"><span class="rp-icon">○</span>Essiga</div>
+        <div class="rp-step" id="rp-4"><span class="rp-icon">○</span>Omutuba</div>
+        <div class="rp-step" id="rp-5"><span class="rp-icon">○</span>Olunyiriri</div>
+        <div class="rp-step" id="rp-6"><span class="rp-icon">○</span>Oluggya</div>
+        <div class="rp-step" id="rp-7"><span class="rp-icon">○</span>Enju</div>
+        <div class="rp-step" id="rp-8"><span class="rp-icon">○</span>Verify</div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">The 8-step lineage funnel traces from your broadest clan group (Akasolya) down to your family house (Enju). Each step teaches you something new about your Mmamba heritage.</p>
+      <div class="roots-steps">
+        <!-- Step 1: Akasolya -->
+        <div class="roots-step-card" id="rs-akasolya">
+          <div class="rsc-header" onclick="toggleStep('akasolya')">
+            <div class="rsc-header-left"><span class="rsc-icon">🌿</span>
+              <div><div class="rsc-title">Step 1 — Akasolya</div><div class="rsc-sub">Your broadest sub-clan division within Mmamba</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-akasolya">To do</span>
+          </div>
+          <div class="rsc-body" id="rb-akasolya">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Choose which major division of the Mmamba clan your family belongs to.</p>
+            <div class="siga-options">
+              <div class="siga-option" onclick="selectOpt('akasolya','Nkima',this)"><div class="so-name">Nkima</div><div class="so-desc">The Monkey division — central Buganda</div></div>
+              <div class="siga-option" onclick="selectOpt('akasolya','Kasimba',this)"><div class="so-name">Kasimba</div><div class="so-desc">The Genet Cat — Masaka / Rakai</div></div>
+              <div class="siga-option" onclick="selectOpt('akasolya','Nkerebwe',this)"><div class="so-name">Nkerebwe ⚓</div><div class="so-desc">The Crocodile — Sese Islands / Gabunga fleet</div></div>
+              <div class="siga-option" onclick="selectOpt('akasolya','unknown',this)"><div class="so-name">I'm not sure yet</div><div class="so-desc">Continue and explore further</div></div>
+            </div>
+            <button class="btn-confirm" id="btn-akasolya" style="display:none" onclick="confirmStep('akasolya','essiga','rp-2','rp-3')">Confirm Akasolya →</button>
+          </div>
+        </div>
+        <!-- Step 2: Essiga -->
+        <div class="roots-step-card locked" id="rs-essiga">
+          <div class="rsc-header" onclick="toggleStep('essiga')">
+            <div class="rsc-header-left"><span class="rsc-icon">🌳</span>
+              <div><div class="rsc-title">Step 2 — Essiga</div><div class="rsc-sub">Your specific sub-clan branch (siga) within your Akasolya</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-essiga">Locked</span>
+          </div>
+          <div class="rsc-body" id="rb-essiga">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select your Essiga — the specific lineage branch documented in Buganda clan records.</p>
+            <div class="siga-options">
+              <div class="siga-option" onclick="selectOpt('essiga','Nkima-Kkooki',this)"><div class="so-name">Nkima wa Kkooki</div><div class="so-desc">Rakai / Kkooki Ssaza</div></div>
+              <div class="siga-option" onclick="selectOpt('essiga','Nkima-Busiro',this)"><div class="so-name">Nkima wa Busiro</div><div class="so-desc">Busiro Ssaza</div></div>
+              <div class="siga-option" onclick="selectOpt('essiga','unknown',this)"><div class="so-name">I'm not sure yet</div><div class="so-desc">Skip and continue</div></div>
+            </div>
+            <button class="btn-confirm" id="btn-essiga" style="display:none" onclick="confirmStep('essiga','omutuba','rp-3','rp-4')">Confirm Essiga →</button>
+          </div>
+        </div>
+        <!-- Step 3: Omutuba -->
+        <div class="roots-step-card locked" id="rs-omutuba">
+          <div class="rsc-header" onclick="toggleStep('omutuba')">
+            <div class="rsc-header-left"><span class="rsc-icon">🌾</span>
+              <div><div class="rsc-title">Step 3 — Omutuba</div><div class="rsc-sub">Your lineage unit within your Essiga</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-omutuba">Locked</span>
+          </div>
+          <div class="rsc-body" id="rb-omutuba">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">The Omutuba is named after an ancestor who founded your lineage group.</p>
+            <div class="modal-field"><label>Omutuba name (if known)</label><input type="text" placeholder="e.g. Nkima wa Katende" id="omutuba-input"/></div>
+            <div class="modal-field"><label>Ssaza of origin</label><input type="text" placeholder="e.g. Kyaggwe, Ssese, Buddu…" id="ssaza-input"/></div>
+            <button class="btn-confirm" onclick="confirmStep('omutuba','olunyiriri','rp-4','rp-5')">Save Omutuba →</button>
+          </div>
+        </div>
+        <!-- Step 4: Olunyiriri -->
+        <div class="roots-step-card locked" id="rs-olunyiriri">
+          <div class="rsc-header" onclick="toggleStep('olunyiriri')">
+            <div class="rsc-header-left"><span class="rsc-icon">👨‍👩‍👦</span>
+              <div><div class="rsc-title">Step 4 — Olunyiriri</div><div class="rsc-sub">Your patrilineal descent line</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-olunyiriri">Locked</span>
+          </div>
+          <div class="rsc-body" id="rb-olunyiriri">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your father's lineage line. Private by default — shared with your Omutaka only for verification.</p>
+            <div class="modal-field"><label>Father's full name</label><input type="text" placeholder="e.g. Katende Ssalongo" id="father-input"/></div>
+            <div class="modal-field"><label>Paternal grandfather's name</label><input type="text" placeholder="Optional"/></div>
+            <button class="btn-confirm" onclick="confirmStep('olunyiriri','oluggya','rp-5','rp-6')">Save Olunyiriri →</button>
+          </div>
+        </div>
+        <!-- Step 5: Oluggya -->
+        <div class="roots-step-card locked" id="rs-oluggya">
+          <div class="rsc-header" onclick="toggleStep('oluggya')">
+            <div class="rsc-header-left"><span class="rsc-icon">🏡</span>
+              <div><div class="rsc-title">Step 5 — Oluggya</div><div class="rsc-sub">Your extended family compound</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-oluggya">Locked</span>
+          </div>
+          <div class="rsc-body" id="rb-oluggya">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">The Oluggya is the broader family homestead — the extended family that lives or has lived together.</p>
+            <div class="modal-field"><label>Oluggya name or location</label><input type="text" placeholder="e.g. Oluggya lwa Ndiwalana, Munyonyo"/></div>
+            <div class="modal-field"><label>Mother's clan (Ekika kya nyoko)</label><input type="text" placeholder="e.g. Ngabi, Mbogo…"/></div>
+            <button class="btn-confirm" onclick="confirmStep('oluggya','enju','rp-6','rp-7')">Save Oluggya →</button>
+          </div>
+        </div>
+        <!-- Step 6: Enju -->
+        <div class="roots-step-card locked" id="rs-enju">
+          <div class="rsc-header" onclick="toggleStep('enju')">
+            <div class="rsc-header-left"><span class="rsc-icon">🏠</span>
+              <div><div class="rsc-title">Step 6 — Enju</div><div class="rsc-sub">Your immediate family house</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-enju">Locked</span>
+          </div>
+          <div class="rsc-body" id="rb-enju">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">The Enju is your most specific unit — your immediate family house and direct ancestry.</p>
+            <div class="modal-field"><label>Head of your Enju (if known)</label><input type="text" placeholder="e.g. Mubbi Katende"/></div>
+            <div class="modal-field"><label>Place of origin</label><input type="text" placeholder="Village, Sub-county, District"/></div>
+            <button class="btn-confirm" onclick="confirmStep('enju','verify','rp-7','rp-8')">Save Enju →</button>
+          </div>
+        </div>
+        <!-- Step 7: Verify -->
+        <div class="roots-step-card locked" id="rs-verify">
+          <div class="rsc-header" onclick="toggleStep('verify')">
+            <div class="rsc-header-left"><span class="rsc-icon">✅</span>
+              <div><div class="rsc-title">Step 7 — Verify with your Omutaka</div><div class="rsc-sub">Ssabataka Ndiwalana · Mmamba · Olukiiko lw'Abataka</div></div>
+            </div>
+            <span class="rsc-status status-todo" id="st-verify">Locked</span>
+          </div>
+          <div class="rsc-body" id="rb-verify">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your verification request goes to Ssabataka Ndiwalana. He reviews your claimed Akasolya, Essiga, Omutuba, and Olunyiriri. You'll be notified within 14 days.</p>
+            <div style="background:var(--g0);border-radius:4px;padding:12px;margin-bottom:14px;font-size:13px;color:var(--gm)">
+              <strong>What you'll unlock:</strong> Verified badge · Downloadable Clan ID card · Voting in clan polls · Family tree connections · Priority registration at Mmamba clan events
+            </div>
+            <button class="btn-confirm" onclick="requestVerification()">Send verification request →</button>
+          </div>
+        </div>
+        <!-- Verified -->
+        <div class="roots-step-card" id="rs-verified" style="display:none">
+          <div class="verified-screen">
+            <div class="badge-big">✅</div>
+            <h3>Bataka-Verified</h3>
+            <p>Ssabataka Ndiwalana has verified your Mmamba membership. Lineage: Nkima Akasolya · Nkima wa Busiro Essiga.</p>
+            <button class="btn-gold btn-sm" onclick="toast('Clan ID card downloaded!')">Download Clan ID card</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GIVE ═══ -->
+<div class="section" id="section-give">
+  <div class="give-wrap">
+    <div class="campaign-card">
+      <h3>Wakivule School — Bulemeezi, Luwero</h3>
+      <div class="camp-sub">Bulemeezi Ssaza · Saza Chief: Kangawo · Bulungi Bwansi community project</div>
+      <p>Help build a permanent school for the children of Luwero District — a Foundation priority endorsed by the Bataka, aligned with the <em>Bulungi Bwansi</em> tradition of community self-help.</p>
+      <div class="camp-stats">
+        <div class="camp-stat"><span class="val">UGX 47M</span><span class="lbl">Raised</span></div>
+        <div class="camp-stat"><span class="val">1,832</span><span class="lbl">Donors</span></div>
+        <div class="camp-stat"><span class="val">39%</span><span class="lbl">of UGX 120M goal</span></div>
+      </div>
+      <div class="camp-thermometer"><div class="camp-fill"></div></div>
+      <div class="camp-milestones"><span>0%</span><span>🎯 60% → roof construction begins</span><span>100%</span></div>
+    </div>
+    <div class="give-tabs">
+      <div class="give-tab active" id="tab-onetime" onclick="switchGiveTab('onetime')">One-time gift</div>
+      <div class="give-tab" id="tab-busuulu" onclick="switchGiveTab('busuulu')">Monthly Busuulu</div>
+      <div class="give-tab" id="tab-transparency" onclick="toast('📊 Transparency dashboard — every UGX raised and spent.')">Transparency</div>
+    </div>
+    <div id="give-onetime" class="show">
+      <div class="give-card" id="donation-form">
+        <h3>Choose an amount</h3>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <button id="curr-ugx" onclick="switchCurrency('UGX')" style="background:var(--gd);color:var(--white);border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600">UGX</button>
+          <button id="curr-usd" onclick="switchCurrency('USD')" style="background:var(--cream2);color:var(--muted);border:1px solid var(--border);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px">USD / GBP</button>
+        </div>
+        <div class="amount-grid" id="amount-grid">
+          <button class="amount-btn" onclick="selectAmount(5000,this)">UGX 5K</button>
+          <button class="amount-btn" onclick="selectAmount(10000,this)">UGX 10K</button>
+          <button class="amount-btn" onclick="selectAmount(25000,this)">UGX 25K</button>
+          <button class="amount-btn" onclick="selectAmount(50000,this)">UGX 50K</button>
+        </div>
+        <input class="custom-amount" type="text" placeholder="Or enter custom amount in UGX" id="custom-amount-input" oninput="clearAmountSelection()"/>
+        <div class="pay-section-label">Pay with</div>
+        <div class="payment-methods">
+          <button class="pay-btn" id="pay-mtn" onclick="selectPayment('mtn',this)">📱 MTN MoMo</button>
+          <button class="pay-btn" id="pay-airtel" onclick="selectPayment('airtel',this)">📱 Airtel Money</button>
+          <button class="pay-btn" id="pay-card" onclick="selectPayment('card',this)">💳 Card</button>
+        </div>
+        <div class="phone-row" id="phone-row-onetime" style="display:none">
+          <label>Mobile Money phone number</label>
+          <input type="tel" placeholder="+256 700 000 000" id="momo-phone-onetime"/>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:8px 0;padding:8px 12px;background:var(--cream2);border-radius:4px">🔒 Processed via Flutterwave (UGX) or Stripe (USD/GBP)</p>
+        <button class="give-submit" onclick="processDonation()" id="give-submit-btn">Give now →</button>
+      </div>
+      <div class="donate-success" id="donate-success">
+        <div class="success-icon">🙏</div>
+        <h3>Thank you, Simon.</h3>
+        <p>Your gift to Wakivule School has been received. A receipt will be sent to your phone. <strong>Would you like to make this a monthly Busuulu?</strong></p>
+        <button class="btn-primary" onclick="switchGiveTab('busuulu')">Become a monthly sustainer →</button>
+      </div>
+    </div>
+    <div id="give-busuulu">
+      <div class="give-card">
+        <h3>Choose your monthly tier</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Join 3,247 Baganda who sustain this work every month. Cancel or pause anytime.</p>
+        <div class="tier-cards">
+          <div class="tier-card" onclick="selectTier('omwana',this)">
+            <div class="tier-card-header"><div><div class="tier-name">Omwana w'Ekika</div><div class="tier-trans">Child of the Clan</div></div><div class="tier-amount">UGX 5,000/mo</div></div>
+            <div class="tier-detail">Tier badge on profile. Full membership benefits. The foundation of our community.</div>
+          </div>
+          <div class="tier-card" onclick="selectTier('omugabo',this)">
+            <div class="tier-card-header"><div><div class="tier-name">Omugabo</div><div class="tier-trans">The Contributor</div></div><div class="tier-amount">UGX 20,000/mo</div></div>
+            <div class="tier-detail">Tier badge + name on the monthly donor list published to all members.</div>
+          </div>
+          <div class="tier-card" onclick="selectTier('mukulu',this)">
+            <div class="tier-card-header"><div><div class="tier-name">Mukulu w'Ekika</div><div class="tier-trans">Elder of the Clan</div></div><div class="tier-amount">UGX 50,000/mo</div></div>
+            <div class="tier-detail">Name on the permanent digital and physical donor wall at Foundation premises.</div>
+          </div>
+          <div class="tier-card olukiiko-tier" onclick="selectTier('olukiiko',this)" style="border-color:var(--gold)">
+            <div class="tier-card-header" style="background:var(--gold3)"><div><div class="tier-name" style="color:var(--gold)">Olukiiko lw'Ebikabyaffe</div><div class="tier-trans">Council of Our Heritage</div></div><div class="tier-amount">UGX 200,000/mo</div></div>
+            <div class="tier-detail">Inner circle. Named in Foundation impact reports. Annual hand-signed letter from the Council of Clan Heads each January.</div>
+          </div>
+        </div>
+        <div class="tier-phone-row" id="tier-phone-row">
+          <label>MTN MoMo phone number</label>
+          <input type="tel" placeholder="+256 700 000 000" id="tier-phone-input"/>
+        </div>
+        <button class="give-submit" style="margin-top:16px" id="busuulu-btn" onclick="startBusuulu()">Select a tier to continue</button>
+      </div>
+    </div>
+    <div class="transparency-link" onclick="toast('📊 Transparency dashboard — every shilling raised and spent.')">
+      📊 Public transparency dashboard — see every shilling raised and spent →
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BATAKA ═══ -->
+<div class="section" id="section-bataka">
+  <div class="kingdom-context">
+    <div class="kingdom-context-inner">
+      <div class="kc-crown">👑</div>
+      <div class="kc-content">
+        <div class="kc-label">Kingdom of Buganda · Established c. 1300 AD</div>
+        <h3>Kabaka Ronald Muwenda Mutebi II — 36th Kabaka of Buganda</h3>
+        <p>Enthroned 31 July 1993 at Naggalabi, Buddo. Patron of the 43 clans. The Buganda Lukiiko, led by Katikkiro Owek. Charles Peter Mayiga, governs Kingdom affairs and coordinates with the Olukiiko lw'Abataka.</p>
+        <div class="kc-facts">
+          <div class="kc-fact"><span class="kf-label">Kabaka</span><span class="kf-val">Ronald Muwenda Mutebi II</span></div>
+          <div class="kc-fact"><span class="kf-label">Katikkiro</span><span class="kf-val">Owek. Charles Peter Mayiga</span></div>
+          <div class="kc-fact"><span class="kf-label">Enthroned</span><span class="kf-val">31 July 1993 · Naggalabi</span></div>
+          <div class="kc-fact"><span class="kf-label">Ebika</span><span class="kf-val">43 Clans</span></div>
+          <div class="kc-fact"><span class="kf-label">Amasaza</span><span class="kf-val">18 Counties</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-head" style="padding:20px 24px">
+    <h2>The Bataka — Clan Heads of Buganda</h2>
+    <p>43 Abataka collectively form the Olukiiko lw'Abataka — the Council of Clan Heads advising the Kabaka.</p>
+  </div>
+  <div style="padding:0 24px;max-width:1040px;margin:12px auto">
+    <div class="lukiiko-note">
+      <strong>About the Olukiiko lw'Abataka:</strong> All 43 Bataka collectively advise the Kabaka on clan governance, land rights, and cultural heritage. The Foundation works in partnership with this council. Clan verification is conducted through the Bataka.
+    </div>
+  </div>
+  <div class="bataka-section-label">Kingdom Leadership</div>
+  <div class="bataka-grid" style="padding-top:8px;padding-bottom:0">
+    <div class="bataka-card royal-card" onclick="toast('Kabaka profile — linked to Buganda Kingdom official page.')">
+      <div class="bataka-avatar royal-av">👑</div>
+      <div class="bataka-info"><h3>Kabaka Ronald Muwenda Mutebi II</h3><div class="btitle royal-title">36th Kabaka of Buganda · Enthroned 31 July 1993</div><p>Constitutional monarch. Patron of the Buganda cultural institutions and the 43 clans. Empango observed 31 July each year.</p><div class="bdots"><span class="bdot">👑 Kabaka</span><span class="bdot">🏛 Naggalabi, Buddo</span></div></div>
+    </div>
+    <div class="bataka-card royal-card" onclick="toast('Katikkiro Mayiga — Prime Minister since 2013.')">
+      <div class="bataka-avatar royal-av">🏛️</div>
+      <div class="bataka-info"><h3>Owek. Charles Peter Mayiga</h3><div class="btitle royal-title">Katikkiro of Buganda · PM since 2013</div><p>Head of the Buganda Lukiiko. Oversees 18 Amasaza, cultural affairs, and Kingdom institutions. Coordinates Bataka on land rights advocacy.</p><div class="bdots"><span class="bdot">🏛 Lukiiko</span><span class="bdot">🗺 18 Amasaza</span></div></div>
+    </div>
+  </div>
+  <div class="bataka-section-label" style="margin-top:20px">Abataka — 43 Clan Heads</div>
+  <div class="bataka-grid" style="padding-top:8px">
+    <div class="bataka-card" onclick="toast('Ssabataka Ndiwalana — Mmamba deep page at launch.')">
+      <div class="bataka-totem">🐟</div>
+      <div class="bataka-info"><h3>Ssabataka Hannington Ndiwalana</h3><div class="btitle">Omutaka of Mmamba · Since 2008</div><p>Custodian of the Gabunga heritage. Presides at Munyonyo annual gathering. Member, Olukiiko lw'Abataka.</p><div class="bdots"><span class="bdot">🐟 Mmamba</span><span class="bdot">⚓ Gabunga</span><span class="bdot">✓ 1,204 verified</span></div></div>
+    </div>
+    <div class="bataka-card" onclick="toast('Omutaka Mubiru — Ngabi full profile at launch.')">
+      <div class="bataka-totem">🦌</div>
+      <div class="bataka-info"><h3>Omutaka James Mubiru</h3><div class="btitle">Omutaka of Ngabi · Since 2014</div><p>Active in land rights at the Lukiiko and Parliament. Leads the Bushbuck clan across central Buganda.</p><div class="bdots"><span class="bdot">🦌 Ngabi</span><span class="bdot">✓ 892 verified</span></div></div>
+    </div>
+    <div class="bataka-card" onclick="toast('Omutaka Ssemwogerere — Mbogo profile at launch.')">
+      <div class="bataka-totem">🐃</div>
+      <div class="bataka-info"><h3>Omutaka Robert Ssemwogerere</h3><div class="btitle">Omutaka of Mbogo · Since 2019</div><p>Youth cultural education and annual gatherings in Mukono, Kyaggwe Ssaza.</p><div class="bdots"><span class="bdot">🐃 Mbogo</span><span class="bdot">✓ 743 verified</span></div></div>
+    </div>
+    <div class="bataka-card" onclick="toast('Omutaka Kiggundu — Nkima profile at launch.')">
+      <div class="bataka-totem">🐒</div>
+      <div class="bataka-info"><h3>Omutaka Francis Kiggundu</h3><div class="btitle">Omutaka of Nkima · Since 2011</div><p>Documents Nkima oral history and works with the Foundation on heritage content curation.</p><div class="bdots"><span class="bdot">🐒 Nkima</span><span class="bdot">✓ 1,101 verified</span></div></div>
+    </div>
+    <div class="bataka-card" onclick="toast('Omutaka Ndugwa — Lugave profile at launch.')">
+      <div class="bataka-totem">🦔</div>
+      <div class="bataka-info"><h3>Ndugwa Grace Ssemakula</h3><div class="btitle">Omutaka of Lugave · Current holder</div><p>Leads the Pangolin clan, among the most senior in Buganda. Obutaka: Katende, Mawokota.</p><div class="bdots"><span class="bdot">🦔 Lugave</span><span class="bdot">Nansangwa origin</span></div></div>
+    </div>
+    <div class="bataka-card" onclick="toast('Omutaka Namagembe — Ndiga profile at launch.')">
+      <div class="bataka-totem">🐑</div>
+      <div class="bataka-info"><h3>Omutaka Grace Namagembe</h3><div class="btitle">Omutaka of Ndiga · Since 2021</div><p>One of the few female clan heads. Focus on diaspora reconnection and women's heritage education.</p><div class="bdots"><span class="bdot">🐑 Ndiga</span><span class="bdot">✓ 481 verified</span></div></div>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:13px;color:var(--muted);padding:12px 24px 20px">Showing 6 of 43 clan heads · Full Olukiiko directory at launch</p>
+  <div class="bataka-section-label">Active calls to action</div>
+  <div style="max-width:760px;margin:12px auto;padding:0 24px">
+    <div class="call-card">
+      <div class="call-label">PARLIAMENT · MAY 15, 2026</div>
+      <h4>Bataka present on land law — join 4,201 who have RSVP'd</h4>
+      <p>The Olukiiko lw'Abataka presents to the Land Affairs Committee, coordinated with Katikkiro Mayiga. We need a credible show of registered clan members.</p>
+      <div class="call-actions">
+        <button class="btn-sm btn-gold" onclick="toast('RSVP recorded! Details by SMS.')">RSVP →</button>
+        <button class="btn-sm btn-outline-white" onclick="navigate('give')">Support</button>
+      </div>
+    </div>
+    <div class="call-card" style="background:var(--royal);border:1px solid var(--gold)">
+      <div class="call-label">EMPANGO · 31 JULY 2026</div>
+      <h4>Mmamba gather at Munyonyo before Empango celebrations</h4>
+      <p>All Mmamba verified members have priority registration for the 20 July pre-Empango gathering at Munyonyo, Kampala.</p>
+      <div class="call-actions">
+        <button class="btn-sm btn-gold" onclick="toast('Registered for Mmamba pre-Empango gathering!')">Register →</button>
+        <button class="btn-sm btn-outline-white" onclick="navigate('roots')">Complete verification</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROFILE ═══ -->
+<div class="section" id="section-profile">
+  <div id="profile-gate" class="auth-gate">
+    <div style="font-size:48px;margin-bottom:16px">👤</div>
+    <h3>Your profile</h3>
+    <p>Sign in to manage your account, lineage data, verification status, and donor history.</p>
+    <button class="btn-primary" onclick="login();navigate('profile')">Sign in</button>
+  </div>
+  <div id="profile-content" style="display:none">
+    <div class="profile-wrap">
+      <div class="profile-header">
+        <div class="profile-avatar">SK</div>
+        <div class="profile-info">
+          <h2>Simon Katende</h2>
+          <p>🐟 Mmamba · ⚓ Gabunga · Nkima Akasolya · +256 700 ••• •••</p>
+          <span class="verify-badge vb-self" id="profile-verify-badge">SELF-DECLARED</span>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Account</div>
+        <div class="profile-row"><span class="row-label">Full name</span><span class="row-val">Simon Katende</span></div>
+        <div class="profile-row"><span class="row-label">Phone</span><span class="row-val">+256 700 ••• •••</span></div>
+        <div class="profile-row"><span class="row-label">Clan</span><span class="row-val">🐟 Mmamba — The Lungfish Clan</span></div>
+        <div class="profile-row"><span class="row-label">Royal title</span><span class="row-val">⚓ Gabunga heritage (Mmamba)</span></div>
+        <div class="profile-row"><span class="row-label">Verification</span><span class="row-val">Self-Declared</span></div>
+      </div>
+      <!-- Lineage tree — the 6 levels completed in /roots -->
+      <div class="profile-section">
+        <div class="profile-section-title">Lineage (from Roots session)</div>
+        <div class="lineage-tree">
+          <div class="lineage-level"><span class="ll-step">Akasolya</span><span class="ll-icon">🌿</span><div class="ll-info"><strong>Nkima</strong><span>The Monkey division of Mmamba</span></div></div>
+          <div class="lineage-level"><span class="ll-step">Essiga</span><span class="ll-icon">🌳</span><div class="ll-info"><strong>Nkima wa Busiro</strong><span>Busiro Ssaza branch</span></div></div>
+          <div class="lineage-level"><span class="ll-step">Omutuba</span><span class="ll-icon">🌾</span><div class="ll-info"><strong>Not yet declared</strong><span>Complete step 3 in Roots</span></div></div>
+          <div class="lineage-level"><span class="ll-step">Olunyiriri</span><span class="ll-icon">👨‍👩‍👦</span><div class="ll-info"><strong>Private</strong><span>Shared with Omutaka only</span></div></div>
+          <div class="lineage-level"><span class="ll-step">Oluggya</span><span class="ll-icon">🏡</span><div class="ll-info"><strong>Not yet declared</strong><span>Complete step 5 in Roots</span></div></div>
+          <div class="lineage-level"><span class="ll-step">Enju</span><span class="ll-icon">🏠</span><div class="ll-info"><strong>Not yet declared</strong><span>Complete step 6 in Roots</span></div></div>
+        </div>
+        <div style="padding:0 18px 14px"><button class="btn-sm btn-green" onclick="navigate('roots')">Continue lineage journey →</button></div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Preferences</div>
+        <div class="profile-row"><span class="row-label">Language</span>
+          <div style="display:flex;gap:8px;align-items:center"><span style="font-size:13px;color:var(--muted)" id="lang-label-profile">English</span><label class="toggle-switch"><input type="checkbox" id="lang-toggle-profile" onchange="toggleLangFromProfile(this)"/><span class="toggle-slider"></span></label><span style="font-size:13px;color:var(--muted)">Luganda</span></div>
+        </div>
+        <div class="profile-row"><span class="row-label">Push notifications</span><label class="toggle-switch"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+        <div class="profile-row"><span class="row-label">Empango reminders</span><label class="toggle-switch"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Donation history</div>
+        <ul class="donor-history">
+          <li><span>Wakivule School</span><span><span class="dh-tag">ONE-TIME</span></span><div style="text-align:right"><span class="dh-amt">UGX 25,000</span><br/><span class="dh-date">12 Jun 2026</span></div></li>
+          <li><span>General Fund</span><span><span class="dh-tag">ONE-TIME</span></span><div style="text-align:right"><span class="dh-amt">UGX 10,000</span><br/><span class="dh-date">2 Apr 2026</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+<div class="modal-overlay" id="modal-signup">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-signup')">×</button>
+    <h2>Save your clan.</h2>
+    <p class="modal-sub">Takes under 60 seconds. No password needed.</p>
+    <div class="clan-prefilled"><span class="totem">🐟</span><div><span class="pf-label">Your clan</span><div class="pf-name">Mmamba — The Lungfish Clan</div><span style="font-size:10px;color:var(--royal2)">⚓ Gabunga — Admiral of the Royal Navy</span></div></div>
+    <div class="modal-field"><label>Full name</label><input type="text" placeholder="e.g. Simon Katende"/></div>
+    <div class="modal-field"><label>Phone number</label><input type="tel" placeholder="+256 700 000 000"/></div>
+    <div class="modal-field"><label>Email (optional — recommended for diaspora)</label><input type="email" placeholder="your@email.com"/></div>
+    <p class="otp-note">📱 We'll send a one-time code to your phone. No password needed now or ever.</p>
+    <button class="modal-submit" onclick="completeSignup()">Send verification code →</button>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-welcome">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-welcome')">×</button>
+    <div class="welcome-totem">🐟</div>
+    <h2>Welcome, Simon.</h2>
+    <p class="welcome-omuziro">Your omuziro is the Lungfish. You are Mmamba — clan of the Gabunga.</p>
+    <div class="welcome-choices">
+      <button class="wc-btn" onclick="closeModal('modal-welcome');navigate('roots')"><span class="wc-icon">🌱</span><div class="wc-text"><strong>Explore your roots</strong><span>Trace your lineage in 8 steps — Akasolya to Enju</span></div></button>
+      <button class="wc-btn" onclick="closeModal('modal-welcome');navigate('clans')"><span class="wc-icon">🐟</span><div class="wc-text"><strong>Explore the 43 clans</strong><span>Browse all clans by totem, wave, or county</span></div></button>
+      <button class="wc-btn" onclick="closeModal('modal-welcome');navigate('bataka')"><span class="wc-icon">👴</span><div class="wc-text"><strong>See Bataka calls</strong><span>Your Omutaka and the Lukiiko are calling</span></div></button>
+      <button class="wc-btn" onclick="closeModal('modal-welcome');navigate('give')"><span class="wc-icon">🏫</span><div class="wc-text"><strong>Support the clan</strong><span>Give to Wakivule School — UGX 5K or more</span></div></button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="site-footer">
+  <div class="footer-motto">"Agali awamu" — Enkulaakulana mu mbeera ne mu byenfuna</div>
+  <div><strong>847,213</strong> Baganda · <strong>43</strong> Clans · <strong>18</strong> Amasaza · <strong>12,847</strong> Bataka-verified · NGO Bureau Reg. 003/NGOB/2024</div>
+  <div class="footer-contact">ebikabyaffefoundation@gmail.com · 0788 018835 / 0776 896500 · New Mukwano Mall, Plot 23 Kyaggwe Rd, 3rd Floor Suite U/G-25, Kampala, Uganda</div>
+</div>
+
+<script>
+const state = {
+  isLoggedIn:false, currentSection:'home', lang:'en',
+  selectedTier:null, selectedPayment:null, selectedAmount:0
+}
+
+function navigate(s){
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'))
+  document.querySelectorAll('#nav-links button').forEach(b=>b.classList.remove('active'))
+  document.getElementById('section-'+s).classList.add('active')
+  document.getElementById('nav-'+s).classList.add('active')
+  state.currentSection=s; window.scrollTo(0,0)
+  if(s==='roots') updateRootsForAuth()
+  if(s==='profile') updateProfileForAuth()
+}
+
+function login(){
+  state.isLoggedIn=true
+  document.getElementById('auth-btn').style.display='none'
+  document.getElementById('user-pill').style.display='flex'
+  document.getElementById('home-landing').style.display='none'
+  document.getElementById('home-dashboard').style.display='block'
+  if(state.currentSection==='roots') updateRootsForAuth()
+  if(state.currentSection==='profile') updateProfileForAuth()
+  updateEmpango()
+}
+
+function logout(){
+  state.isLoggedIn=false
+  document.getElementById('auth-btn').style.display='block'
+  document.getElementById('user-pill').style.display='none'
+  document.getElementById('home-landing').style.display='block'
+  document.getElementById('home-dashboard').style.display='none'
+}
+
+function updateRootsForAuth(){
+  document.getElementById('roots-gate').style.display=state.isLoggedIn?'none':'block'
+  document.getElementById('roots-content').style.display=state.isLoggedIn?'block':'none'
+}
+
+function updateProfileForAuth(){
+  document.getElementById('profile-gate').style.display=state.isLoggedIn?'none':'block'
+  document.getElementById('profile-content').style.display=state.isLoggedIn?'block':'none'
+}
+
+function updateEmpango(){
+  const target=new Date('2026-07-31T00:00:00'), now=new Date(), diff=target-now
+  if(diff<=0)return
+  document.getElementById('ec-days').textContent=Math.floor(diff/(1000*60*60*24))
+  document.getElementById('ec-hours').textContent=Math.floor((diff%(1000*60*60*24))/(1000*60*60))
+  document.getElementById('ec-mins').textContent=Math.floor((diff%(1000*60*60))/(1000*60))
+}
+updateEmpango()
+
+function toggleLang(){
+  state.lang=state.lang==='en'?'lg':'en'
+  const btn=document.getElementById('lang-btn')
+  btn.textContent=state.lang==='en'?'🇬🇧 EN':'🇺🇬 LG'
+  const toggle=document.getElementById('lang-toggle-profile')
+  if(toggle) toggle.checked=state.lang==='lg'
+  toast(state.lang==='lg'?'🇺🇬 Olulimi: Luganda':'🇬🇧 Language: English')
+}
+
+function toggleLangFromProfile(cb){
+  if((cb.checked&&state.lang==='en')||(!cb.checked&&state.lang==='lg')) toggleLang()
+}
+
+function switchClanView(view){
+  document.getElementById('clans-grid-panel').style.display=view==='clans'?'block':'none'
+  document.getElementById('amasaza-view').style.display=view==='amasaza'?'block':'none'
+  document.getElementById('tab-clans').className='clans-view-tab'+(view==='clans'?' active':'')
+  document.getElementById('tab-amasaza').className='clans-view-tab'+(view==='amasaza'?' active':'')
+  document.getElementById('clan-search-wrap').style.display=view==='clans'?'block':'none'
+  document.getElementById('wave-filter-tabs').style.display=view==='clans'?'flex':'none'
+  window.scrollTo(0,0)
+}
+
+function filterWave(wave){
+  document.querySelectorAll('.wave-tab').forEach(t=>t.classList.remove('active'))
+  event.target.classList.add('active')
+  document.querySelectorAll('.clan-tile').forEach(tile=>{
+    tile.style.display=(wave==='all'||tile.dataset.wave===wave)?'block':'none'
+  })
+}
+
+function filterClans(q){
+  q=q.toLowerCase()
+  document.querySelectorAll('.clan-tile').forEach(tile=>{
+    tile.style.display=tile.textContent.toLowerCase().includes(q)?'block':'none'
+  })
+}
+
+function showClan(slug){
+  document.getElementById('clan-grid-view').style.display='none'
+  document.getElementById('clan-detail-view').style.display='block'
+  if(slug==='mmamba'){
+    document.getElementById('clan-mmamba').style.display='block'
+    document.getElementById('clan-generic').style.display='none'
+  } else {
+    document.getElementById('clan-mmamba').style.display='none'
+    document.getElementById('clan-generic').style.display='block'
+    const names={ngabi:'Ngabi',mbogo:'Mbogo',nkima:'Nkima',lugave:'Lugave',ndiga:'Ndiga',njaza:'Njaza',njovu:'Njovu',nnyonyi:'Nnyonyi Ennume',nseenene:'Nseenene',musu:'Musu',nswaswa:'Nswaswa',ffumbe:'Ffumbe',ngonge:'Ngonge',nkejje:'Nkejje'}
+    const totems={ngabi:'🦌',mbogo:'🐃',nkima:'🐒',lugave:'🦔',ndiga:'🐑',njaza:'🐆',njovu:'🐘',nnyonyi:'🦅',nseenene:'🦗',musu:'🐭',nswaswa:'🦎',ffumbe:'🦡',ngonge:'🦦',nkejje:'🐡'}
+    document.getElementById('generic-totem').textContent=totems[slug]||'🌿'
+    document.getElementById('generic-name').textContent=names[slug]||slug
+    document.getElementById('generic-luganda').textContent='Ekika kya '+(names[slug]||slug)
+    document.getElementById('generic-sub').textContent='Heritage page being curated with the Omutaka'
+    document.getElementById('generic-count').innerHTML='<strong>–</strong>&nbsp;registered members'
+  }
+  window.scrollTo(0,0)
+}
+
+function backToClans(){
+  document.getElementById('clan-grid-view').style.display='block'
+  document.getElementById('clan-detail-view').style.display='none'
+  window.scrollTo(0,0)
+}
+
+// Roots steps
+const stepState={}
+function toggleStep(id){
+  const body=document.getElementById('rb-'+id)
+  if(body) body.className='rsc-body'+(body.className.includes('open')?'':' open')
+}
+
+function selectOpt(step,val,el){
+  document.querySelectorAll('#rb-'+step+' .siga-option').forEach(o=>o.classList.remove('selected'))
+  el.classList.add('selected')
+  stepState[step]=val
+  const btn=document.getElementById('btn-'+step)
+  if(btn) btn.style.display='block'
+}
+
+function confirmStep(step,nextStep,doneRp,nextRp){
+  document.getElementById('st-'+step).textContent='Done ✓'
+  document.getElementById('st-'+step).className='rsc-status status-done'
+  document.getElementById('rs-'+step).classList.add('done')
+  document.getElementById('rb-'+step).className='rsc-body'
+  if(doneRp) document.getElementById(doneRp).className='rp-step done'
+  if(nextRp) document.getElementById(nextRp).className='rp-step active-step'
+  if(nextStep){
+    const nextCard=document.getElementById('rs-'+nextStep)
+    if(nextCard){
+      nextCard.classList.remove('locked')
+      document.getElementById('st-'+nextStep).textContent='To do'
+      document.getElementById('st-'+nextStep).className='rsc-status status-active'
+      document.getElementById('rb-'+nextStep).className='rsc-body open'
+    }
+  }
+  toast('Step saved! Continue to the next level.')
+}
+
+function requestVerification(){
+  toast('Verification request sent to Ssabataka Ndiwalana. Expect a response within 14 days.')
+  document.getElementById('rs-verify').classList.add('done')
+  document.getElementById('st-verify').textContent='Pending'
+  document.getElementById('rb-verify').className='rsc-body'
+  document.getElementById('rp-8').className='rp-step active-step'
+}
+
+// Give
+function switchGiveTab(tab){
+  document.getElementById('give-onetime').className=tab==='onetime'?'show':''
+  document.getElementById('give-busuulu').className=tab==='busuulu'?'show':''
+  document.getElementById('tab-onetime').className='give-tab'+(tab==='onetime'?' active':'')
+  document.getElementById('tab-busuulu').className='give-tab'+(tab==='busuulu'?' active':'')
+  document.getElementById('tab-transparency').className='give-tab'
+}
+
+function switchCurrency(c){
+  const isUGX=c==='UGX'
+  document.getElementById('curr-ugx').style.background=isUGX?'var(--gd)':'var(--cream2)'
+  document.getElementById('curr-ugx').style.color=isUGX?'var(--white)':'var(--muted)'
+  document.getElementById('curr-usd').style.background=isUGX?'var(--cream2)':'var(--gd)'
+  document.getElementById('curr-usd').style.color=isUGX?'var(--muted)':'var(--white)'
+  const grid=document.getElementById('amount-grid')
+  grid.innerHTML=isUGX
+    ?'<button class="amount-btn" onclick="selectAmount(5000,this)">UGX 5K</button><button class="amount-btn" onclick="selectAmount(10000,this)">UGX 10K</button><button class="amount-btn" onclick="selectAmount(25000,this)">UGX 25K</button><button class="amount-btn" onclick="selectAmount(50000,this)">UGX 50K</button>'
+    :'<button class="amount-btn" onclick="selectAmount(2,this)">$2</button><button class="amount-btn" onclick="selectAmount(5,this)">$5</button><button class="amount-btn" onclick="selectAmount(10,this)">$10</button><button class="amount-btn" onclick="selectAmount(20,this)">$20</button>'
+  document.getElementById('custom-amount-input').placeholder='Or enter custom amount in '+c
+  state.selectedAmount=0
+}
+
+function selectAmount(n,el){
+  document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('selected'))
+  el.classList.add('selected')
+  state.selectedAmount=n
+  document.getElementById('custom-amount-input').value=''
+}
+
+function clearAmountSelection(){
+  document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('selected'))
+  state.selectedAmount=0
+}
+
+function selectPayment(method,el){
+  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('selected'))
+  el.classList.add('selected')
+  state.selectedPayment=method
+  const phoneRow=document.getElementById('phone-row-onetime')
+  phoneRow.style.display=(method==='mtn'||method==='airtel')?'block':'none'
+}
+
+function processDonation(){
+  const amount=state.selectedAmount||parseInt(document.getElementById('custom-amount-input').value)||0
+  if(!amount||!state.selectedPayment){toast('Please select an amount and payment method.');return}
+  if((state.selectedPayment==='mtn'||state.selectedPayment==='airtel')&&!document.getElementById('momo-phone-onetime').value){toast('Please enter your mobile money number.');return}
+  document.getElementById('donation-form').style.display='none'
+  document.getElementById('donate-success').className='donate-success show'
+}
+
+function selectTier(tier,el){
+  document.querySelectorAll('.tier-card').forEach(c=>c.classList.remove('selected'))
+  el.classList.add('selected')
+  state.selectedTier=tier
+  document.getElementById('busuulu-btn').textContent='Continue with '+el.querySelector('.tier-name').textContent+' →'
+  document.getElementById('tier-phone-row').className='tier-phone-row show'
+}
+
+function startBusuulu(){
+  if(!state.selectedTier){toast('Please select a tier.');return}
+  if(!document.getElementById('tier-phone-input').value){toast('Please enter your MTN MoMo phone number.');return}
+  toast('Busuulu set up! Welcome to the '+state.selectedTier+' tier.')
+}
+
+// Modals
+function openSignupModal(){ document.getElementById('modal-signup').className='modal-overlay show' }
+function closeModal(id){ document.getElementById(id).className='modal-overlay' }
+function completeSignup(){
+  closeModal('modal-signup')
+  login()
+  document.getElementById('modal-welcome').className='modal-overlay show'
+}
+
+// Toast
+let toastTimer
+function toast(msg){
+  const el=document.getElementById('toast')
+  el.textContent=msg; el.className='show'
+  clearTimeout(toastTimer)
+  toastTimer=setTimeout(()=>el.className='',3000)
+}
+</script>
+</body>
+</html>
