@@ -9,6 +9,15 @@ import { getClanImages } from "@/lib/clanImages";
 // Fixed display order for the wave filter chips — matches the chronological arrival sequence
 const WAVE_ORDER: OriginWave[] = ["nansangwa", "kintu", "kimera", "later"];
 
+// Chip copy is richer than WAVE_LABELS (emoji + era date range) so it's kept
+// separate from the grid-badge labels used elsewhere on this page.
+const WAVE_CHIP_LABEL: Record<OriginWave, string> = {
+  nansangwa: "🌿 Nansangwa · Indigenous",
+  kintu:     "🌊 Kintu era · c.1200–1400",
+  kimera:    "🏹 Kimera era · c.1370",
+  later:     "📜 Later recognised",
+};
+
 export function ClanGrid() {
   const [query, setQuery] = useState("");
   const [wave, setWave]   = useState<OriginWave | "all">("all");
@@ -53,11 +62,8 @@ export function ClanGrid() {
         style={{ background: "var(--gd)", borderTop: "1px solid rgba(255,255,255,.08)" }}
       >
         {[
-          { key: "all" as const, label: "All (56)" },
-          { key: "nansangwa" as const, label: "🌿 Nansangwa · Indigenous" },
-          { key: "kintu"     as const, label: "🌊 Kintu era · c.1200–1400" },
-          { key: "kimera"    as const, label: "🏹 Kimera era · c.1370" },
-          { key: "later"     as const, label: "📜 Later recognised" },
+          { key: "all" as const, label: `All (${clans.length})` },
+          ...WAVE_ORDER.map((w) => ({ key: w, label: WAVE_CHIP_LABEL[w] })),
         ].map(({ key, label }) => (
           <button
             key={key}

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { cn } from "@/lib/utils";
 import { OneTimeForm } from "./OneTimeForm";
-import { BusuuluTiers } from "./BusuuluTiers";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Campaign data
@@ -27,9 +26,19 @@ export type Campaign = {
   // Programme cards (no funding stats) show a short aim list instead of a progress bar.
   aims?: string[];
   // Sacco-style cards show real fixed figures (fee/share/donation) instead of raised/goal.
-  saccoStats?: { label: string; value: string }[];
+  // Each stat is clickable — selecting one carries its amount straight into the payment form.
+  saccoStats?: SaccoOption[];
   // Shown under the stats block when there's a real-world action beyond the online form.
   contactNote?: string;
+};
+
+// A clickable Sacco option (membership fee, share value, or open donation).
+// amountUGX is fixed for membership/share; left undefined for "any amount" donations.
+export type SaccoOption = {
+  key: string;
+  label: string;
+  value: string;
+  amountUGX?: number;
 };
 
 const CAMPAIGNS: Campaign[] = [
@@ -77,17 +86,17 @@ const CAMPAIGNS: Campaign[] = [
       "part of the same fund carrying the clan school project forward.",
     emoji: "🤝",
     saccoStats: [
-      { label: "Membership fee", value: "UGX 10,000" },
-      { label: "Share value", value: "UGX 20,000/share" },
-      { label: "Donations", value: "Any amount" },
+      { key: "membership", label: "Membership fee", value: "UGX 10,000 one-time", amountUGX: 10_000 },
+      { key: "share",      label: "Share value",     value: "UGX 20,000 per share", amountUGX: 20_000 },
+      { key: "donation",   label: "Donations",       value: "Any amount, voluntary" },
     ],
     contactNote:
-      "To register as a member or purchase shares, contact the Foundation's clan leadership " +
-      "or Sacco officials directly. Voluntary donations can be made below.",
+      "Select an option above to choose what you're contributing, then complete payment below. " +
+      "Prefer to pay in person? Contact the Foundation's clan leadership or Sacco officials directly.",
   },
 ];
 
-type Tab = "onetime" | "busuulu" | "transparency";
+type Tab = "onetime" | "transparency";
 
 // Formats large UGX values as "UGX 47M" for the stats row.
 // Smaller numbers are left as locale-formatted integers.
@@ -101,15 +110,21 @@ interface Props {
   // Lets /give?campaign=<id> deep-link straight to a specific project card
   // (e.g. from the home page's Flagship Project section).
   initialCampaignId?: string;
+  // Lets /give?campaign=sacco&option=<key> land directly on the payment step
+  // with that Sacco option (membership fee / share / donation) pre-selected.
+  initialSaccoOption?: string;
 }
 
-export function GiveContent({ initialCampaignId }: Props) {
+export function GiveContent({ initialCampaignId, initialSaccoOption }: Props) {
   const initialIdx = Math.max(
     0,
     CAMPAIGNS.findIndex((c) => c.id === initialCampaignId)
   );
   const [activeCampaignIdx, setActiveCampaignIdx] = useState(initialIdx);
   const [activeTab, setActiveTab] = useState<Tab>("onetime");
+  const [saccoPreset, setSaccoPreset] = useState<SaccoOption | null>(
+    CAMPAIGNS[initialIdx].saccoStats?.find((s) => s.key === initialSaccoOption) ?? null
+  );
 
   const campaign = CAMPAIGNS[activeCampaignIdx];
   const hasFundingStats = campaign.goalUGX != null && campaign.raisedUGX != null;
@@ -119,7 +134,7 @@ export function GiveContent({ initialCampaignId }: Props) {
 
   return (
     <>
-      <SectionHead title="Give to the Foundation" sub="Every shilling goes directly to the work" />
+      <SectionHead title="Support the Foundation" sub="Every shilling goes directly to the work" />
 
       <div className="max-w-[720px] mx-auto px-5 py-7">
 
@@ -131,7 +146,10 @@ export function GiveContent({ initialCampaignId }: Props) {
             {CAMPAIGNS.map((c, i) => (
               <button
                 key={c.id}
-                onClick={() => setActiveCampaignIdx(i)}
+                onClick={() => {
+                  setActiveCampaignIdx(i);
+                  setSaccoPreset(null);
+                }}
                 className={cn(
                   "shrink-0 px-4 py-2 rounded-full text-[13px] font-semibold border transition-all",
                   i === activeCampaignIdx
@@ -196,15 +214,31 @@ export function GiveContent({ initialCampaignId }: Props) {
             </>
           )}
 
-          {/* Sacco-style campaigns: real fixed fee/share/donation figures, no invented goal */}
+          {/* Sacco-style campaigns: real fixed fee/share/donation figures, no invented goal. */}
+          {/* Each stat is clickable — picking one carries its amount into the payment form below. */}
           {campaign.saccoStats && (
-            <div className="flex gap-6 mb-2 flex-wrap">
-              {campaign.saccoStats.map(({ label, value }) => (
-                <div key={label}>
-                  <span className="block text-[16px] font-bold text-[var(--gold2)]">{value}</span>
-                  <span className="text-[11px] text-white/50">{label}</span>
-                </div>
-              ))}
+            <div className="flex gap-3 mb-2 flex-wrap">
+              {campaign.saccoStats.map((stat) => {
+                const isActive = saccoPreset?.key === stat.key;
+                return (
+                  <button
+                    key={stat.key}
+                    onClick={() => {
+                      setSaccoPreset(stat);
+                      setActiveTab("onetime");
+                    }}
+                    className={cn(
+                      "text-left rounded-[6px] border px-3.5 py-2.5 transition-all cursor-pointer",
+                      isActive
+                        ? "border-[var(--gold)] bg-white/10"
+                        : "border-white/20 hover:border-[var(--gold)] hover:bg-white/5"
+                    )}
+                  >
+                    <span className="block text-[16px] font-bold text-[var(--gold2)]">{stat.value}</span>
+                    <span className="text-[11px] text-white/50">{stat.label}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -228,7 +262,7 @@ export function GiveContent({ initialCampaignId }: Props) {
 
         {/* ── Tab bar ─────────────────────────────────────────────────────── */}
         <div className="flex border border-[var(--border)] rounded-[var(--r)] overflow-hidden mb-5">
-          {(["onetime", "busuulu", "transparency"] as Tab[]).map((tab, i, arr) => (
+          {(["onetime", "transparency"] as Tab[]).map((tab, i, arr) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -241,17 +275,21 @@ export function GiveContent({ initialCampaignId }: Props) {
                   : "text-[var(--muted)] hover:bg-[var(--cream2)]"
               )}
             >
-              {tab === "onetime" ? "One-time gift" : tab === "busuulu" ? "Monthly Busuulu" : "Transparency"}
+              {tab === "onetime" ? "One-time gift" : "Transparency"}
             </button>
           ))}
         </div>
 
         {/* ── Tab content ─────────────────────────────────────────────────── */}
         {activeTab === "onetime" && (
-          // Pass onSwitchToBusuulu so the success screen can redirect the user
-          <OneTimeForm campaign={campaign} onSwitchToBusuulu={() => setActiveTab("busuulu")} />
+          // Keying on campaign + preset forces a remount (fresh form state)
+          // whenever the user switches campaigns or picks a different Sacco option.
+          <OneTimeForm
+            key={`${campaign.id}:${saccoPreset?.key ?? "none"}`}
+            campaign={campaign}
+            preset={campaign.id === "sacco" ? saccoPreset : null}
+          />
         )}
-        {activeTab === "busuulu" && <BusuuluTiers />}
         {activeTab === "transparency" && (
           <div className="text-center py-10 border border-dashed border-[var(--border)] rounded-[var(--r)]">
             <p className="text-[32px] mb-3">📊</p>

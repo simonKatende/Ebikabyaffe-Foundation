@@ -144,7 +144,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
         {clan.omubala && (
           <Section title="Omubala (Clan Motto)">
             <blockquote className="border-l-4 border-gold pl-4 py-1 italic text-[15px] text-gd leading-relaxed font-serif">
-              "{clan.omubala}"
+              &ldquo;{clan.omubala}&rdquo;
             </blockquote>
           </Section>
         )}
@@ -232,7 +232,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
           </h3>
           <p className="text-[14px] text-white/70 mb-4 leading-relaxed">
             Join the Foundation to trace your roots, connect with your Omutaka,
-            and get Bataka-verified.
+            and get verified by Bataka.
           </p>
           <Button
             variant="primary"

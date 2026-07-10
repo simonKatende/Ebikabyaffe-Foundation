@@ -116,7 +116,9 @@ export function HeroSlider({ overlayOpacity = 0.62 }: HeroSliderProps) {
     if (touchStartX.current === null) return;
     const delta = e.changedTouches[0].clientX - touchStartX.current;
     // Negative delta = swiped left → advance; positive = swiped right → go back
-    if (Math.abs(delta) > 50) delta < 0 ? next() : prev();
+    if (Math.abs(delta) > 50) {
+      if (delta < 0) next(); else prev();
+    }
     touchStartX.current = null;
   };
 

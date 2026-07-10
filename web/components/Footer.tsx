@@ -10,13 +10,13 @@ export function Footer() {
       style={{ background: "var(--gd)" }}
     >
       <p className="font-serif italic text-[11px] text-gold">
-        "Okutumbula n'okusitula Ebikabyaffe" — To promote and uplift our heritage
+        &ldquo;Okutumbula n&apos;okusitula Ebikabyaffe&rdquo; — To promote and uplift our heritage
       </p>
       <p className="text-[11px] text-white/50 mt-0.5">
         <strong className="text-gold2">847,213</strong> Baganda ·{" "}
         <strong className="text-gold2">56</strong> Clans ·{" "}
         <strong className="text-gold2">18</strong> Amasaza ·{" "}
-        <strong className="text-gold2">12,847</strong> Bataka-verified · NGO
+        <strong className="text-gold2">12,847</strong> Verified by Bataka · NGO
         Bureau Reg. 003/NGOB/2024
       </p>
       <p className="text-[10px] text-white/35 mt-0.5">

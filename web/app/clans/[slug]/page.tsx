@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getClan } from "@/lib/clans";
+import { clans, getClan } from "@/lib/clans";
 import { MmambaDetail } from "@/components/clans/MmambaDetail";
 import { LugaveDetail } from "@/components/clans/LugaveDetail";
 import { GenericClanDetail } from "@/components/clans/GenericClanDetail";
@@ -44,6 +44,5 @@ export default async function ClanDetailPage({ params }: Props) {
 // Tells Next.js which slugs to pre-render at build time (static generation).
 // Without this, dynamic routes would only render on request (slower first load).
 export function generateStaticParams() {
-  const { clans } = require("@/lib/clans");
-  return clans.map((c: { slug: string }) => ({ slug: c.slug }));
+  return clans.map((c) => ({ slug: c.slug }));
 }

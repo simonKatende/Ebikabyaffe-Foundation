@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
@@ -55,7 +54,7 @@ export function MmambaDetail() {
         </p>
         <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3.5 py-1.5 text-[12px] text-white/80 mb-3">
           <strong className="text-gold2">23,481</strong> registered members ·
-          1,204 Bataka-verified
+          1,204 verified by Bataka
         </div>
         <br />
         {/* Court title badge — displayed prominently because Gabunga is one of the most
@@ -105,13 +104,13 @@ export function MmambaDetail() {
           <p className="text-[13px] text-white/70 leading-relaxed">
             The Mmamba clan holds the hereditary court title of{" "}
             <strong className="text-gold2">Gabunga</strong> — the Admiral of
-            the Kabaka's royal navy on Lake Victoria. This title, passed down
+            the Kabaka&apos;s royal navy on Lake Victoria. This title, passed down
             through the Mmamba lineage, made the clan the commanding force of
-            the Kingdom's fleet. The Gabunga commanded the royal canoes
-            (Enyanja), protected the King's waterways, and controlled trade and
+            the Kingdom&apos;s fleet. The Gabunga commanded the royal canoes
+            (Enyanja), protected the King&apos;s waterways, and controlled trade and
             movement across Lake Victoria and the Sese Islands — making the
             Mmamba clan one of the most strategically significant clans in
-            Buganda's history.
+            Buganda&apos;s history.
           </p>
         </div>
 
@@ -122,14 +121,14 @@ export function MmambaDetail() {
             their origins to Kintu, the first Kabaka of Buganda, through the
             lineage of Nambi. The lungfish — which can survive both in water
             and on land, and endure long dry seasons buried in the earth —
-            became the clan's totem as a symbol of resilience, adaptability,
+            became the clan&apos;s totem as a symbol of resilience, adaptability,
             and enduring life.
           </p>
           <p className="mt-2.5">
             The Mmamba are historically associated with the shores of Lake
             Victoria and the Sese Islands (Sseze Ssaza), where the lungfish is
             found in abundance. As the clan of the Gabunga, the Mmamba
-            commanded Lake Victoria — the Kingdom's most vital waterway.
+            commanded Lake Victoria — the Kingdom&apos;s most vital waterway.
           </p>
         </Section>
 
@@ -201,7 +200,7 @@ export function MmambaDetail() {
               </h4>
               <p className="text-[12px] text-muted mb-1.5">
                 Omutaka of the Mmamba Clan · Serving since 2008 · Member,
-                Olukiiko lw'Abataka
+                Olukiiko lw&apos;Abataka
               </p>
               <p className="text-[13px]">
                 Ssabataka Ndiwalana has led the Mmamba clan for over 16 years,

@@ -4,16 +4,20 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
-import { Card, CardHeader, CardBody, DarkCard, RoyalCard } from "@/components/ui/Card";
+import { Card, CardHeader, CardBody, DarkCard } from "@/components/ui/Card";
 import { EmpangoCountdown } from "@/components/home/EmpangoCountdown";
+import { getClan } from "@/lib/clans";
 
 export function HomeDashboard() {
-  const { lang } = useAuth();
+  const { lang, user } = useAuth();
   const { toast } = useToast();
+
+  const firstName = user.name.split(" ")[0];
+  const clan = user.clanSlug ? getClan(user.clanSlug) : undefined;
 
   // Greeting text switches between English and Luganda based on the user's language preference
   const greeting =
-    lang === "lg" ? "Mwasuze otya, Mubbi." : "Good morning, Mubbi.";
+    lang === "lg" ? `Mwasuze otya, ${firstName}.` : `Good morning, ${firstName}.`;
   const greetingSub =
     lang === "lg"
       ? "Ekika lyo likukyalira. Laba ebikula."
@@ -55,27 +59,54 @@ export function HomeDashboard() {
         ))}
       </div>
 
-      {/* Clan membership card — shows the user's current clan (self-declared until verified) */}
+      {/* Clan membership card — shows the user's current clan (self-declared until verified).
+          Reads from AuthContext + lib/clans.ts so it stays in sync with whatever the
+          member picks on /profile, instead of a hardcoded clan. */}
       <Card className="mb-3.5">
-        <CardHeader>
-          <span className="text-[28px]">🐟</span>
-          <div className="flex-1">
-            <h3 className="text-[16px] text-gd mb-0.5">
-              Mmamba — The Lungfish Clan
-            </h3>
-            <p className="text-[12px] text-muted">
-              Omuziro: Lungfish · Akabbiro: Muguya (Kob antelope) ·{" "}
-              <strong className="text-royal2">Gabunga — Admiral of the Royal Navy</strong>
-            </p>
-            {/* SELF-DECLARED badge disappears once the user is Bataka-verified */}
-            <span className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 bg-g0 text-gm tracking-[.5px]">
-              SELF-DECLARED
-            </span>
-          </div>
-          <span className="text-[13px] text-muted ml-auto shrink-0">
-            23,481 members
-          </span>
-        </CardHeader>
+        {clan ? (
+          <CardHeader>
+            <span className="text-[28px]">{clan.totemEmoji}</span>
+            <div className="flex-1">
+              <h3 className="text-[16px] text-gd mb-0.5">{clan.name}</h3>
+              <p className="text-[12px] text-muted">
+                Omuziro: {clan.omuziro}
+                {clan.akabbiro && <> · Akabbiro: {clan.akabbiro}</>}
+                {clan.courtRole && (
+                  <>
+                    {" · "}
+                    <strong className="text-royal2">{clan.courtRole}</strong>
+                  </>
+                )}
+              </p>
+              {/* Badge flips to VERIFIED once the Kingdom/Bataka confirm membership — mocked for now */}
+              <span className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 bg-g0 text-gm tracking-[.5px]">
+                {user.clanVerified ? "VERIFIED" : "SELF-DECLARED"}
+              </span>
+            </div>
+            <div className="ml-auto shrink-0 text-right">
+              <span className="block text-[13px] text-muted">
+                {clan.memberCount ? `${clan.memberCount} members` : "Member count coming soon"}
+              </span>
+              <Link href="/profile" className="text-[11px] text-royal2 no-underline hover:underline">
+                Manage in profile →
+              </Link>
+            </div>
+          </CardHeader>
+        ) : (
+          <CardBody className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[15px] text-gd mb-0.5">You haven&apos;t joined a clan yet</h3>
+              <p className="text-[12px] text-muted">
+                Pick your Ekika to be counted among its registered members.
+              </p>
+            </div>
+            <Link href="/profile">
+              <Button variant="gold" size="sm" className="shrink-0">
+                Choose your clan →
+              </Button>
+            </Link>
+          </CardBody>
+        )}
       </Card>
 
       {/* Dark card for the Bataka call to action — needs visual weight to prompt action */}
@@ -90,7 +121,7 @@ export function HomeDashboard() {
             Bataka are meeting Parliament on land law — May 15
           </h3>
           <p className="text-[13px] text-white/70 mb-3.5 leading-relaxed">
-            The Council of Clan Heads (Olukiiko lw'Abataka), led by Katikkiro
+            The Council of Clan Heads (Olukiiko lw&apos;Abataka), led by Katikkiro
             Owek. Charles Peter Mayiga, will present to the Land Affairs
             Committee. Add your voice as a registered clan member.
           </p>
@@ -103,7 +134,7 @@ export function HomeDashboard() {
                 toast("RSVP recorded! You'll receive details by SMS.")
               }
             >
-              RSVP — I'll attend
+              RSVP — I&apos;ll attend
             </Button>
             <Link href="/give">
               <Button variant="outline-white" size="sm">
@@ -173,7 +204,7 @@ export function HomeDashboard() {
             className="font-serif italic text-[16px] text-gd leading-relaxed mb-1.5"
             style={{ borderLeft: "3px solid var(--gold)", paddingLeft: 14 }}
           >
-            "Agali awamu gaggya ennyuma."
+            &ldquo;Agali awamu gegaluma enyama.&rdquo;
           </blockquote>
           <p className="text-[13px] text-muted" style={{ paddingLeft: 17 }}>
             Hands united pull a load. — The motto of Ebikabyaffe Foundation:

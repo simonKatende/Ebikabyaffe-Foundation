@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { YouTubeEmbed } from "@/components/ui/YouTubeEmbed";
+import { cn } from "@/lib/utils";
 
 // Animation timing — each layer delays slightly so elements arrive in sequence
 const ANIM = {
   badge:   "hero-badge-in   0.9s ease-out 0.10s both",
+  kicker:  "hero-heading-in 1.0s ease-out 0.20s both",
   heading: "hero-heading-in 1.1s ease-out 0.30s both",
   content: "hero-content-in 1.0s ease-out 0.60s both",
 };
@@ -76,9 +78,17 @@ export function HomeLanding() {
         {/* ── Main content — sits above the slider via z-10 ── */}
         <div className="relative z-10 flex flex-col items-center w-full px-6">
 
-          {/* 1 · Endorsement badge — arrives first */}
+          {/* 1 · Endorsement badge — arrives first. Sizing/tracking/margin are
+              all responsive: on short mobile viewports the hero's total
+              content easily runs taller than the visible area (nav height +
+              reserved bottom strip for the slider caption/dots), so the
+              badge — a secondary trust signal, not core content — is kept
+              deliberately compact on mobile (tighter tracking keeps it on
+              one line instead of wrapping to two) to leave room for the new
+              kicker line below it. Same class of bug as the documented
+              mobile-overflow pattern in CLAUDE.md, just the vertical axis. */}
           <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-7 text-[10px] tracking-[2.5px] uppercase font-medium"
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1 sm:px-4 sm:py-1.5 mb-3 sm:mb-7 text-[8.5px] tracking-[1.2px] sm:text-[10px] sm:tracking-[2.5px] uppercase font-medium"
             style={{
               background: "rgba(200,151,58,.13)",
               border: "1px solid rgba(200,151,58,.38)",
@@ -91,13 +101,28 @@ export function HomeLanding() {
             Endorsed by Olukiiko lw&apos;Abataka · Buganda Kingdom
           </div>
 
-          {/* 2 · Headline — arrives second, largest element on the page */}
+          {/* 2 · Luganda rallying cry — now the primary heading, calling back
+              to Project I (Ekikakyo, the Clan Fund) */}
           <h1
-            className="font-serif text-white font-normal leading-[1.12] mb-5"
+            className="font-serif font-bold uppercase leading-[1.12] mb-2 sm:mb-3"
             style={{
-              fontSize: "clamp(36px, 6.5vw, 68px)",
-              maxWidth: 760,
+              fontSize: "clamp(32px, 6.5vw, 68px)",
+              letterSpacing: "1px",
+              color: "var(--gold2)",
               textShadow: "0 2px 24px rgba(0,0,0,0.45)",
+              animation: ANIM.kicker,
+            }}
+          >
+            Wegatte ku Kikakyo
+          </h1>
+
+          {/* 4 · English subheading — smaller than the heading above it */}
+          <h2
+            className="font-serif text-white font-normal leading-[1.2] mb-3 sm:mb-5"
+            style={{
+              fontSize: "clamp(17px, 3.2vw, 32px)",
+              maxWidth: 640,
+              textShadow: "0 2px 20px rgba(0,0,0,0.4)",
               animation: ANIM.heading,
             }}
           >
@@ -115,31 +140,18 @@ export function HomeLanding() {
             Discover your clan,
             <br className="hidden sm:block" />
             {" "}your roots, your people.
-          </h1>
+          </h2>
 
-          {/* 3 · Lede + CTAs + stats — arrive together, slightly after heading */}
+          {/* 5 · Lede + CTAs + stats — arrive together, slightly after heading */}
           <div
-            className="flex flex-col items-center"
+            className="flex flex-col items-center w-full"
             style={{ animation: ANIM.content }}
           >
-            <p
-              className="mb-9 leading-relaxed"
-              style={{
-                fontSize: 17,
-                maxWidth: 460,
-                color: "rgba(255,255,255,0.72)",
-                textShadow: "0 1px 8px rgba(0,0,0,0.4)",
-              }}
-            >
-              56 Buganda clans. 18 Amasaza. One foundation. Your lineage,
-              traced in 8 steps — from Akasolya to Enju.
-            </p>
-
             {/* CTA buttons */}
-            <div className="flex gap-3.5 flex-wrap justify-center mb-11">
+            <div className="flex gap-3.5 flex-wrap justify-center mb-5 sm:mb-11">
               <Link href="/clans" className="no-underline">
                 <button
-                  className="font-semibold text-[15px] px-7 py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
+                  className="font-semibold text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
                   style={{
                     background: "var(--gold)",
                     color: "var(--gd)",
@@ -164,7 +176,7 @@ export function HomeLanding() {
 
               <button
                 onClick={login}
-                className="font-medium text-[15px] px-7 py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
+                className="font-medium text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
                 style={{
                   background: "rgba(255,255,255,0.10)",
                   border: "1px solid rgba(255,255,255,0.28)",
@@ -192,9 +204,13 @@ export function HomeLanding() {
 
             {/* 4-block stats bar — frosted glass panel. Tiles with an href are
                 links (56 Ebika → /clans, 18 Amasaza → /abakungu) so the two
-                encyclopedias are discoverable straight from the landing page. */}
+                encyclopedias are discoverable straight from the landing page.
+                grid-cols-2 on mobile (2x2) prevents the same overflow bug as the
+                lede above — a non-wrapping flex row of 4 fixed-padding tiles is
+                wider than a phone screen; sm:flex restores the single-row layout
+                once there's room for it. */}
             <div
-              className="flex rounded-lg overflow-hidden"
+              className="grid grid-cols-2 sm:flex w-full sm:w-auto rounded-lg overflow-hidden"
               style={{
                 background: "rgba(255,255,255,0.07)",
                 border: "1px solid rgba(255,255,255,0.13)",
@@ -205,15 +221,15 @@ export function HomeLanding() {
                 { num: "847K+",  lbl: "Baganda registered"                   },
                 { num: "56",     lbl: "Ebika bya Buganda", href: "/clans"    },
                 { num: "18",     lbl: "Amasaza",           href: "/abakungu" },
-                { num: "12,847", lbl: "Bataka-verified"                      },
+                { num: "12,847", lbl: "Verified by Bataka"                   },
               ].map(({ num, lbl, href }, i, arr) => {
                 const inner = (
                   <>
-                    <span className="font-serif text-[27px] text-white block leading-none mb-1">
+                    <span className="font-serif text-[22px] sm:text-[27px] text-white block leading-none mb-1">
                       {num}
                     </span>
                     <span
-                      className="text-[10px] tracking-[.5px] whitespace-nowrap uppercase"
+                      className="text-[10px] tracking-[.5px] uppercase"
                       style={{ color: "rgba(255,255,255,0.38)" }}
                     >
                       {lbl}
@@ -224,18 +240,21 @@ export function HomeLanding() {
                 const borderStyle = {
                   borderRight:
                     i < arr.length - 1 ? "1px solid rgba(255,255,255,0.10)" : "none",
+                  borderBottom:
+                    i < 2 ? "1px solid rgba(255,255,255,0.10)" : "none",
                 };
+                const tileClass = "px-3 py-2 sm:px-6 sm:py-4 text-center";
                 return href ? (
                   <Link
                     key={lbl}
                     href={href}
-                    className="px-6 py-4 text-center no-underline transition-colors hover:bg-white/[.08]"
+                    className={cn(tileClass, "no-underline transition-colors hover:bg-white/[.08]")}
                     style={borderStyle}
                   >
                     {inner}
                   </Link>
                 ) : (
-                  <div key={lbl} className="px-6 py-4 text-center" style={borderStyle}>
+                  <div key={lbl} className={tileClass} style={borderStyle}>
                     {inner}
                   </div>
                 );
@@ -472,19 +491,20 @@ export function HomeLanding() {
               style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
             >
               {[
-                ["Membership fee", "UGX 10,000 one-time"],
-                ["Share value", "UGX 20,000 per share"],
-                ["Donations", "Any amount, voluntary"],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="bg-white border border-eborder rounded-[6px] px-3.5 py-3"
+                { key: "membership", label: "Membership fee", value: "UGX 10,000 one-time" },
+                { key: "share",      label: "Share value",     value: "UGX 20,000 per share" },
+                { key: "donation",   label: "Donations",       value: "Any amount, voluntary" },
+              ].map(({ key, label, value }) => (
+                <Link
+                  key={key}
+                  href={`/give?campaign=sacco&option=${key}`}
+                  className="block bg-white border border-eborder rounded-[6px] px-3.5 py-3 no-underline hover:border-gold transition-colors"
                 >
                   <p className="text-[10px] uppercase tracking-wide text-muted mb-1">
                     {label}
                   </p>
                   <p className="text-[13px] text-gd font-semibold">{value}</p>
-                </div>
+                </Link>
               ))}
             </div>
             <Link href="/give?campaign=sacco" className="no-underline">

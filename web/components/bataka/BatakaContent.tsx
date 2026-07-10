@@ -175,12 +175,12 @@ export function BatakaContent() {
           style={{ background: "var(--gd)" }}
         >
           <h3 className="font-serif text-[20px] text-white font-normal mb-2">
-            Get Bataka-verified.
+            Get verified by Bataka.
           </h3>
           <p className="text-[14px] text-white/70 mb-4 leading-relaxed max-w-[520px] mx-auto">
             Verification links your Foundation profile to your clan&apos;s
             Omutaka. <strong className="text-gold2">12,847 members</strong>{" "}
-            are already Bataka-verified — unlocking priority registration at
+            are already verified by Bataka — unlocking priority registration at
             clan gatherings and a voice in clan affairs.
           </p>
           <Button

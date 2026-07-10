@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
-import type { Campaign } from "./GiveContent";
+import type { Campaign, SaccoOption } from "./GiveContent";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preset amounts shown as quick-pick buttons.
@@ -31,11 +30,16 @@ const PAY_METHODS: { key: PayMethod; label: string }[] = [
 
 interface Props {
   campaign: Campaign;
-  // Called from the success screen so the parent can switch to the Busuulu tab
-  onSwitchToBusuulu: () => void;
+  // A Sacco option (membership fee / share / donation) carried over from the
+  // campaign card's clickable stats. A preset with a fixed amountUGX locks the
+  // amount step; a preset with no amountUGX (open donation) just adds context
+  // above the normal picker. null for non-Sacco campaigns or no selection.
+  preset: SaccoOption | null;
 }
 
-export function OneTimeForm({ campaign, onSwitchToBusuulu }: Props) {
+export function OneTimeForm({ campaign, preset }: Props) {
+  const isLockedPreset = preset?.amountUGX != null;
+
   const [currency,       setCurrency]       = useState<Currency>("UGX");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount,   setCustomAmount]   = useState("");
@@ -46,8 +50,11 @@ export function OneTimeForm({ campaign, onSwitchToBusuulu }: Props) {
   // Mobile-money methods require the user to enter a phone number
   const needsPhone = payMethod === "momo" || payMethod === "airtel";
 
-  // The actual donation value: preset takes priority; falls back to custom field
-  const effectiveAmount = selectedAmount ?? (customAmount ? Number(customAmount) : 0);
+  // The actual donation value: a locked preset (membership/share) wins outright;
+  // otherwise preset takes priority over the custom field, same as before.
+  const effectiveAmount = isLockedPreset
+    ? preset!.amountUGX!
+    : selectedAmount ?? (customAmount ? Number(customAmount) : 0);
 
   function handleAmountClick(amount: number) {
     // Selecting a preset clears the custom field so only one value is active
@@ -84,13 +91,9 @@ export function OneTimeForm({ campaign, onSwitchToBusuulu }: Props) {
           Weebale nyo — Thank you!
         </h3>
         <p className="text-[13px] text-[var(--muted)] mb-5 leading-relaxed max-w-[340px] mx-auto">
-          Your gift to {campaign.title.split("—")[0].trim()} has been received.
+          Your gift to {preset ? preset.label : campaign.title.split("—")[0].trim()} has been received.
           A receipt will be sent to your phone.
         </p>
-        {/* Nudge one-time donors toward a recurring monthly commitment */}
-        <Button variant="green" onClick={onSwitchToBusuulu}>
-          Make this a monthly Busuulu →
-        </Button>
       </div>
     );
   }
@@ -99,51 +102,73 @@ export function OneTimeForm({ campaign, onSwitchToBusuulu }: Props) {
   return (
     <div className="bg-white border border-[var(--border)] rounded-[var(--r)] p-5">
 
-      {/* Currency toggle ── UGX for local donors, USD for diaspora */}
-      <div className="flex gap-2 mb-4">
-        {(["UGX", "USD"] as Currency[]).map((c) => (
-          <button
-            key={c}
-            onClick={() => handleCurrencySwitch(c)}
-            className={cn(
-              "px-4 py-1.5 rounded text-[12px] font-semibold border transition-all",
-              currency === c
-                ? "bg-[var(--gd)] text-white border-[var(--gd)]"
-                : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-[var(--gm)]"
-            )}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
+      {isLockedPreset ? (
+        /* Locked amount step — membership fee / share value have a fixed price,
+           so there's nothing to pick; just show what's being paid for. */
+        <div className="mb-4 p-3 rounded border border-[var(--gm)] bg-[var(--cream2)]">
+          <p className="text-[11px] text-[var(--muted)] font-semibold uppercase tracking-wide mb-1">
+            Contributing to
+          </p>
+          <p className="text-[16px] font-bold text-[var(--gd)]">
+            {preset!.label} — UGX {preset!.amountUGX!.toLocaleString()}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Open donation preset (e.g. Sacco "Donations") — context label above the normal picker */}
+          {preset && (
+            <p className="text-[11px] text-[var(--muted)] font-semibold uppercase tracking-wide mb-2">
+              Contributing to: {preset.label}
+            </p>
+          )}
 
-      {/* Preset amount buttons */}
-      <div className="flex gap-2 flex-wrap mb-3">
-        {PRESETS[currency].map((amt) => (
-          <button
-            key={amt}
-            onClick={() => handleAmountClick(amt)}
-            className={cn(
-              "px-4 py-2 rounded text-[13px] font-semibold border transition-all",
-              selectedAmount === amt
-                ? "bg-[var(--gm)] text-white border-[var(--gm)]"
-                : "bg-white text-[var(--gd)] border-[var(--border)] hover:border-[var(--gm)]"
-            )}
-          >
-            {currency} {amt.toLocaleString()}
-          </button>
-        ))}
-      </div>
+          {/* Currency toggle ── UGX for local donors, USD for diaspora */}
+          <div className="flex gap-2 mb-4">
+            {(["UGX", "USD"] as Currency[]).map((c) => (
+              <button
+                key={c}
+                onClick={() => handleCurrencySwitch(c)}
+                className={cn(
+                  "px-4 py-1.5 rounded text-[12px] font-semibold border transition-all",
+                  currency === c
+                    ? "bg-[var(--gd)] text-white border-[var(--gd)]"
+                    : "bg-white text-[var(--muted)] border-[var(--border)] hover:border-[var(--gm)]"
+                )}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
 
-      {/* Custom amount — deselects presets when typed into */}
-      <input
-        type="number"
-        min={0}
-        placeholder={`Or enter custom amount in ${currency}`}
-        value={customAmount}
-        onChange={(e) => handleCustomAmountChange(e.target.value)}
-        className="w-full border border-[var(--border)] rounded px-3 py-2.5 text-[14px] mb-4 outline-none focus:border-[var(--gm)]"
-      />
+          {/* Preset amount buttons */}
+          <div className="flex gap-2 flex-wrap mb-3">
+            {PRESETS[currency].map((amt) => (
+              <button
+                key={amt}
+                onClick={() => handleAmountClick(amt)}
+                className={cn(
+                  "px-4 py-2 rounded text-[13px] font-semibold border transition-all",
+                  selectedAmount === amt
+                    ? "bg-[var(--gm)] text-white border-[var(--gm)]"
+                    : "bg-white text-[var(--gd)] border-[var(--border)] hover:border-[var(--gm)]"
+                )}
+              >
+                {currency} {amt.toLocaleString()}
+              </button>
+            ))}
+          </div>
+
+          {/* Custom amount — deselects presets when typed into */}
+          <input
+            type="number"
+            min={0}
+            placeholder={`Or enter custom amount in ${currency}`}
+            value={customAmount}
+            onChange={(e) => handleCustomAmountChange(e.target.value)}
+            className="w-full border border-[var(--border)] rounded px-3 py-2.5 text-[14px] mb-4 outline-none focus:border-[var(--gm)]"
+          />
+        </>
+      )}
 
       {/* Payment method selection */}
       <p className="text-[12px] text-[var(--muted)] mb-2 font-semibold uppercase tracking-wide">
