@@ -52,7 +52,7 @@ export const batakaNotes: Record<string, string> = {
   kiwere:
     "The previous Luwonko, James Mbaale Zzamuwanga, has died; his son Alexander Basajjabaka Sserwadda was presented to the Katikkiro as the new head of the clan (per bugandauk.com reporting).",
   lugave:
-    "The Ndugwa was historically the first among the Bataka to be consulted and to speak before the Kabaka. Succession is decided by the clan council — see the full Lugave archive page for the 17 Amasiga, 6 royal Emituba, and succession history. Note: a section of Lugave clan elders and Bataka boycotted a 2016 ceremony honouring Grace Ssemakula as Ndugwa, reportedly questioning his standing since the 1990s — treat his headship as Kingdom-recognised but not universally uncontested within the clan.",
+    "The Ndugwa was historically the first among the Bataka to be consulted and to speak before the Kabaka. Succession is decided by the clan council — see the full Lugave archive page for the 17 Amasiga, 6 royal Emituba, and succession history. Note: per the clan's own 2021 archive, Grace Ssemakula announced his retirement as Ndugwa in December 2017 and named Fred Katende Kyekango to succeed him, but the amasiga heads contested the manner of the nomination and the installation stalled after the convener of the Bataka Council intervened — treat the headship as Kingdom-recognised but the succession as unresolved within the clan.",
   lukato:
     "Unusual in having two co-recognised titleholders — Magunda and Lyongera — rather than a single Omutaka, per Kingdom records.",
   mbogo:

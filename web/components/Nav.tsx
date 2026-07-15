@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LogoSVG } from "@/components/LogoSVG";
+import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 
 // All nav links in one array so adding a new route only requires a single edit here
@@ -131,7 +131,16 @@ export function Nav() {
     >
       {/* Brand logo + name — links back to home */}
       <Link href="/" className="flex items-center gap-2 shrink-0 no-underline">
-        <LogoSVG className="w-10 h-10 shrink-0" />
+        {/* Real Foundation logo (web/public/logo.png, 1200×1085 export) —
+            replaced the LogoSVG placeholder 2026-07 */}
+        <Image
+          src="/logo.png"
+          alt="Ebikabyaffe Foundation logo"
+          width={44}
+          height={40}
+          priority
+          className="w-11 h-10 shrink-0 object-contain"
+        />
         <div className="text-white font-normal leading-tight">
           <span className="font-serif text-sm">Ebikabyaffe</span>
           <span className="block text-gold2 text-[10px] tracking-[2px] uppercase">

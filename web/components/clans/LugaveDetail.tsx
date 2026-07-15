@@ -6,6 +6,7 @@ import { getClan } from "@/lib/clans";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
+import { LugaveLineageExplorer } from "@/components/clans/LugaveLineageExplorer";
 
 const LUGAVE_TOTEM: LightboxImage = {
   src: "/images/totems/lugave.jpg",
@@ -373,8 +374,9 @@ export function LugaveDetail() {
           >
             <p>
               Every person who takes Lugave as their totem falls under one of
-              the clan&apos;s <strong>17 Amasiga</strong> (major lineages — the
-              full list is in the branch grid below) or the{" "}
+              the clan&apos;s <strong>17 Amasiga</strong> (major lineages —
+              explore them branch by branch, down to the individual ennyiriri,
+              in the interactive explorer below) or the{" "}
               <strong>6 Emituba Emirangira</strong> (royal sub-lineages
               descended from a prince absorbed into the clan, which require the
               Kabaka&apos;s own recognition).
@@ -499,31 +501,10 @@ export function LugaveDetail() {
           </ExpandCard>
         </div>
 
-        {/* Amasiga grid — data-driven from clans.ts so it stays in sync with the registry */}
-        {lugave.amasiga && (
-          <div className="mb-8">
-            <h3
-              className="font-serif text-[18px] text-gd font-normal mb-3 pb-2"
-              style={{ borderBottom: "1px solid var(--border)" }}
-            >
-              Amasiga — {lugave.amasiga.length} Documented Branches
-            </h3>
-            <div
-              className="grid gap-2"
-              style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}
-            >
-              {lugave.amasiga.map(({ elder, seat }) => (
-                <div
-                  key={elder}
-                  className="bg-white border border-eborder rounded-[5px] px-3.5 py-3"
-                >
-                  <h4 className="text-[13px] text-gd font-semibold mb-0.5">{elder}</h4>
-                  <p className="text-[11px] text-muted">{seat}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Interactive lineage explorer — Essiga → Emituba → Ennyiriri, from
+            lib/lugaveLineage.ts (extracted from the 2021 clan archive). This
+            replaced the earlier flat amasiga grid that read from clans.ts. */}
+        <LugaveLineageExplorer />
 
         {/* Taboos */}
         <div className="mb-8">

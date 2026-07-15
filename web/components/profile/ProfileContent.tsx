@@ -244,11 +244,13 @@ function ProfileDashboard() {
           ) : (
             <>
               <p className="text-[13px] text-muted leading-relaxed mb-3">
-                Pay the one-time UGX 10,000 membership fee to join the Ebikabyaffe
-                Foundation Fraternity Sacco.
+                Sacco membership is arranged with the Foundation&apos;s Sacco
+                officials directly. Online, you can support the Sacco — the
+                financial engine behind the school project — with a voluntary
+                donation of any amount.
               </p>
-              <Link href="/give?campaign=sacco&option=membership">
-                <Button variant="gold" size="sm">Pay Membership Fee →</Button>
+              <Link href="/give?campaign=sacco&option=donation">
+                <Button variant="gold" size="sm">Donate to the Sacco →</Button>
               </Link>
             </>
           )}

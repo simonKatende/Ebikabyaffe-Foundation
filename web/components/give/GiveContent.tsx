@@ -78,21 +78,23 @@ const CAMPAIGNS: Campaign[] = [
   {
     id: "sacco",
     title: "Ebikabyaffe Foundation Fraternity Sacco",
-    subtitle: "The financial arm — a members-owned savings and credit cooperative",
+    subtitle: "The financial engine behind the school project and the Foundation's other initiatives",
     description:
       "Where Ekikakyo gathers the clan around a shared cause, the Sacco gives that effort " +
-      "financial structure and discipline — modernising the old Buganda instinct of bulungi " +
-      "bwansi and rotating contribution groups. Every membership fee, share, and donation becomes " +
-      "part of the same fund carrying the clan school project forward.",
+      "financial structure and discipline. This donation is particularly for raising funds " +
+      "to boost the Sacco — every donation becomes part of the same fund carrying the clan " +
+      "school project forward.",
     emoji: "🤝",
+    // Membership-fee and share-value options were removed 2026-07 per direct
+    // request — the online Sacco flow is donations only; membership itself is
+    // arranged with the Sacco officials in person.
     saccoStats: [
-      { key: "membership", label: "Membership fee", value: "UGX 10,000 one-time", amountUGX: 10_000 },
-      { key: "share",      label: "Share value",     value: "UGX 20,000 per share", amountUGX: 20_000 },
-      { key: "donation",   label: "Donations",       value: "Any amount, voluntary" },
+      { key: "donation", label: "Donations", value: "Any amount, voluntary" },
     ],
     contactNote:
-      "Select an option above to choose what you're contributing, then complete payment below. " +
-      "Prefer to pay in person? Contact the Foundation's clan leadership or Sacco officials directly.",
+      "Donations to the Sacco are voluntary and of any amount — complete yours below. " +
+      "Sacco membership itself is arranged with the Foundation's clan leadership or Sacco " +
+      "officials directly.",
   },
 ];
 

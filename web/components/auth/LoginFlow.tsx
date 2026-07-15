@@ -31,12 +31,14 @@ export type LoginMode = "create" | "signin";
 
 // Demo-only prefix → network mapping. The real network (and registered name)
 // will come from the telecom APIs — do not grow this map, it's placeholder UX.
+// Returns null for prefixes outside the demo map — the confirmation sentence
+// then simply omits the network name instead of printing a placeholder.
 function detectNetwork(local: string): string | null {
   const p = local.slice(0, 3);
   if (p === "077" || p === "078" || p === "076") return "MTN";
   if (p === "070" || p === "075") return "Airtel";
   if (p === "071") return "Uganda Telecom";
-  return local.length >= 3 ? "your network" : null;
+  return null;
 }
 
 // Accepts 07XXXXXXXX or +2567XXXXXXXX / 2567XXXXXXXX; returns local 10-digit
@@ -249,11 +251,10 @@ export function LoginFlow({ initialMode = "create" }: { initialMode?: LoginMode 
         {/* Network + registered-SIM-name confirmation — mirrors the mobile
             money experience. The name shown is SIMULATED until the telecom
             (MoMo/Airtel Money) lookup API is integrated. */}
-        {phone && network && canSendCode && !otpCode && (
+        {phone && canSendCode && !otpCode && (
           <div className="bg-cream2 border border-eborder rounded-[6px] px-4 py-3 mb-3">
             <p className="text-[13px] text-gd leading-relaxed">
-              We will send a one-time code to the{" "}
-              <strong>{network}</strong> number{" "}
+              We will send a one-time code to the{network && <> <strong>{network}</strong></>} number{" "}
               <strong>{formatPhone(phone)}</strong>
               {mode === "create" ? (
                 <>

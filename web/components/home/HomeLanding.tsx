@@ -437,12 +437,12 @@ export function HomeLanding() {
           <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-2">
             Flagship Initiative
           </p>
-          <h2 className="font-serif text-[26px] text-gd font-normal mb-2">
-            Ekika, Essomero n&apos;Enkulaakulana
+          {/* The three-line rallying tagline maps 1:1 onto Projects I/II/III below */}
+          <h2 className="font-serif text-[22px] text-gd font-normal mb-4 leading-snug">
+            <span className="block">1. Yamba Ekikakyo</span>
+            <span className="block">2. Okutumbula Ebyenjigiriza</span>
+            <span className="block">3. Okutumbula Enkulaakulana</span>
           </h2>
-          <p className="font-serif italic text-[14px] text-muted mb-4">
-            &quot;Clan, School and Development&quot;
-          </p>
           <p className="text-[13px] text-muted leading-relaxed max-w-[560px] mx-auto">
             Three interconnected projects through which members of the clan
             and friends of the Kingdom&apos;s heritage are invited to
@@ -524,41 +524,35 @@ export function HomeLanding() {
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
               🤝 The Sacco — Financial Arm
             </h3>
-            <p className="text-[14px] text-gd leading-relaxed mb-4">
+            <p className="text-[14px] text-gd leading-relaxed mb-2">
               The Ebikabyaffe Foundation Fraternity Sacco is the financial
               engine behind the school project and the Foundation&apos;s
-              other initiatives — a members-owned savings and credit
-              cooperative, modernising the old Buganda instinct of{" "}
-              <em className="not-italic font-semibold">bulungi bwansi</em>{" "}
-              (communal labour) and rotating contribution groups.
+              other initiatives.
             </p>
-            <div
-              className="grid gap-2.5 mb-5"
-              style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
+            <p className="text-[13px] text-muted leading-relaxed mb-4">
+              This donation is particularly for raising funds to boost the
+              Sacco.
+            </p>
+            {/* Donations only — membership-fee and share-value tiles were
+                removed 2026-07 per direct request: this card exists purely
+                to channel voluntary donations into the Sacco. */}
+            <Link
+              href="/give?campaign=sacco&option=donation"
+              className="block max-w-[320px] bg-white border border-eborder rounded-[6px] px-3.5 py-3 no-underline hover:border-gold transition-colors mb-5"
             >
-              {[
-                { key: "membership", label: "Membership fee", value: "UGX 10,000 one-time" },
-                { key: "share",      label: "Share value",     value: "UGX 20,000 per share" },
-                { key: "donation",   label: "Donations",       value: "Any amount, voluntary" },
-              ].map(({ key, label, value }) => (
-                <Link
-                  key={key}
-                  href={`/give?campaign=sacco&option=${key}`}
-                  className="block bg-white border border-eborder rounded-[6px] px-3.5 py-3 no-underline hover:border-gold transition-colors"
-                >
-                  <p className="text-[10px] uppercase tracking-wide text-muted mb-1">
-                    {label}
-                  </p>
-                  <p className="text-[13px] text-gd font-semibold">{value}</p>
-                </Link>
-              ))}
-            </div>
-            <Link href="/give?campaign=sacco" className="no-underline">
+              <p className="text-[10px] uppercase tracking-wide text-muted mb-1">
+                Donations
+              </p>
+              <p className="text-[13px] text-gd font-semibold">
+                Any amount, voluntary
+              </p>
+            </Link>
+            <Link href="/give?campaign=sacco&option=donation" className="no-underline">
               <button
                 className="font-semibold text-[13px] px-5 py-2.5 rounded-[5px] cursor-pointer"
                 style={{ background: "var(--gold)", color: "var(--gd)" }}
               >
-                Join the Sacco →
+                Donate to the Sacco →
               </button>
             </Link>
           </div>
@@ -580,14 +574,10 @@ export function HomeLanding() {
           </p>
           <p className="text-[14px] text-gd leading-relaxed max-w-[600px] mx-auto mb-8">
             Ebikabyaffe Foundation is affiliated with Buganda Kingdom,
-            connected to the Kingdom&apos;s Council of Clan Heads (Olukiiko
-            lwa Bataka). We work to instill good morals, discipline, and
-            cultural pride in young Ugandans, in response to what our
-            officials see as declining respect for elders and leaders — by
-            reviving pride in Buganda culture and identity, and by building
-            institutions that combine standard education with cultural
-            formation. The Foundation was formally launched by the Katikkiro
-            of Buganda.
+            working in unison with the Kingdom&apos;s Council of Clan Heads
+            (Olukiiko lwa Bataka). We work to instill good morals and
+            discipline, to revitalise our culture, and to restore the
+            declining respect for elders and leaders.
           </p>
           <div className="max-w-[520px] mx-auto">
             <YouTubeEmbed

@@ -1,0 +1,20 @@
+# Supabase CLI project config — see https://supabase.com/docs/guides/local-development
+#
+# No live project is linked yet (Session 19, 2026-07-16). Once a Supabase
+# project exists, set project_id below and run `supabase link` from web/.
+project_id = "ebikabyaffe-foundation"
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000"]
+# Phone-OTP is the app's sign-in method (see web/components/auth/LoginFlow.tsx) —
+# enable Supabase's phone auth + an SMS provider when wiring this up for real.
+enable_signup = true
+
+[storage]
+enabled = false
