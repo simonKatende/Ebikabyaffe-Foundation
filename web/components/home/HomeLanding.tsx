@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { YouTubeEmbed } from "@/components/ui/YouTubeEmbed";
 import { cn } from "@/lib/utils";
@@ -29,36 +30,135 @@ const PILLARS = [
   },
   {
     icon: "🐟",
-    title: "Ebika bya Buganda",
+    title: "Ebika bya Baganda",
     sub: "The 56 clans, each with its own totem, head, and ancestral seat",
     head: "Omukulembeza w'Olukiiko lwa Bataka",
     holder: "Omutaka Augustine Kizito Mutumba, Chairman of the Council of Clan Heads",
-    href: "/clans?view=bataka",
-    cta: "Meet the Council of Clan Heads",
+    href: "/clans",
+    cta: "Explore the 56 Clans",
   },
   {
     icon: "⚖️",
     title: "Abakungu ba Ssaabasajja",
     sub: "The territorial chiefs — Ssaza, Gombolola, Muluka",
-    head: "Katikkiro of Buganda",
+    head: "Katikkiro of Buganda — head of this pillar",
     holder: "Owek. Charles Peter Mayiga — in office since 12 May 2013",
     href: "/abakungu",
     cta: "Explore the Kingdom's Chiefs",
+    // Per user request (2026-07): the Katikkiro-is-head line renders at the
+    // TOP of this card (right under the title), not below the sub line.
+    headFirst: true,
   },
 ];
 
 // Ebikabyaffe Foundation's own leadership, per the same reference doc.
 const LEADERS = [
-  ["Omutaka Augustine Kizito Mutumba", "Chairman, Council of Clan Heads (Olukiiko lwa Bataka), Buganda Kingdom"],
-  ["Omutaka Kayongo Patrick Kawuma", "Chairperson, Board of Ebikabyaffe Foundation"],
-  ["Omutaka Blasio Mutanda Kawule", "Executive Director"],
-  ["Joshua Kato Bbosa", "Chief National Coordinator"],
-  ["Eng. Ronald Serumaga Ssava", "Coordinator"],
-  ["Robert Sserunjogi", "Lead Researcher"],
+  ["Omutaka Augustine Kizito Mutumba", "Patron · Chairman, Council of Clan Heads (Olukiiko lwa Bataka), Buganda Kingdom"],
+  ["Omutaka Blasius Mutanda Kawule", "Founder"],
+  ["Kironde Mike", "Chairperson, Board of Ebikabyaffe Foundation"],
+  ["Kayongo Patrick Kawuma", "Vice Chairperson"],
+  ["Kityamuweesi Musubire Vicent", "Secretary"],
+  ["Eng. Ronald Sserumaga Ssava", "Coordinator"],
+  ["Dr. John B. Kakembo", "Advisor · Retired Archbishop, Seventh-day Adventist Church"],
+  ["Mukiibi Keneth", "Treasurer"],
+  ["Sserunjogi Robert", "Lead Researcher"],
 ];
 
+// Recent Activity items — each expands on click. Media/details for each are
+// still being collected; where a launch video already exists elsewhere in the
+// codebase it's wired in here too, the rest show an honest placeholder until
+// the user supplies photos/videos (do not invent content for them).
+const ACTIVITIES: {
+  id: string;
+  icon: string;
+  title: string;
+  videoId?: string;
+  videoTitle?: string;
+}[] = [
+  {
+    id: "foundation-launch",
+    icon: "🏛️",
+    title: "Launch of the Ebikabyaffe Foundation",
+    videoId: "A9fa60aNhQA",
+    videoTitle: "Ebikabyaffe Foundation launch",
+  },
+  {
+    id: "school-launch",
+    icon: "🏫",
+    title: "Launch of the Pilot School — Wakivule Village",
+    videoId: "3CEUzFGR3Fo",
+    videoTitle: "Wakivule Project school launch",
+  },
+  {
+    id: "sacco-launch",
+    icon: "🤝",
+    title: "Launch of the Ebikabyaffe Foundation Fraternity Sacco",
+  },
+  {
+    id: "kabaka-run",
+    icon: "🏃",
+    title: "Participation in the Kabaka Birthday Run",
+  },
+];
+
+function RecentActivityList() {
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {ACTIVITIES.map(({ id, icon, title, videoId, videoTitle }) => {
+        const open = openId === id;
+        return (
+          <div
+            key={id}
+            className="bg-cream2 border border-eborder rounded-[6px] overflow-hidden"
+          >
+            <button
+              onClick={() => setOpenId(open ? null : id)}
+              aria-expanded={open}
+              className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer bg-transparent border-0 hover:bg-white/60 transition-colors"
+            >
+              <span className="text-[20px]">{icon}</span>
+              <span className="flex-1 text-[14px] text-gd font-semibold leading-snug">
+                {title}
+              </span>
+              <span
+                className="text-[12px] transition-transform duration-200"
+                style={{
+                  color: "var(--gold2)",
+                  transform: open ? "rotate(90deg)" : "none",
+                }}
+              >
+                ▶
+              </span>
+            </button>
+            {open && (
+              <div className="px-4 pb-4 pt-1 border-t border-eborder">
+                {videoId ? (
+                  <>
+                    <div className="max-w-[520px] mx-auto mt-3 mb-3">
+                      <YouTubeEmbed videoId={videoId} title={videoTitle ?? title} />
+                    </div>
+                    <p className="text-[12px] text-muted italic text-center">
+                      More photos and details coming soon.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-[13px] text-muted italic text-center mt-3">
+                    Photos, videos and details coming soon.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function HomeLanding() {
-  const { login } = useAuth();
+  const router = useRouter();
 
   return (
     <>
@@ -75,8 +175,12 @@ export function HomeLanding() {
         {/* Full-viewport background slider — absolutely positioned behind all content */}
         <HeroSlider />
 
-        {/* ── Main content — sits above the slider via z-10 ── */}
-        <div className="relative z-10 flex flex-col items-center w-full px-6">
+        {/* ── Main content — sits above the slider via z-10.
+            pointer-events-none lets clicks on the empty space around the text
+            fall through to the slider's prev/next arrows underneath (the
+            full-width wrapper was swallowing them); the interactive children
+            (CTA buttons, stats-bar links) re-enable their own events. ── */}
+        <div className="relative z-10 flex flex-col items-center w-full px-6 pointer-events-none">
 
           {/* 1 · Endorsement badge — arrives first. Sizing/tracking/margin are
               all responsive: on short mobile viewports the hero's total
@@ -113,7 +217,7 @@ export function HomeLanding() {
               animation: ANIM.kicker,
             }}
           >
-            Wegatte ku Kikakyo
+            Weewandiise mu Kikakyo
           </h1>
 
           {/* 4 · English subheading — smaller than the heading above it */}
@@ -148,7 +252,7 @@ export function HomeLanding() {
             style={{ animation: ANIM.content }}
           >
             {/* CTA buttons */}
-            <div className="flex gap-3.5 flex-wrap justify-center mb-5 sm:mb-11">
+            <div className="flex gap-3.5 flex-wrap justify-center mb-5 sm:mb-11 pointer-events-auto">
               <Link href="/clans" className="no-underline">
                 <button
                   className="font-semibold text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
@@ -175,7 +279,7 @@ export function HomeLanding() {
               </Link>
 
               <button
-                onClick={login}
+                onClick={() => router.push("/login")}
                 className="font-medium text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
                 style={{
                   background: "rgba(255,255,255,0.10)",
@@ -210,7 +314,7 @@ export function HomeLanding() {
                 wider than a phone screen; sm:flex restores the single-row layout
                 once there's room for it. */}
             <div
-              className="grid grid-cols-2 sm:flex w-full sm:w-auto rounded-lg overflow-hidden"
+              className="grid grid-cols-2 sm:flex w-full sm:w-auto rounded-lg overflow-hidden pointer-events-auto"
               style={{
                 background: "rgba(255,255,255,0.07)",
                 border: "1px solid rgba(255,255,255,0.13)",
@@ -219,7 +323,7 @@ export function HomeLanding() {
             >
               {[
                 { num: "847K+",  lbl: "Baganda registered"                   },
-                { num: "56",     lbl: "Ebika bya Buganda", href: "/clans"    },
+                { num: "56",     lbl: "Ebika bya Baganda", href: "/clans"    },
                 { num: "18",     lbl: "Amasaza",           href: "/abakungu" },
                 { num: "12,847", lbl: "Verified by Bataka"                   },
               ].map(({ num, lbl, href }, i, arr) => {
@@ -269,72 +373,6 @@ export function HomeLanding() {
           A Buganda Kingdom-Affiliated Organisation" reference doc (Jul 2026).
           ══════════════════════════════════════════════════════════════════ */}
 
-      {/* ── About the Foundation ── */}
-      <section className="px-6 py-16" style={{ background: "var(--cream)" }}>
-        <div className="max-w-[720px] mx-auto text-center">
-          <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-3">
-            About Us
-          </p>
-          <h2 className="font-serif text-[28px] text-gd font-normal mb-3">
-            Okutumbula n&apos;okusitula Ebikabyaffe
-          </h2>
-          <p className="font-serif italic text-[15px] text-muted mb-5">
-            &quot;To promote and uplift our heritage.&quot;
-          </p>
-          <p className="text-[14px] text-gd leading-relaxed max-w-[600px] mx-auto mb-8">
-            Ebikabyaffe Foundation is affiliated with Buganda Kingdom,
-            connected to the Kingdom&apos;s Council of Clan Heads (Olukiiko
-            lwa Bataka). We work to instill good morals, discipline, and
-            cultural pride in young Ugandans, in response to what our
-            officials see as declining respect for elders and leaders — by
-            reviving pride in Buganda culture and identity, and by building
-            institutions that combine standard education with cultural
-            formation. The Foundation was formally launched by the Katikkiro
-            of Buganda.
-          </p>
-          <div className="max-w-[520px] mx-auto">
-            <YouTubeEmbed
-              videoId="A9fa60aNhQA"
-              title="Ebikabyaffe Foundation launch"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ── Our Leadership ── */}
-      <section className="px-6 py-16" style={{ background: "white" }}>
-        <div className="max-w-[860px] mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-2">
-              Leadership
-            </p>
-            <h2 className="font-serif text-[26px] text-gd font-normal">
-              Who Runs Ebikabyaffe Foundation
-            </h2>
-          </div>
-          <div
-            className="grid gap-2.5"
-            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}
-          >
-            {LEADERS.map(([name, role]) => (
-              <div
-                key={name}
-                className="bg-cream2 border border-eborder rounded-[6px] px-4 py-3.5"
-              >
-                <h3 className="text-[14px] text-gd font-semibold mb-1 leading-snug">
-                  {name}
-                </h3>
-                <p className="text-[12px] text-muted leading-relaxed">{role}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-[11px] text-muted text-center mt-5">
-            Source: State House Uganda / Watchdog Uganda coverage of the
-            January 2025 SHIPU meeting.
-          </p>
-        </div>
-      </section>
-
       {/* ── The Three Pillars of Buganda — doubles as a site map, each
           pillar links to its own full page already built on this site ── */}
       <section className="px-6 py-16" style={{ background: "var(--gd)" }}>
@@ -353,30 +391,38 @@ export function HomeLanding() {
             className="grid gap-4 text-left"
             style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}
           >
-            {PILLARS.map((p) => (
-              <Link
-                key={p.title}
-                href={p.href}
-                className="block no-underline bg-white/[.06] border border-white/15 rounded-[8px] p-5 transition-colors hover:bg-white/[.10] hover:border-gold/50"
-              >
-                <span className="text-[28px] block mb-2">{p.icon}</span>
-                <h3 className="font-serif text-[17px] text-white mb-0.5">
-                  {p.title}
-                </h3>
-                <p className="text-[11.5px] text-white/50 mb-3 leading-snug">
-                  {p.sub}
-                </p>
-                <p className="text-[11px] text-gold2 uppercase tracking-[.5px] mb-1">
-                  {p.head}
-                </p>
-                <p className="text-[12px] text-white/75 leading-relaxed mb-3">
-                  {p.holder}
-                </p>
-                <span className="text-[11px] text-gold2 font-semibold uppercase tracking-[.5px]">
-                  {p.cta} →
-                </span>
-              </Link>
-            ))}
+            {PILLARS.map((p) => {
+              const headBlock = (
+                <>
+                  <p className="text-[11px] text-gold2 uppercase tracking-[.5px] mb-1">
+                    {p.head}
+                  </p>
+                  <p className="text-[12px] text-white/75 leading-relaxed mb-3">
+                    {p.holder}
+                  </p>
+                </>
+              );
+              return (
+                <Link
+                  key={p.title}
+                  href={p.href}
+                  className="block no-underline bg-white/[.06] border border-white/15 rounded-[8px] p-5 transition-colors hover:bg-white/[.10] hover:border-gold/50"
+                >
+                  <span className="text-[28px] block mb-2">{p.icon}</span>
+                  <h3 className="font-serif text-[17px] text-white mb-0.5">
+                    {p.title}
+                  </h3>
+                  {p.headFirst && <div className="mt-2">{headBlock}</div>}
+                  <p className="text-[11.5px] text-white/50 mb-3 leading-snug">
+                    {p.sub}
+                  </p>
+                  {!p.headFirst && headBlock}
+                  <span className="text-[11px] text-gold2 font-semibold uppercase tracking-[.5px]">
+                    {p.cta} →
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -520,26 +566,76 @@ export function HomeLanding() {
         </div>
       </section>
 
-      {/* ── Recent Activity ── */}
+      {/* ── About the Foundation ── */}
+      <section className="px-6 py-16" style={{ background: "white" }}>
+        <div className="max-w-[720px] mx-auto text-center">
+          <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-3">
+            About Us
+          </p>
+          <h2 className="font-serif text-[28px] text-gd font-normal mb-3">
+            Okutumbula n&apos;okusitula Ebikabyaffe
+          </h2>
+          <p className="font-serif italic text-[15px] text-muted mb-5">
+            &quot;To promote and uplift our heritage.&quot;
+          </p>
+          <p className="text-[14px] text-gd leading-relaxed max-w-[600px] mx-auto mb-8">
+            Ebikabyaffe Foundation is affiliated with Buganda Kingdom,
+            connected to the Kingdom&apos;s Council of Clan Heads (Olukiiko
+            lwa Bataka). We work to instill good morals, discipline, and
+            cultural pride in young Ugandans, in response to what our
+            officials see as declining respect for elders and leaders — by
+            reviving pride in Buganda culture and identity, and by building
+            institutions that combine standard education with cultural
+            formation. The Foundation was formally launched by the Katikkiro
+            of Buganda.
+          </p>
+          <div className="max-w-[520px] mx-auto">
+            <YouTubeEmbed
+              videoId="A9fa60aNhQA"
+              title="Ebikabyaffe Foundation launch"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Our Leadership ── */}
+      <section className="px-6 py-16" style={{ background: "var(--cream)" }}>
+        <div className="max-w-[860px] mx-auto">
+          <div className="text-center mb-8">
+            <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-2">
+              Leadership
+            </p>
+            <h2 className="font-serif text-[26px] text-gd font-normal">
+              Who Runs Ebikabyaffe Foundation
+            </h2>
+          </div>
+          <div
+            className="grid gap-2.5"
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}
+          >
+            {LEADERS.map(([name, role]) => (
+              <div
+                key={name}
+                className="bg-white border border-eborder rounded-[6px] px-4 py-3.5"
+              >
+                <h3 className="text-[14px] text-gd font-semibold mb-1 leading-snug">
+                  {name}
+                </h3>
+                <p className="text-[12px] text-muted leading-relaxed">{role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Recent Activity — each item expands on click; media/details
+          arrive from the user over time, see ACTIVITIES above ── */}
       <section className="px-6 py-14" style={{ background: "white" }}>
         <div className="max-w-[680px] mx-auto">
-          <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-2 text-center">
+          <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-4 text-center">
             Recent Activity
           </p>
-          <div className="bg-cream2 border border-eborder rounded-[6px] p-5">
-            <p className="text-[13px] text-gd leading-relaxed">
-              In January 2025, Foundation officials met{" "}
-              <strong>Col. Edith Nakalema</strong>, head of State House&apos;s
-              Investors Protection Unit (SHIPU), seeking support to complete
-              the Wakivule pilot school project — framing the effort as tied
-              to national goals such as fighting corruption and protecting
-              investors, and gifting Col. Nakalema a book cataloguing
-              Buganda&apos;s clans and totems. Our messaging frames this work
-              as pan-Ugandan unity work rather than narrowly
-              Buganda-focused: we work with everyone, regardless of
-              background.
-            </p>
-          </div>
+          <RecentActivityList />
         </div>
       </section>
     </>

@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/Toast";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { VerificationCard } from "@/components/profile/VerificationCard";
 import { cn } from "@/lib/utils";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 
@@ -15,7 +16,7 @@ import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 const WAVE_ORDER: OriginWave[] = ["nansangwa", "kintu", "kimera", "later"];
 
 export function ProfileContent() {
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn } = useAuth();
 
   return (
     <>
@@ -29,7 +30,9 @@ export function ProfileContent() {
             Sign in to register your clan membership, track your Sacco status,
             and support the Foundation&apos;s school projects.
           </p>
-          <Button variant="gold" onClick={login}>Sign in →</Button>
+          <Link href="/login">
+            <Button variant="gold">Sign in →</Button>
+          </Link>
         </div>
       )}
     </>
@@ -69,8 +72,13 @@ function ProfileDashboard() {
     if (!draftClanSlug) return;
     const picked = getClan(draftClanSlug);
     // Changing clan always resets verification — a new self-declaration until
-    // the Bataka/Kingdom confirm it, same rule the HomeDashboard badge already follows.
-    updateUser({ clanSlug: draftClanSlug, clanVerified: false });
+    // the Omutaka confirms it, same rule the HomeDashboard badge already follows.
+    updateUser({
+      clanSlug: draftClanSlug,
+      clanVerified: false,
+      verification: "none",
+      lineage: null,
+    });
     toast(`You're now a self-declared member of the ${picked?.name} clan.`);
   }
 
@@ -131,8 +139,17 @@ function ProfileDashboard() {
         <CardHeader>
           <span className="text-[15px] text-gd font-semibold flex-1">Ekika — Your Clan</span>
           {clan && (
-            <span className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-g0 text-gm tracking-[.5px]">
-              {user.clanVerified ? "VERIFIED" : "SELF-DECLARED"}
+            <span
+              className={cn(
+                "inline-block text-[10px] font-bold px-1.5 py-0.5 rounded tracking-[.5px]",
+                user.verification === "pending" ? "bg-gold3 text-gd" : "bg-g0 text-gm"
+              )}
+            >
+              {user.verification === "verified"
+                ? "✓ VERIFIED BY OMUTAKA"
+                : user.verification === "pending"
+                  ? "PENDING OMUTAKA REVIEW"
+                  : "SELF-DECLARED"}
             </span>
           )}
         </CardHeader>
@@ -195,10 +212,15 @@ function ProfileDashboard() {
           </Button>
           <p className="text-[11px] text-muted mt-2 leading-relaxed">
             Self-declared membership counts you among your clan&apos;s registered members
-            right away. Kingdom/Bataka verification is a separate step that happens later.
+            right away. Verification by your Omutaka is a separate step below.
           </p>
         </CardBody>
       </Card>
+
+      {/* ── Omutaka verification — only once a clan is joined. Keyed on the
+          clan so switching clans remounts it with a fresh form (the repo's
+          key-remount pattern; effect-based resets are lint-blocked). ── */}
+      {clan && <VerificationCard key={clan.slug} clan={clan} />}
 
       {/* ── Sacco & contribution status ──────────────────────────────────── */}
       <Card className="mb-3.5">

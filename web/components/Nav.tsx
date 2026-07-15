@@ -112,7 +112,7 @@ function MobileMenu({ pathname }: { pathname: string }) {
 
 export function Nav() {
   const pathname = usePathname();
-  const { isLoggedIn, login, logout, lang, toggleLang, user } = useAuth();
+  const { isLoggedIn, logout, lang, toggleLang, user } = useAuth();
 
   // Initials for the avatar circle, e.g. "Mubbi Kironde" -> "MK"
   const initials = user.name
@@ -200,12 +200,12 @@ export function Nav() {
             </button>
           </>
         ) : (
-          <button
-            onClick={login}
-            className="bg-gold text-gd font-semibold text-[13px] px-4 py-1.5 rounded cursor-pointer whitespace-nowrap hover:bg-gold2 transition-colors"
+          <Link
+            href="/login"
+            className="bg-gold text-gd font-semibold text-[13px] px-4 py-1.5 rounded cursor-pointer whitespace-nowrap hover:bg-gold2 transition-colors no-underline"
           >
             Sign in
-          </button>
+          </Link>
         )}
       </div>
     </nav>

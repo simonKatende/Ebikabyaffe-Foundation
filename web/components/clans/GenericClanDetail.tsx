@@ -77,6 +77,18 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
             </span>
           </div>
         )}
+
+        {/* Join CTA — registration is the site's primary goal, so the invite
+            sits at the top of every clan page (the fuller card at the bottom
+            of the page remains as the second prompt) */}
+        <div className="mt-5">
+          <Button
+            variant="primary"
+            onClick={() => toast("Sign-up coming at launch!")}
+          >
+            Join the {clan.name} clan →
+          </Button>
+        </div>
       </div>
 
       <div className="max-w-[760px] mx-auto px-6 py-7">
@@ -238,7 +250,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
             variant="primary"
             onClick={() => toast("Sign-up coming at launch!")}
           >
-            Save your clan →
+            Join your clan →
           </Button>
         </div>
       </div>

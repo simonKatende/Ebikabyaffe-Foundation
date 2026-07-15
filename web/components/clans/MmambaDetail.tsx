@@ -62,6 +62,17 @@ export function MmambaDetail() {
         <span className="inline-block bg-gold text-gd text-[11px] font-bold px-3.5 py-1.5 rounded-[3px] tracking-[1px] uppercase mt-3">
           ⚓ Gabunga — Admiral of the Royal Navy of Buganda
         </span>
+
+        {/* Join CTA — registration is the site's primary goal, so the invite
+            sits at the top of the page too (bottom card remains) */}
+        <div className="mt-5">
+          <Button
+            variant="primary"
+            onClick={() => toast("Sign-up coming at launch!")}
+          >
+            Join the Mmamba clan →
+          </Button>
+        </div>
       </div>
 
       <div className="max-w-[760px] mx-auto px-6 py-7">
@@ -250,7 +261,7 @@ export function MmambaDetail() {
             variant="primary"
             onClick={() => toast("Sign-up coming at launch!")}
           >
-            Save your clan →
+            Join your clan →
           </Button>
         </div>
       </div>

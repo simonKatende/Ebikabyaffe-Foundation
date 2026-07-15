@@ -63,6 +63,15 @@ const slides: Slide[] = [
   },
   {
     id: 5,
+    label: "Kabaka's Palace — Lubiri, Mengo",
+    placeholder: "linear-gradient(155deg,#3d2c08 0%,#8f6a1a 50%,#201704 100%)",
+    src: "/images/hero/lubiri-mengo.jpg",
+    credit: "Photo: Dixon099 · Wikimedia Commons · CC BY-SA 4.0",
+    href: "/kabaka",
+    cta: "Meet the Kabaka",
+  },
+  {
+    id: 6,
     label: "Bulange, Mmengo — Royal Seat of the Buganda Kingdom",
     placeholder: "linear-gradient(155deg,#2b1a3d 0%,#5a3080 50%,#150a1e 100%)",
     src: "/images/hero/bulange-mengo.jpg",
