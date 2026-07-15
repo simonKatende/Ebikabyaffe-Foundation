@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
+import { isPhoneRegistered, getRegisteredName, registerPhone } from "@/lib/auth/registry";
 
 // ── Frontend mock of the planned phone-first OTP sign-in ────────────────────
 //
@@ -17,6 +18,16 @@ import { Button } from "@/components/ui/Button";
 //  - names first (surname, first name, optional given name), then phone
 //  - network + registered-SIM-name confirmation before sending the OTP
 //  - correct OTP signs the member in immediately (no extra "Login" click)
+//  - "Create account" and "Sign in" are the same card, switched via a toggle
+//    link (?mode=signin on /login) — sign-in skips names entirely and just
+//    needs the phone number used to register
+//  - a phone already registered this session is flagged on the create-account
+//    side with a link straight to sign-in; a phone with no account is flagged
+//    on the sign-in side with a link straight to create-account. The registry
+//    behind this is session-only (lib/auth/registry.ts) — there's no backend
+//    yet, so it resets on a hard reload like the rest of the app's mocks.
+
+export type LoginMode = "create" | "signin";
 
 // Demo-only prefix → network mapping. The real network (and registered name)
 // will come from the telecom APIs — do not grow this map, it's placeholder UX.
@@ -41,12 +52,14 @@ function formatPhone(local: string): string {
   return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`;
 }
 
-export function LoginFlow() {
+export function LoginFlow({ initialMode = "create" }: { initialMode?: LoginMode }) {
   const router = useRouter();
   const { loginWithPhone } = useAuth();
   const { toast } = useToast();
 
-  // Step 1 — names
+  const [mode, setMode] = useState<LoginMode>(initialMode);
+
+  // Step 1 — names (create mode only)
   const [surname, setSurname] = useState("");
   const [firstName, setFirstName] = useState("");
   const [givenName, setGivenName] = useState("");
@@ -59,12 +72,30 @@ export function LoginFlow() {
   const [otpInput, setOtpInput] = useState("");
   const [otpError, setOtpError] = useState(false);
 
-  const namesReady = surname.trim().length > 0 && firstName.trim().length > 0;
+  function switchMode(next: LoginMode) {
+    setMode(next);
+    setPhoneRaw("");
+    setOtpCode(null);
+    setOtpInput("");
+    setOtpError(false);
+    router.replace(next === "signin" ? "/login?mode=signin" : "/login", { scroll: false });
+  }
+
+  const namesReady = mode === "signin" || (surname.trim().length > 0 && firstName.trim().length > 0);
   const phone = normalizePhone(phoneRaw);
   const network = phone ? detectNetwork(phone) : null;
 
+  const alreadyRegistered = mode === "create" && phone ? isPhoneRegistered(phone) : false;
+  const registeredName = mode === "signin" && phone ? getRegisteredName(phone) : null;
+
   // Simulated registered-SIM name — the real one comes from the MoMo lookup.
-  const simName = `${surname} ${firstName}`.trim().toUpperCase();
+  const simName =
+    mode === "signin"
+      ? registeredName ?? ""
+      : `${surname} ${firstName}`.trim().toUpperCase();
+
+  const canSendCode =
+    mode === "create" ? Boolean(phone && !alreadyRegistered) : Boolean(phone && registeredName);
 
   function handleSendOtp() {
     const code = String(Math.floor(100000 + Math.random() * 900000));
@@ -80,11 +111,17 @@ export function LoginFlow() {
     if (digits.length === 6 && otpCode) {
       if (digits === otpCode) {
         // Correct code — sign in immediately, no extra "Login" click needed.
-        const name = [surname.trim(), firstName.trim(), givenName.trim()]
-          .filter(Boolean)
-          .join(" ");
-        loginWithPhone({ name, phone: phone! });
-        toast(`Welcome, ${firstName.trim()}! Now choose your clan.`);
+        if (mode === "create") {
+          const name = [surname.trim(), firstName.trim(), givenName.trim()]
+            .filter(Boolean)
+            .join(" ");
+          registerPhone(phone!, name);
+          loginWithPhone({ name, phone: phone! });
+          toast(`Welcome, ${firstName.trim()}! Now choose your clan.`);
+        } else {
+          loginWithPhone({ name: registeredName!, phone: phone! });
+          toast(`Welcome back, ${registeredName!.split(" ")[0]}!`);
+        }
         router.push("/profile");
       } else {
         setOtpError(true);
@@ -101,57 +138,62 @@ export function LoginFlow() {
       <div className="text-center mb-7">
         <p className="text-[36px] mb-2">🔐</p>
         <h1 className="font-serif text-[26px] text-gd font-normal mb-1.5">
-          Sign in / Create account
+          {mode === "create" ? "Sign in / Create account" : "Sign in"}
         </h1>
         <p className="text-[13px] text-muted leading-relaxed">
-          One account for your clan membership, verification, and
-          contributions. No password — we send a one-time code to your phone.
+          {mode === "create"
+            ? "One account for your clan membership, verification, and contributions. No password — we send a one-time code to your phone."
+            : "Enter the phone number you registered with — we'll send a one-time code, no need to retype your names."}
         </p>
       </div>
 
       <div className="bg-white border border-eborder rounded-[8px] p-5">
-        {/* ── 1 · Names ── */}
-        <p className="text-[11px] tracking-[1.5px] uppercase text-royal2 font-semibold mb-3">
-          1 · Your names
-        </p>
-        <div className="grid gap-3 mb-5" style={{ gridTemplateColumns: "1fr 1fr" }}>
-          <label className="block">
-            <span className={labelClass}>Surname *</span>
-            <input
-              type="text"
-              value={surname}
-              onChange={(e) => setSurname(e.target.value)}
-              placeholder="e.g. Kironde"
-              className={inputClass}
-            />
-          </label>
-          <label className="block">
-            <span className={labelClass}>First name *</span>
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="e.g. Mike"
-              className={inputClass}
-            />
-          </label>
-          <label className="block col-span-2">
-            <span className={labelClass}>Given name (optional)</span>
-            <input
-              type="text"
-              value={givenName}
-              onChange={(e) => setGivenName(e.target.value)}
-              className={inputClass}
-            />
-          </label>
-        </div>
+        {/* ── 1 · Names (create mode only) ── */}
+        {mode === "create" && (
+          <>
+            <p className="text-[11px] tracking-[1.5px] uppercase text-royal2 font-semibold mb-3">
+              1 · Your names
+            </p>
+            <div className="grid gap-3 mb-5" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              <label className="block">
+                <span className={labelClass}>Surname *</span>
+                <input
+                  type="text"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                  placeholder="e.g. Kironde"
+                  className={inputClass}
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>First name *</span>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="e.g. Mike"
+                  className={inputClass}
+                />
+              </label>
+              <label className="block col-span-2">
+                <span className={labelClass}>Given name (optional)</span>
+                <input
+                  type="text"
+                  value={givenName}
+                  onChange={(e) => setGivenName(e.target.value)}
+                  className={inputClass}
+                />
+              </label>
+            </div>
+          </>
+        )}
 
         {/* ── 2 · Phone ── */}
         <p
           className="text-[11px] tracking-[1.5px] uppercase font-semibold mb-3"
           style={{ color: namesReady ? "var(--royal2)" : "var(--muted)" }}
         >
-          2 · Your phone number
+          {mode === "create" ? "2 · Your phone number" : "1 · Your phone number"}
         </p>
         <label className="block mb-3">
           <span className={labelClass}>Phone (for the one-time code)</span>
@@ -172,25 +214,67 @@ export function LoginFlow() {
           />
         </label>
 
+        {/* Create mode: flag a number that already has an account */}
+        {mode === "create" && alreadyRegistered && !otpCode && (
+          <div className="bg-cream2 border border-gold/40 rounded-[6px] px-4 py-3 mb-3">
+            <p className="text-[13px] text-gd leading-relaxed">
+              This contact already has an account with us.
+            </p>
+            <button
+              type="button"
+              onClick={() => switchMode("signin")}
+              className="text-royal2 underline cursor-pointer bg-transparent border-0 p-0 text-[13px] mt-1"
+            >
+              Sign in instead →
+            </button>
+          </div>
+        )}
+
+        {/* Sign-in mode: flag a number with no account yet */}
+        {mode === "signin" && phone && !registeredName && !otpCode && (
+          <div className="bg-cream2 border border-gold/40 rounded-[6px] px-4 py-3 mb-3">
+            <p className="text-[13px] text-gd leading-relaxed">
+              We don&apos;t recognize that number yet.
+            </p>
+            <button
+              type="button"
+              onClick={() => switchMode("create")}
+              className="text-royal2 underline cursor-pointer bg-transparent border-0 p-0 text-[13px] mt-1"
+            >
+              Create an account →
+            </button>
+          </div>
+        )}
+
         {/* Network + registered-SIM-name confirmation — mirrors the mobile
             money experience. The name shown is SIMULATED until the telecom
             (MoMo/Airtel Money) lookup API is integrated. */}
-        {phone && network && !otpCode && (
+        {phone && network && canSendCode && !otpCode && (
           <div className="bg-cream2 border border-eborder rounded-[6px] px-4 py-3 mb-3">
             <p className="text-[13px] text-gd leading-relaxed">
               We will send a one-time code to the{" "}
               <strong>{network}</strong> number{" "}
-              <strong>{formatPhone(phone)}</strong>, registered in the names
-              of <strong>{simName}</strong>.
+              <strong>{formatPhone(phone)}</strong>
+              {mode === "create" ? (
+                <>
+                  , registered in the names of <strong>{simName}</strong>.
+                </>
+              ) : (
+                <>
+                  {" "}
+                  to sign in as <strong>{simName}</strong>.
+                </>
+              )}
             </p>
             <p className="text-[10.5px] text-muted mt-1 italic">
-              Demo: registered name is simulated — the real one will come from
-              the mobile-money lookup.
+              {mode === "create"
+                ? "Demo: registered name is simulated — the real one will come from the mobile-money lookup."
+                : "Demo: this account exists for this browser session only."}
             </p>
           </div>
         )}
 
-        {phone && !otpCode && (
+        {canSendCode && !otpCode && (
           <Button variant="gold" onClick={handleSendOtp} className="w-full">
             Send code →
           </Button>
@@ -200,7 +284,7 @@ export function LoginFlow() {
         {otpCode && (
           <>
             <p className="text-[11px] tracking-[1.5px] uppercase text-royal2 font-semibold mb-3 mt-2">
-              3 · Enter the code
+              {mode === "create" ? "3 · Enter the code" : "2 · Enter the code"}
             </p>
 
             {/* Demo-only hint — in the real app this arrives as an SMS */}
@@ -245,6 +329,26 @@ export function LoginFlow() {
           </>
         )}
       </div>
+
+      <p className="text-center mt-4">
+        {mode === "create" ? (
+          <button
+            type="button"
+            onClick={() => switchMode("signin")}
+            className="text-[13px] text-royal2 underline cursor-pointer bg-transparent border-0 p-0"
+          >
+            Already have an account? Sign in →
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => switchMode("create")}
+            className="text-[13px] text-royal2 underline cursor-pointer bg-transparent border-0 p-0"
+          >
+            New here? Create an account →
+          </button>
+        )}
+      </p>
 
       <p className="text-[11px] text-muted text-center mt-4 leading-relaxed">
         This is a preview of the sign-in experience. Accounts, SMS codes, and
