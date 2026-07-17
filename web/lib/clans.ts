@@ -65,7 +65,7 @@ export const clans: Clan[] = [
   {
     slug: "lugave",
     name: "Lugave",
-    lugandaName: "Ekika kya Lugave",
+    lugandaName: "Ekika ky'Abeddira Olugave",
     totemEmoji: "🦔",
     omuziro: "Lugave — pangolin",
     akabbiro: "Maleere (tree mushroom)",
@@ -117,7 +117,7 @@ export const clans: Clan[] = [
   {
     slug: "njaza",
     name: "Njaza",
-    lugandaName: "Ekika kya Njaza",
+    lugandaName: "Ekika ky'Abeddira Enjaza",
     totemEmoji: "🦌",
     omuziro: "Njaza — bohor reedbuck",
     akabbiro: "Ngujulu",
@@ -125,35 +125,15 @@ export const clans: Clan[] = [
     obutaka: "Kirungu, Kyaggwe",
     omubala: "Akaana k'enjaza alikatta alikaliwa, Ssendabanyolo tantama. Ow'omuggo aliguta.",
     originWave: "nansangwa",
-    amasiga: [
-      { elder: "Kinaalwa",    seat: "Nsenge, Kyaggwe" },
-      { elder: "Kyonga",      seat: "Nyenga, Kyaggwe" },
-      { elder: "Kiddu",       seat: "Kigoma, Kyaggwe" },
-      { elder: "Waguma",      seat: "Naminya, Kyaggwe" },
-      { elder: "Mutwalume",   seat: "Kkonko, Kyaggwe" },
-      { elder: "Ssekeba",     seat: "Malindi, Kyaggwe" },
-      { elder: "Nnakibinga",  seat: "Gguluma, Kyaggwe" },
-      { elder: "Genaanya",    seat: "Nnakyessanja, Kyaggwe" },
-      { elder: "Mawawa",      seat: "Bugabo, Kyaggwe" },
-      { elder: "Malevu",      seat: "Butavujja, Kyaggwe" },
-      { elder: "Mukongoolo",  seat: "Kitovu, Kyaggwe" },
-      { elder: "Kawanda",     seat: "Wakisi, Kyaggwe" },
-      { elder: "Lugwa",       seat: "Buku, Kyaggwe" },
-      { elder: "Kasota",      seat: "Bugoma, Kyaggwe" },
-      { elder: "Kabaale",     seat: "Nakiso, Kyaggwe" },
-      { elder: "Kasasa",      seat: "Bujaagu, Kyaggwe" },
-      { elder: "Kambugu",     seat: "Buziika, Kyaggwe" },
-      { elder: "Nnanyungu",   seat: "Buwoola, Kyaggwe" },
-      { elder: "Ssematimba",  seat: "Najjembe, Kyaggwe" },
-      { elder: "Mbwabwa",     seat: "Ssendabanyoro, Kyaggwe" },
-    ],
+    // Amasiga now live in lib/clanAmasiga.ts (21 branches per the Amasiga
+    // archive, which corrected several seats in the old inline list)
     deep: false,
     memberCount: "8,301",
   },
   {
     slug: "nnyonyi",
-    name: "Nnyange",
-    lugandaName: "Ekika kya Nnyange",
+    name: "Nnyonyi Nnyange",
+    lugandaName: "Ekika ky'Abeddira Ennyonyi Nnyange",
     totemEmoji: "🦢",
     omuziro: "Nnyonyi Nnyange — cattle egret",
     akabbiro: "Kkunguvvu",
@@ -167,7 +147,9 @@ export const clans: Clan[] = [
   {
     slug: "mmamba",
     name: "Mmamba",
-    lugandaName: "Ekika kya Mmamba",
+    // "Mmamba Gabunga" per the Emibala reference doc; the Amasiga archive
+    // titles this clan's branch register "Emmamba Namakaka" (see clanAmasiga.ts)
+    lugandaName: "Ekika ky'e Mmamba Gabunga",
     totemEmoji: "🐟",
     omuziro: "Mmamba — lungfish",
     akabbiro: "Muguya",
@@ -183,7 +165,7 @@ export const clans: Clan[] = [
   {
     slug: "ngeye",
     name: "Ngeye",
-    lugandaName: "Ekika kya Ngeye",
+    lugandaName: "Ekika ky'Engeye",
     totemEmoji: "🐒",
     omuziro: "Ngeye — colobus monkey",
     akabbiro: "Kunguvvu",
@@ -211,7 +193,7 @@ export const clans: Clan[] = [
   {
     slug: "ngabi",
     name: "Ngabi Nnyunga",
-    lugandaName: "Ekika kya Ngabi Nnyunga",
+    lugandaName: "Ekika ky'Engabi Ennyunga",
     totemEmoji: "🦌",
     omuziro: "Ngabi — bushbuck",
     akabbiro: "Jjerengesa",
@@ -240,7 +222,7 @@ export const clans: Clan[] = [
   {
     slug: "ekkobe",
     name: "Kkobe",
-    lugandaName: "Ekika kya Kkobe",
+    lugandaName: "Ekika ky'Ekkobe",
     totemEmoji: "🪴",
     omuziro: "Kkobe — air potato (climbing food plant)",
     akabbiro: "Kaama",
@@ -252,7 +234,7 @@ export const clans: Clan[] = [
   {
     slug: "mbwa",
     name: "Mbwa",
-    lugandaName: "Ekika kya Mbwa",
+    lugandaName: "Ekika ky'e Mbwa",
     totemEmoji: "🐕",
     omuziro: "Mbwa — dog",
     akabbiro: "Kyuma kya mbwa",
@@ -280,7 +262,7 @@ export const clans: Clan[] = [
   {
     slug: "mpologoma",
     name: "Mpologoma",
-    lugandaName: "Ekika kya Mpologoma",
+    lugandaName: "Ekika ky'Empologoma",
     totemEmoji: "🦁",
     omuziro: "Mpologoma — lion",
     akabbiro: "Ngo (leopard)",
@@ -297,7 +279,7 @@ export const clans: Clan[] = [
   {
     slug: "nnamungoona",
     name: "Nnamuŋŋoona",
-    lugandaName: "Ekika kya Nnamuŋŋoona",
+    lugandaName: "Ekika kya Namuŋŋoona",
     totemEmoji: "🐦",
     omuziro: "Namuŋŋoona — pied crow",
     akabbiro: "Mutima (heart)",
@@ -311,7 +293,7 @@ export const clans: Clan[] = [
   {
     slug: "ngo",
     name: "Ngo",
-    lugandaName: "Ekika kya Ngo",
+    lugandaName: "Ekika ky'Engo",
     totemEmoji: "🐆",
     omuziro: "Ngo — leopard",
     akabbiro: "Kasimba (genet)",
@@ -324,7 +306,7 @@ export const clans: Clan[] = [
   {
     slug: "nte",
     name: "Nte",
-    lugandaName: "Ekika kya Nte",
+    lugandaName: "Ekika ky'Ente",
     totemEmoji: "🐄",
     omuziro: "Nte — the tailless cow (Enkunku)",
     akabbiro: "Ngaali (crested crane)",
@@ -337,7 +319,7 @@ export const clans: Clan[] = [
   {
     slug: "nkejje",
     name: "Nkejje",
-    lugandaName: "Ekika kya Nkejje",
+    lugandaName: "Ekika ky'e Nkejje",
     totemEmoji: "🐡",
     omuziro: "Nkejje — sprat / small lake cichlid",
     akabbiro: "Nkejje Kiyemba",
@@ -351,7 +333,7 @@ export const clans: Clan[] = [
   {
     slug: "ntalaganya",
     name: "Ntalaganya",
-    lugandaName: "Ekika kya Ntalaganya",
+    lugandaName: "Ekika ky'e Ntalaganya",
     totemEmoji: "🦌",
     omuziro: "Ntalaganya — blue duiker",
     akabbiro: "Maleere",
@@ -364,7 +346,7 @@ export const clans: Clan[] = [
   {
     slug: "nvubu",
     name: "Nvubu",
-    lugandaName: "Ekika kya Nvubu",
+    lugandaName: "Ekika ky'Abeddira Envubu",
     totemEmoji: "🦛",
     omuziro: "Nvubu — hippopotamus",
     akabbiro: "Njovu (elephant)",
@@ -377,7 +359,7 @@ export const clans: Clan[] = [
   {
     slug: "nvuma",
     name: "Nvuma",
-    lugandaName: "Ekika kya Nvuma",
+    lugandaName: "Ekika ky'Envuma",
     totemEmoji: "🌊",
     omuziro: "Nvuma — spiky underwater seed",
     akabbiro: "Katinvuma",
@@ -416,7 +398,7 @@ export const clans: Clan[] = [
   {
     slug: "nkima",
     name: "Nkima",
-    lugandaName: "Ekika kya Nkima",
+    lugandaName: "Ekika ky'e Nkima",
     totemEmoji: "🐒",
     omuziro: "Nkima — vervet monkey",
     akabbiro: "Byenda",
@@ -431,7 +413,7 @@ export const clans: Clan[] = [
   {
     slug: "butiko",
     name: "Butiko",
-    lugandaName: "Ekika kya Butiko",
+    lugandaName: "Ekika ky'Obutiko",
     totemEmoji: "🍄",
     omuziro: "Butiko — mushroom",
     akabbiro: "Namulondo",
@@ -468,7 +450,7 @@ export const clans: Clan[] = [
   {
     slug: "kayozi",
     name: "Kayozi",
-    lugandaName: "Ekika kya Kayozi",
+    lugandaName: "Ekika ky'Akayozi",
     totemEmoji: "🐀",
     omuziro: "Kayozi — jerboa / jumping rat",
     akabbiro: "Nsombabyama",
@@ -480,7 +462,7 @@ export const clans: Clan[] = [
   {
     slug: "kibe",
     name: "Kibe",
-    lugandaName: "Ekika kya Kibe",
+    lugandaName: "Ekika ky'Ekibe",
     totemEmoji: "🦊",
     omuziro: "Kibe — black-backed jackal",
     akabbiro: "Kasukusuku",
@@ -493,7 +475,7 @@ export const clans: Clan[] = [
   {
     slug: "mbogo",
     name: "Mbogo",
-    lugandaName: "Ekika kya Mbogo",
+    lugandaName: "Ekika ky'Abeembogo",
     totemEmoji: "🐃",
     omuziro: "Mbogo — buffalo",
     akabbiro: "Ndeweere",
@@ -508,7 +490,7 @@ export const clans: Clan[] = [
   {
     slug: "musu",
     name: "Musu",
-    lugandaName: "Ekika kya Musu",
+    lugandaName: "Ekika ky'Abeddira Omusu",
     totemEmoji: "🐭",
     omuziro: "Musu — greater cane rat",
     akabbiro: "Kayozi",
@@ -523,7 +505,7 @@ export const clans: Clan[] = [
   {
     slug: "ngabi-nsamba",
     name: "Ngabi Nsamba",
-    lugandaName: "Ekika kya Ngabi Nsamba",
+    lugandaName: "Ekika ky'Engabi (Nsamba)",
     totemEmoji: "🐐",
     omuziro: "Ngabi — antelope",
     clanHead: "Nsamba",
@@ -533,7 +515,7 @@ export const clans: Clan[] = [
   {
     slug: "nkerebwe",
     name: "Nkerebwe",
-    lugandaName: "Ekika kya Nkerebwe",
+    lugandaName: "Ekika ky'e Nkerebwe",
     totemEmoji: "🐿️",
     omuziro: "Nkerebwe — bush squirrel",
     akabbiro: "Kikirikisi",
@@ -546,7 +528,7 @@ export const clans: Clan[] = [
   {
     slug: "nsuma",
     name: "Nsuma",
-    lugandaName: "Ekika kya Nsuma",
+    lugandaName: "Ekika ky'e Nsuma",
     totemEmoji: "🐠",
     omuziro: "Nsuma — elephant-snout fish",
     akabbiro: "Kasulubbana",
@@ -560,7 +542,7 @@ export const clans: Clan[] = [
   {
     slug: "nseenene",
     name: "Nseenene",
-    lugandaName: "Ekika kya Nseenene",
+    lugandaName: "Ekika ky'Enseenene",
     totemEmoji: "🦗",
     omuziro: "Nseenene — long-horned grasshopper",
     akabbiro: "Nabangogoma",
@@ -577,7 +559,7 @@ export const clans: Clan[] = [
   {
     slug: "njovu",
     name: "Njovu",
-    lugandaName: "Ekika kya Njovu",
+    lugandaName: "Ekika ky'Enjovu",
     totemEmoji: "🐘",
     omuziro: "Njovu — elephant",
     akabbiro: "Nvubu (hippopotamus)",
@@ -586,21 +568,14 @@ export const clans: Clan[] = [
     obutaka: "Kambugu, Busiro",
     omubala: "Nsimbye amasanga, Nakate ajja!…",
     originWave: "later",
-    amasiga: [
-      { elder: "Kikomeko",    seat: "Lubu, Mawokota" },
-      { elder: "Ggulu",       seat: "Busabala, Kyaddondo" },
-      { elder: "Kakembo",     seat: "Zzirannumbu, Kyaddondo" },
-      { elder: "Ntambi",      seat: "Lubya, Kyaddondo" },
-      { elder: "Ssebanyiiga", seat: "Kyazi, Kyaggwe" },
-      { elder: "Ssentomero",  seat: "Zzinga, Kyaggwe" },
-      { elder: "Ssemakadde",  seat: "Mpuku, Kyaggwe" },
-    ],
+    // Amasiga now live in lib/clanAmasiga.ts (7 branches per the Amasiga
+    // archive — note the old inline list's "Ssemakadde" is not in the archive)
     deep: false,
   },
   {
     slug: "njobe",
     name: "Njobe",
-    lugandaName: "Ekika kya Njobe",
+    lugandaName: "Ekika ky'e Njobe",
     totemEmoji: "🦌",
     omuziro: "Njobe — sitatunga (marsh antelope)",
     akabbiro: "Bugaala",
@@ -614,7 +589,7 @@ export const clans: Clan[] = [
   {
     slug: "ndiga",
     name: "Ndiga",
-    lugandaName: "Ekika kya Ndiga",
+    lugandaName: "Ekika ky'Abeddira Endiga",
     totemEmoji: "🐑",
     omuziro: "Ndiga — sheep",
     akabbiro: "Mpologoma (lion)",
@@ -629,7 +604,7 @@ export const clans: Clan[] = [
   {
     slug: "ndiisa",
     name: "Ndiisa",
-    lugandaName: "Ekika kya Ndiisa",
+    lugandaName: "Ekika ky'e Ndiisa",
     totemEmoji: "🐦",
     omuziro: "Ndiisa — lark",
     akabbiro: "Namunye",
@@ -643,7 +618,7 @@ export const clans: Clan[] = [
   {
     slug: "nkula",
     name: "Nkula",
-    lugandaName: "Ekika kya Nkula",
+    lugandaName: "Ekika ky'Abeddira Enkula",
     totemEmoji: "🦏",
     omuziro: "Nkula — rhinoceros",
     clanHead: "Muwangi",
@@ -655,7 +630,7 @@ export const clans: Clan[] = [
   {
     slug: "nkusu",
     name: "Nkusu",
-    lugandaName: "Ekika kya Nkusu",
+    lugandaName: "Ekika ky'Abeddira Enkusu",
     totemEmoji: "🦜",
     omuziro: "Nkusu — African grey parrot",
     clanHead: "Ssenkusu Ssonja",
@@ -682,7 +657,7 @@ export const clans: Clan[] = [
   {
     slug: "nswaswa",
     name: "Nswaswa",
-    lugandaName: "Ekika kya Nswaswa",
+    lugandaName: "Ekika ky'Enswaswa",
     totemEmoji: "🦎",
     omuziro: "Nswaswa — monitor lizard",
     akabbiro: "Goonya (crocodile)",
@@ -690,14 +665,8 @@ export const clans: Clan[] = [
     obutaka: "Bugabo, Buvuma",
     omubala: "Mayengo ttutu.",
     originWave: "later",
-    amasiga: [
-      { elder: "Kisuule",  seat: "Bugabo, Buvuma" },
-      { elder: "Munyingu", seat: "Bugabo, Buvuma" },
-      { elder: "Kimbirye", seat: "Buruuli, Buvuma" },
-      { elder: "Kawundo",  seat: "Buwanzi, Buvuma" },
-      { elder: "Mwavu",    seat: "Buwanzi, Buvuma" },
-      { elder: "Yihara",   seat: "Buyihara, Buvuma" },
-    ],
+    // Amasiga now live in lib/clanAmasiga.ts (7 branches per the Amasiga
+    // archive, incl. the migration notes the old inline list dropped)
     deep: false,
   },
   {
@@ -716,7 +685,7 @@ export const clans: Clan[] = [
   {
     slug: "kinyomo",
     name: "Kinyomo",
-    lugandaName: "Ekika kya Kinyomo",
+    lugandaName: "Ekika ky'e Kinyomo",
     totemEmoji: "🐜",
     omuziro: "Kinyomo — large black ant",
     akabbiro: "Mutima (heart)",
@@ -728,7 +697,7 @@ export const clans: Clan[] = [
   {
     slug: "kiwere",
     name: "Kiwere",
-    lugandaName: "Ekika kya Kiwere",
+    lugandaName: "Ekika ky'Ekiwere",
     totemEmoji: "🌿",
     omuziro: "Kiwere — purple-dye plant",
     akabbiro: "Sekafu",
@@ -745,7 +714,7 @@ export const clans: Clan[] = [
   {
     slug: "mazzi-ga-kisasi",
     name: "Mazzi ga Kisasi",
-    lugandaName: "Ekika kya Mazzi ga Kisasi",
+    lugandaName: "Ekika ky'Amazzi g'Ekisasi",
     totemEmoji: "💧",
     omuziro: "Mazzi ga Kisasi — rainwater dripping from the eaves",
     akabbiro: "Ggongolo (millipede)",
@@ -759,7 +728,7 @@ export const clans: Clan[] = [
   {
     slug: "mutima-muyanja",
     name: "Mutima Omuyanja",
-    lugandaName: "Ekika kya Mutima Omuyanja",
+    lugandaName: "Ekika ky'Omutima (Abayanja)",
     totemEmoji: "❤️",
     omuziro: "Mutima — heart",
     akabbiro: "Mawuggwe (lung)",
@@ -772,8 +741,9 @@ export const clans: Clan[] = [
   },
   {
     slug: "mutima-musagi",
-    name: "Mutima Musagi",
-    lugandaName: "Ekika kya Mutima Musagi",
+    // "Omusaggi" (double g) per the Amasiga archive — supersedes "Musagi"
+    name: "Mutima Omusaggi",
+    lugandaName: "Ekika ky'Omutima Omusaggi",
     totemEmoji: "🫀",
     omuziro: "Mutima — heart",
     clanHead: "Nakirembeka",
@@ -785,7 +755,7 @@ export const clans: Clan[] = [
   {
     slug: "mmamba-kakoboza",
     name: "Mmamba Kakoboza",
-    lugandaName: "Ekika kya Mmamba Kakoboza",
+    lugandaName: "Ekika ky'e Mmamba Kakoboza",
     totemEmoji: "🐠",
     omuziro: "Mmamba — lungfish",
     clanHead: "Nnankere",

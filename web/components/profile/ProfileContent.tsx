@@ -10,6 +10,7 @@ import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { VerificationCard } from "@/components/profile/VerificationCard";
 import { cn } from "@/lib/utils";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
+import { useStats, clanMemberCount, formatMembers, recordClanChange } from "@/lib/stats";
 
 // Clan picker groups the 56 clans by origin wave (same grouping used for the
 // /clans filter tabs) so the <select> isn't just one flat alphabetical wall.
@@ -53,6 +54,9 @@ function ProfileDashboard() {
 
   const clan = user.clanSlug ? getClan(user.clanSlug) : undefined;
   const clanChanged = draftClanSlug !== (user.clanSlug ?? "");
+  // Live member count for the joined clan — ticks immediately on a join
+  const stats = useStats();
+  const liveCount = clan ? clanMemberCount(stats, clan.slug) : null;
 
   const initials = name
     .split(" ")
@@ -79,6 +83,9 @@ function ProfileDashboard() {
       verification: "none",
       lineage: null,
     });
+    // Move the live member counters: the joined clan ticks up everywhere
+    // it's displayed; the clan being left (if any) ticks back down.
+    recordClanChange(user.clanSlug, draftClanSlug);
     toast(`You're now a self-declared member of the ${picked?.name} clan.`);
   }
 
@@ -169,7 +176,7 @@ function ProfileDashboard() {
               </div>
               <div className="text-right shrink-0">
                 <span className="block text-[13px] text-muted">
-                  {clan.memberCount ? `${clan.memberCount} members` : "Member count coming soon"}
+                  {liveCount !== null ? formatMembers(liveCount) : "Member count coming soon"}
                 </span>
                 <Link href={`/clans/${clan.slug}`} className="text-[11px] text-royal2 no-underline hover:underline">
                   View clan page →

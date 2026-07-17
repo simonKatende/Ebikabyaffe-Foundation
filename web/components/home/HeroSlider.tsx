@@ -96,6 +96,13 @@ export function HeroSlider({ overlayOpacity = 0.62 }: HeroSliderProps) {
   // Stores the X position where a touch gesture started — used to detect swipe direction
   const touchStartX = useRef<number | null>(null);
 
+  // Set on the first real touch. Mobile browsers fire EMULATED mouse events
+  // (mouseenter etc.) after a tap with no matching mouseleave ever coming —
+  // without this guard the first touch set paused=true forever and the
+  // slider looked frozen on phones. Once a touch is seen, mouse handlers
+  // are ignored and pausing is driven by the touch handlers instead.
+  const isTouch = useRef(false);
+
   // Stores the setInterval ID so useEffect can cancel the timer on cleanup
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -118,10 +125,14 @@ export function HeroSlider({ overlayOpacity = 0.62 }: HeroSliderProps) {
 
   // Touch swipe: record the starting X on touchstart, measure the delta on touchend.
   // A horizontal movement greater than 50px is treated as an intentional swipe.
+  // Auto-advance pauses only while the finger is down and resumes on release.
   const onTouchStart = (e: React.TouchEvent) => {
+    isTouch.current = true;
+    setPaused(true);
     touchStartX.current = e.touches[0].clientX;
   };
   const onTouchEnd = (e: React.TouchEvent) => {
+    setPaused(false);
     if (touchStartX.current === null) return;
     const delta = e.changedTouches[0].clientX - touchStartX.current;
     // Negative delta = swiped left → advance; positive = swiped right → go back
@@ -130,15 +141,23 @@ export function HeroSlider({ overlayOpacity = 0.62 }: HeroSliderProps) {
     }
     touchStartX.current = null;
   };
+  // A system gesture (notification pull-down, app switch) can end a touch
+  // without touchend — resume here too so the slider never sticks paused.
+  const onTouchCancel = () => {
+    setPaused(false);
+    touchStartX.current = null;
+  };
 
   return (
     <div
       className="absolute inset-0 overflow-hidden"
-      // Pause auto-advance while the user is hovering (desktop) or swiping (mobile)
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      // Pause auto-advance while the user is hovering (desktop) or swiping (mobile).
+      // Mouse handlers bail on touch devices — see the isTouch note above.
+      onMouseEnter={() => { if (!isTouch.current) setPaused(true); }}
+      onMouseLeave={() => { if (!isTouch.current) setPaused(false); }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchCancel}
     >
       {/* All slide layers are stacked on top of each other at all times.
           Only the active one has opacity: 1; the rest are invisible.

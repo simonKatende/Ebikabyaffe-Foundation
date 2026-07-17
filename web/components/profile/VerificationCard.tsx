@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { clans, getClan, WAVE_LABELS, type OriginWave, type Clan } from "@/lib/clans";
+import { recordVerification } from "@/lib/stats";
 
 // ── "Get verified by Omutaka" — frontend mock ────────────────────────────────
 //
@@ -160,6 +161,7 @@ export function VerificationCard({ clan }: { clan: Clan }) {
               type="button"
               onClick={() => {
                 updateUser({ verification: "verified", clanVerified: true });
+                recordVerification();
                 toast(`The ${clan.clanHead} has verified your membership. Webale!`);
               }}
               className="text-[11px] text-muted underline cursor-pointer bg-transparent border-0 p-0"

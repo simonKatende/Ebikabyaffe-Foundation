@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { clans, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 import { getClanImages } from "@/lib/clanImages";
+import { useStats, clanMemberCount, formatMembers } from "@/lib/stats";
 
 // Fixed display order for the wave filter chips — matches the chronological arrival sequence
 const WAVE_ORDER: OriginWave[] = ["nansangwa", "kintu", "kimera", "later"];
@@ -21,6 +22,8 @@ const WAVE_CHIP_LABEL: Record<OriginWave, string> = {
 export function ClanGrid() {
   const [query, setQuery] = useState("");
   const [wave, setWave]   = useState<OriginWave | "all">("all");
+  // Live member counts — tick immediately when someone joins a clan
+  const stats = useStats();
 
   // Combined filter: a clan must match the text query AND the selected wave.
   // Text search covers English name, Luganda name, the primary totem
@@ -134,8 +137,10 @@ export function ClanGrid() {
                     {clan.clanHead}
                   </p>
                 )}
-                {clan.memberCount && (
-                  <p className="text-[11px] text-muted mt-auto">{clan.memberCount.toLocaleString()} members</p>
+                {clanMemberCount(stats, clan.slug) !== null && (
+                  <p className="text-[11px] text-muted mt-auto">
+                    {formatMembers(clanMemberCount(stats, clan.slug)!)}
+                  </p>
                 )}
               </div>
             </Link>

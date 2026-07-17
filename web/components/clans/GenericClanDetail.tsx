@@ -4,12 +4,21 @@ import { useState } from "react";
 import Image from "next/image";
 import { Clan, WAVE_LABELS } from "@/lib/clans";
 import { getClanImages, type TotemImage } from "@/lib/clanImages";
+import { useStats, clanMemberCount, formatCount } from "@/lib/stats";
 import { Button } from "@/components/ui/Button";
-import { useToast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
+import {
+  AmasigaArchiveSection,
+  OmubalaSection,
+} from "@/components/clans/ClanArchiveSections";
+import { getClanAmasiga } from "@/lib/clanAmasiga";
 
 export function GenericClanDetail({ clan }: { clan: Clan }) {
-  const { toast } = useToast();
+  const router = useRouter();
+  // Live member count — ticks immediately when someone joins this clan
+  const stats = useStats();
+  const liveCount = clanMemberCount(stats, clan.slug);
   // Look up the wave display metadata (label, sub-heading, colour) for this clan
   const wave = WAVE_LABELS[clan.originWave];
   // Real totem photos (omuziro + akabbiro) — absent for abstract totems
@@ -54,9 +63,10 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
 
         {/* Info chips — memberCount is optional so wrapped in a conditional */}
         <div className="flex flex-wrap justify-center gap-2.5 mb-1">
-          {clan.memberCount && (
+          {liveCount !== null && (
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3.5 py-1.5 text-[12px] text-white/80">
-              <strong className="text-gold2">{clan.memberCount}</strong> registered members
+              <strong className="text-gold2">{formatCount(liveCount)}</strong>{" "}
+              registered {liveCount === 1 ? "member" : "members"}
             </div>
           )}
           {/* Wave badge — colour dot matches the clan grid dot for visual consistency */}
@@ -84,7 +94,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
         <div className="mt-5">
           <Button
             variant="primary"
-            onClick={() => toast("Sign-up coming at launch!")}
+            onClick={() => router.push("/login")}
           >
             Join the {clan.name} clan →
           </Button>
@@ -152,14 +162,9 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
           </div>
         )}
 
-        {/* Clan motto (Omubala) — only rendered if the clan has a documented motto */}
-        {clan.omubala && (
-          <Section title="Omubala (Clan Motto)">
-            <blockquote className="border-l-4 border-gold pl-4 py-1 italic text-[15px] text-gd leading-relaxed font-serif">
-              &ldquo;{clan.omubala}&rdquo;
-            </blockquote>
-          </Section>
-        )}
+        {/* Omubala — sourced text from lib/emibala.ts (Emibala reference doc);
+            falls back to the legacy clans.ts string when nothing is captured */}
+        <OmubalaSection slug={clan.slug} fallback={clan.omubala} />
 
         {/* Taboos — every clan has at least two: don't eat the omuziro, don't marry same clan */}
         <Section title="Omuziro & Taboos">
@@ -182,8 +187,11 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
           </ul>
         </Section>
 
-        {/* Amasiga (branches) — show documented list if available; otherwise show placeholder */}
-        {clan.amasiga && clan.amasiga.length > 0 ? (
+        {/* Amasiga (branches) — the clan-archive registry (lib/clanAmasiga.ts)
+            takes precedence; then any legacy clans.ts list; then placeholder */}
+        {getClanAmasiga(clan.slug) ? (
+          <AmasigaArchiveSection slug={clan.slug} />
+        ) : clan.amasiga && clan.amasiga.length > 0 ? (
           <Section title={`Amasiga — ${clan.amasiga.length} Documented Branches`}>
             <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
               {clan.amasiga.map(({ elder, seat }) => (
@@ -248,7 +256,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
           </p>
           <Button
             variant="primary"
-            onClick={() => toast("Sign-up coming at launch!")}
+            onClick={() => router.push("/login")}
           >
             Join your clan →
           </Button>

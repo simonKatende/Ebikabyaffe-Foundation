@@ -3,8 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
-import { useToast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
+import { useStats, clanMemberCount, formatCount } from "@/lib/stats";
+import {
+  AmasigaArchiveSection,
+  OmubalaSection,
+} from "@/components/clans/ClanArchiveSections";
 
 const MMAMBA_TOTEM: LightboxImage = {
   src: "/images/totems/mmamba.jpg",
@@ -16,8 +21,11 @@ const MMAMBA_TOTEM: LightboxImage = {
 // Mmamba is the only clan with a fully hand-curated deep page.
 // All other clans use GenericClanDetail which is data-driven from clans.ts.
 export function MmambaDetail() {
-  const { toast } = useToast();
+  const router = useRouter();
   const [lightbox, setLightbox] = useState<LightboxImage | null>(null);
+  // Live member count (base from clans.ts) — ticks immediately on a join
+  const stats = useStats();
+  const liveCount = clanMemberCount(stats, "mmamba") ?? 0;
 
   return (
     <>
@@ -50,10 +58,10 @@ export function MmambaDetail() {
           Mmamba
         </h1>
         <p className="text-[14px] text-white/55 mb-4">
-          The Lungfish Clan · Ekika kya Mmamba
+          The Lungfish Clan · Ekika ky&apos;e Mmamba Gabunga
         </p>
         <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3.5 py-1.5 text-[12px] text-white/80 mb-3">
-          <strong className="text-gold2">23,481</strong> registered members ·
+          <strong className="text-gold2">{formatCount(liveCount)}</strong> registered members ·
           1,204 verified by Bataka
         </div>
         <br />
@@ -68,7 +76,7 @@ export function MmambaDetail() {
         <div className="mt-5">
           <Button
             variant="primary"
-            onClick={() => toast("Sign-up coming at launch!")}
+            onClick={() => router.push("/login")}
           >
             Join the Mmamba clan →
           </Button>
@@ -182,23 +190,11 @@ export function MmambaDetail() {
           </div>
         </Section>
 
-        {/* Amasiga placeholder — Mmamba branches are being compiled with the Gabunga's office */}
-        <Section title="Amasiga (Major Branches)">
-          <div className="bg-gold3 border border-gold/30 rounded-[5px] p-4 mb-3">
-            <p className="text-[13px] text-gd leading-relaxed">
-              The Mmamba clan&apos;s Amasiga (major branch list) is currently being compiled
-              in consultation with the Gabunga&apos;s office and the Olukiiko lw&apos;Abataka.
-              Members who know their specific Essiga within the Mmamba clan are
-              encouraged to contact the Foundation — your knowledge helps build the
-              registry.
-            </p>
-          </div>
-          <p className="text-[12px] text-muted leading-relaxed">
-            The Mmamba clan spans the Lake Victoria shoreline, the Sese Islands (Sseze Ssaza),
-            Munyonyo, and parts of Mawokota, Kyaggwe, and Buddu. Branches are organised
-            under the Gabunga&apos;s jurisdiction across these regions.
-          </p>
-        </Section>
+        {/* Omubala — sourced from the Emibala reference document (lib/emibala.ts) */}
+        <OmubalaSection slug="mmamba" />
+
+        {/* Amasiga — the archive's "Emmamba Namakaka" register (lib/clanAmasiga.ts) */}
+        <AmasigaArchiveSection slug="mmamba" />
 
         <Section title="Omutaka">
           <div className="flex gap-4 items-start bg-white border border-eborder rounded-[6px] p-4">
@@ -254,12 +250,12 @@ export function MmambaDetail() {
           </h3>
           <p className="text-[14px] text-white/70 mb-4 leading-relaxed">
             Save your profile to learn more, get notified by your Omutaka, and
-            join <strong className="text-gold2">23,481 Mmamba</strong> already
+            join <strong className="text-gold2">{formatCount(liveCount)} Mmamba</strong> already
             here. Sign up in under 60 seconds.
           </p>
           <Button
             variant="primary"
-            onClick={() => toast("Sign-up coming at launch!")}
+            onClick={() => router.push("/login")}
           >
             Join your clan →
           </Button>

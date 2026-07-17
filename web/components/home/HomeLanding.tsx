@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HeroSlider } from "@/components/home/HeroSlider";
+import { useStats, registeredTotal, verifiedTotal, formatCount } from "@/lib/stats";
 import { YouTubeEmbed } from "@/components/ui/YouTubeEmbed";
 import { cn } from "@/lib/utils";
 
@@ -159,6 +160,9 @@ function RecentActivityList() {
 
 export function HomeLanding() {
   const router = useRouter();
+  // Live counters — tick immediately when someone registers or an Omutaka
+  // verifies a member, everywhere they're displayed (see lib/stats.ts).
+  const stats = useStats();
 
   return (
     <>
@@ -251,9 +255,13 @@ export function HomeLanding() {
             className="flex flex-col items-center w-full"
             style={{ animation: ANIM.content }}
           >
-            {/* CTA buttons */}
-            <div className="flex gap-3.5 flex-wrap justify-center mb-5 sm:mb-11 pointer-events-auto">
-              <Link href="/clans" className="no-underline">
+            {/* CTA buttons. pointer-events-auto sits on each control, NOT on
+                the row wrapper — on mobile the row's empty space overlaps the
+                slider's prev/next arrows and a wrapper-level auto swallowed
+                their taps (the desktop-click version of this same bug was
+                fixed in s16; touch hit it again via the row's own box). */}
+            <div className="flex gap-3.5 flex-wrap justify-center mb-5 sm:mb-11">
+              <Link href="/clans" className="no-underline pointer-events-auto">
                 <button
                   className="font-semibold text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
                   style={{
@@ -280,7 +288,7 @@ export function HomeLanding() {
 
               <button
                 onClick={() => router.push("/login")}
-                className="font-medium text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200"
+                className="font-medium text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200 pointer-events-auto"
                 style={{
                   background: "rgba(255,255,255,0.10)",
                   border: "1px solid rgba(255,255,255,0.28)",
@@ -322,10 +330,10 @@ export function HomeLanding() {
               }}
             >
               {[
-                { num: "847K+",  lbl: "Baganda registered"                   },
-                { num: "56",     lbl: "Ebika bya Baganda", href: "/clans"    },
-                { num: "18",     lbl: "Amasaza",           href: "/abakungu" },
-                { num: "12,847", lbl: "Verified by Bataka"                   },
+                { num: formatCount(registeredTotal(stats)), lbl: "Baganda registered" },
+                { num: "56", lbl: "Ebika bya Baganda", href: "/clans" },
+                { num: "18", lbl: "Amasaza", href: "/abakungu" },
+                { num: formatCount(verifiedTotal(stats)), lbl: "Verified by Bataka" },
               ].map(({ num, lbl, href }, i, arr) => {
                 const inner = (
                   <>

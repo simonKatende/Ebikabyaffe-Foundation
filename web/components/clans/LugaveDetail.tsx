@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { getClan } from "@/lib/clans";
 import { Button } from "@/components/ui/Button";
-import { useToast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
 import { LugaveLineageExplorer } from "@/components/clans/LugaveLineageExplorer";
+import { useStats, clanMemberCount, formatCount } from "@/lib/stats";
 
 const LUGAVE_TOTEM: LightboxImage = {
   src: "/images/totems/lugave.jpg",
@@ -26,9 +26,11 @@ const LUGAVE_TOTEM: LightboxImage = {
 // The full information (and photographs) only appears when the reader clicks —
 // so the page reads as a scannable index of the archive first.
 export function LugaveDetail() {
-  const { toast } = useToast();
-  const lugave = getClan("lugave")!;
+  const router = useRouter();
   const [lightbox, setLightbox] = useState<LightboxImage | null>(null);
+  // Live member count (base from clans.ts) — ticks immediately on a join
+  const stats = useStats();
+  const liveCount = clanMemberCount(stats, "lugave") ?? 0;
 
   return (
     <>
@@ -61,10 +63,10 @@ export function LugaveDetail() {
           Lugave
         </h1>
         <p className="text-[14px] text-white/55 mb-4">
-          The Pangolin Clan · Ekika kya Lugave
+          The Pangolin Clan · Ekika ky&apos;Abeddira Olugave
         </p>
         <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3.5 py-1.5 text-[12px] text-white/80 mb-3">
-          <strong className="text-gold2">{lugave.memberCount}</strong>{" "}
+          <strong className="text-gold2">{formatCount(liveCount)}</strong>{" "}
           registered members · One of the six Bannansangwa clans
         </div>
         <br />
@@ -77,7 +79,7 @@ export function LugaveDetail() {
         <div className="mt-5">
           <Button
             variant="primary"
-            onClick={() => toast("Sign-up coming at launch!")}
+            onClick={() => router.push("/login")}
           >
             Join the Lugave clan →
           </Button>
@@ -541,12 +543,12 @@ export function LugaveDetail() {
           </h3>
           <p className="text-[14px] text-white/70 mb-4 leading-relaxed">
             Save your profile to learn more, get notified by your Omutaka, and
-            join <strong className="text-gold2">{lugave.memberCount} Abagave</strong>{" "}
+            join <strong className="text-gold2">{formatCount(liveCount)} Abagave</strong>{" "}
             already here. Sign up in under 60 seconds.
           </p>
           <Button
             variant="primary"
-            onClick={() => toast("Sign-up coming at launch!")}
+            onClick={() => router.push("/login")}
           >
             Join your clan →
           </Button>

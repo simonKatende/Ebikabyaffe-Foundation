@@ -1,0 +1,795 @@
+// ── Clan Amasiga registry — per-clan Essiga (major branch) lists ─────────────
+//
+// Source: "AMASIGA" (user-supplied clan-archive compilation, 2026) — the same
+// registry family as the 2021 Lugave archive. Each clan's section heading is
+// reproduced as printed (archiveHeading), and entries keep the archive's own
+// order, spellings and place strings.
+//
+// Editorial rules (mirror lib/lugaveLineage.ts):
+//  • Named branch heads printed in the archive ARE reproduced (head field) —
+//    they are the archive's own published record. Personal PHONE NUMBERS are
+//    deliberately NOT reproduced.
+//  • Asterisks (*) on names/places are the archive's own internal flags and
+//    are kept as printed — do not silently resolve them.
+//  • Structural parentheticals ("Okuva mu mutuba gwa…", "Emituba; …") are
+//    kept as note fields. The archive's superscript footnote digits and
+//    per-entry registry numbers (e.g. "- 6." in the Abayanja list) are
+//    formatting artifacts and are omitted.
+//  • Lugave is NOT in this file — its richer three-level registry lives in
+//    lib/lugaveLineage.ts (17 Amasiga → Emituba → Ennyiriri).
+//  • The archive also carries an "Abasengya" section that matches none of the
+//    56 clans in lib/clans.ts — deliberately not mapped; see session notes.
+//  • The archive's "Emmamba Namakaka" list is attached to the Mmamba
+//    (Gabunga) clan — the only remaining Mmamba clan once Kakoboza has its
+//    own list; flagged in that entry's note rather than silently merged.
+
+export interface ArchiveSsiga {
+  name: string;   // Essiga (branch) name as printed
+  seat?: string;  // place – Ssaza, as printed
+  head?: string;  // named holder printed in the archive (phone numbers omitted)
+  note?: string;  // structural note from the archive
+}
+
+export interface ClanAmasigaEntry {
+  archiveHeading: string;  // the archive's own "Amasiga Mu Kika …" heading
+  note?: string;           // section-level note from the archive
+  amasiga: ArchiveSsiga[];
+}
+
+export const CLAN_AMASIGA: Record<string, ClanAmasigaEntry> = {
+
+  "mmamba-kakoboza": {
+    archiveHeading: "Amasiga Mu Kika Ky'e Mmamba Kakoboza",
+    amasiga: [
+      { name: "Ssaabalangira", seat: "Bukeerere – Busiro" },
+      { name: "Kayonga", seat: "Buyonga – Busiro" },
+      { name: "Kasolo", seat: "Mpengwe – Busiro" },
+      { name: "Namenyeka", seat: "Namugera – Busiro" },
+      { name: "Katiisa", seat: "Butiisa (Kyengeza) – Busiro" },
+      { name: "Kasiga", seat: "Bendegere – Busiro" },
+      { name: "Ssebanga", seat: "Nimuntwe – Busiro" },
+      { name: "Mukaajanga", seat: "Buyonga – Busiro" },
+      { name: "Nkambwe", seat: "Kikiino – Busiro" },
+      { name: "Kajjoba", seat: "Kikiino – Busiro" },
+      { name: "Mayirikiti", seat: "Nakayira – Busiro" },
+      { name: "Namukupa", seat: "Kikusi – Busiro" },
+      { name: "Naluswa", seat: "Buwalula – Ssingo" },
+      { name: "Nkobazambogo", seat: "Butto – Busiro" },
+      { name: "Nsanja", seat: "Kisaasi – Kyaddondo" },
+      { name: "Namalusa", seat: "Nakayira – Busiro" },
+      { name: "Bukulula", seat: "Buyinja – Busiro" },
+      { name: "Ssenninde", seat: "Nkanja – Busiro" },
+      { name: "Mbajja", seat: "Namukonda – Busiro", note: "Namayamba – Bulemeezi" },
+      { name: "Nabugwamu Kakebe", seat: "Ssambwe – Bulemeezi" },
+      { name: "Muwanguzi", seat: "Lwaleero – Busiro", note: "Bulyana – Buweekula" },
+      { name: "Ssonko", seat: "Buyonga – Busiro", note: "Okuva mu mutuba gwa Kayonga" },
+    ],
+  },
+
+  nvubu: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Envubu",
+    amasiga: [
+      { name: "Kavubu", seat: "Ntonyeze – Busujju", head: "Kavubu Alifunsi" },
+      { name: "Kibengo Nkukunala Sserumaga", seat: "Bwendero – Kyaggwe" },
+      { name: "Nkambo Kasoma", seat: "Zziru-Nkumba – Busiro", head: "Kasoma Joseph" },
+      { name: "Mumpi", seat: "Nkoone – Kyaggwe", head: "Kanaaba Nathan" },
+      { name: "Kisongole", seat: "Gobero/Namayiba – Kyaggwe", head: "Musoke Edward Ssalongo" },
+      { name: "Ggambira", seat: "Masujju – Kyaggwe", head: "Ssekalongo Wilson" },
+      { name: "Namugunde", seat: "Kyaazi – Kyaggwe", head: "Musisi Ssebiragala Ssalongo" },
+      { name: "Ssebabi", seat: "Kyanamira – Kyaggwe", head: "Kiwunda Alex" },
+      { name: "Mbuge", seat: "Luwafu – Mbazi – Kyaggwe", head: "Musisi Ssemmengo Fred" },
+      { name: "Ssempuuwo", seat: "Zzinga – Busiro", head: "Nabyonsi Dodoviko Ssalongo" },
+      { name: "Jjita", seat: "Matanga – Buddu", head: "Gonjebwa Fred" },
+      { name: "Kibowa", seat: "Batwala – Ddamba – Kyaggwe", head: "Kibengo Lawrence" },
+      { name: "Mutwe", seat: "Nanso – Kyaggwe", head: "Mukooza Fred" },
+      { name: "Mawagajjo", seat: "Bugolo/Buwagajjo – Kyaggwe", head: "Hajji Ali Wasswa" },
+      { name: "Ndobera", seat: "Buuje/Bujje – Koome – Kyaggwe", head: "Kamanje Henry" },
+      { name: "Walyato", seat: "Kkerenge – Buvuma", head: "Musulo Hannington" },
+      { name: "Kikondo", seat: "Bugolo – Kyaggwe", head: "Kipanda Musimba Samuel" },
+      { name: "Sserufusa", seat: "Buligo – Ssese", head: "Sseruwooza David" },
+      { name: "Kanaaba", seat: "Kyanamira – Mbazi – Kyaggwe", head: "Lubanga Paulo" },
+    ],
+  },
+
+  nnyonyi: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Ennyonyi Nnyange",
+    amasiga: [
+      { name: "Kawunu", seat: "Kyazi – Kyaggwe" },
+      { name: "Kaboola", seat: "Bukaya – Kyaggwe" },
+      { name: "Kassukussuku*", seat: "Nabitaka – Buddu" },
+      { name: "Nundye", seat: "Muvvo – Bukunja – Kyaggwe" },
+      { name: "Mikalo", seat: "Ssimba – Bukunja – Kyaggwe" },
+      { name: "Kituuma", seat: "Mmengo – Bukunja – Kyaggwe" },
+      { name: "Kyesimba", seat: "Kimbugu – Bukunja – Kyaggwe" },
+      { name: "Nawandugu", seat: "Sserinnyabbi – Mawokota" },
+      { name: "Muyomba", seat: "Buyomba – Kyaggwe" },
+      { name: "Luganda", seat: "Bbanga – Kyaggwe" },
+      { name: "Lugonda", seat: "Kiyimba – Buvuma" },
+      { name: "Lugonda Mugunjo", seat: "Bwema – Buvuma" },
+      { name: "Kibongo", seat: "Bumbugu – Bukunja – Kyaggwe" },
+      { name: "Ggunga", seat: "Bunjako – Mawokota" },
+      { name: "Kyasanku", seat: "Sserinnyabbi – Mawokota" },
+      { name: "Muyanja*", seat: "Mukaka – Bussi – Busiro" },
+      { name: "Kyesimba", seat: "Kimbugu – Kyaggwe", note: "Listed a second time in the archive as printed" },
+      { name: "Kawuuba", seat: "Buwuuba – Kyaggwe" },
+      { name: "Bateera", seat: "Bbanga – Kyaggwe" },
+      { name: "Aganisa", seat: "Mbalirire – Kyaggwe" },
+      { name: "Kagumba", seat: "Busagazi – Kyaggwe" },
+      { name: "Lwalira", seat: "Bugabo – Bulemeezi" },
+      { name: "Ngobya", seat: "Musozi – Ssingo" },
+      { name: "Mbowa", seat: "Magala – Ssingo" },
+      { name: "Tala", seat: "Kitwala – Ssingo" },
+      { name: "Kayaayu", seat: "Kakindu – Ssingo" },
+      { name: "Luwali", seat: "Ttende – Busiro" },
+      { name: "Ssekijumba", seat: "Namamuli – Kyaggwe" },
+      { name: "Kafuuma*", seat: "Bufuma – Kyaggwe" },
+      { name: "Muganda", seat: "Kikonge – Busujju" },
+      { name: "Lubumbu Mbajjwe", seat: "Buwunge – Buvuma" },
+      { name: "Mataaga", seat: "Mabanga – Kyaggwe" },
+      { name: "Basaggule", seat: "Kabamba – Gomba" },
+      { name: "Janja", seat: "Kakubansiri – Gomba" },
+    ],
+  },
+
+  ngeye: {
+    archiveHeading: "Amasiga Mu Kika Ky'engeye",
+    amasiga: [
+      { name: "Kasule", seat: "Buwembo – Busiro" },
+      { name: "Bakazirwendo Kawooya", seat: "Bumpeje – Busiro" },
+      { name: "Mpoza", seat: "Ggwattiro – Butambala" },
+      { name: "Kisero*", seat: "Busero – Mawokota" },
+      { name: "Ssebatta", seat: "Mutundwe – Kyaddondo" },
+      { name: "Ggayi*", seat: "Bugayi – Mawokota" },
+      { name: "Muwuluzi", seat: "Misasa – Buddu" },
+      { name: "Muwuluzi", seat: "Kigo – Buddu" },
+      { name: "Mungo", seat: "Kabugolo – Busujju" },
+    ],
+  },
+
+  njaza: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Enjaza",
+    amasiga: [
+      { name: "Kinaalwa", seat: "Nsenge – Kyaggwe", head: "George William Nakimiisa/Nakimizza" },
+      { name: "Kyonga", seat: "Nnyenga – Kyaggwe", head: "Kyonga Kato Ronald" },
+      { name: "Kiddu", seat: "Kitigoma – Kyaggwe" },
+      { name: "Waguma Masanso", seat: "Naminya – Wakisi – Kyaggwe", head: "Erisa Lubanda" },
+      { name: "Mutwalume", seat: "Kkonko – Kyaggwe", head: "Siraje Bbengo" },
+      { name: "Ssekkeba", seat: "Malindi – Kyaggwe", head: "Moses Bbengo" },
+      { name: "Kiringa", seat: "Gulama – Nnyenga – Kyaggwe" },
+      { name: "Bbengo", seat: "Nakatooke – Kyaggwe", head: "Samuel Kalyowa" },
+      { name: "Genaanya", seat: "Nnakyessanja – Kyaggwe", head: "Muhamad Kyega" },
+      { name: "Mawawa", seat: "Bugabo – Kyaggwe" },
+      { name: "Malevu", seat: "Butavujja – Kyaggwe", head: "Musa Kyazze" },
+      { name: "Mukongoolo", seat: "Kitovu – Nnyenga – Kyaggwe", head: "Abdul Lukoma" },
+      { name: "Kawanda", seat: "Wakisi – Nnyenga – Kyaggwe", head: "Benard Kinaalwa" },
+      { name: "Lugwa", seat: "Buku – Kyaggwe", head: "Musa Kinaalwa" },
+      { name: "Kasota", seat: "Bugoma – Kyaggwe", head: "Kamaadi Ttuttu" },
+      { name: "Kabaale", seat: "Nakiso – Kyaggwe" },
+      { name: "Kasasa", seat: "Bujaagu – Kyaggwe" },
+      { name: "Kambugu", seat: "Buziika – Kyaggwe" },
+      { name: "Nnannyungu", seat: "Najjembe – Kyaggwe", head: "Edward Kalyowa" },
+      { name: "Mbwabwa", seat: "Ssendabanyolo – Kyaggwe", head: "Ronald Kato Lukoma" },
+      { name: "Ssematimba", seat: "Buwoola – Kyaggwe" },
+    ],
+  },
+
+  ngo: {
+    archiveHeading: "Amasiga Mu Kika Ky'engo",
+    amasiga: [
+      { name: "Kalyango", seat: "Buvvi – Busiro", note: "Omutuba gwa Kamwanyimwanyi n'Olunyiriri Mwesigwa" },
+      { name: "Bbugo", seat: "Mangira – Kyaggwe" },
+      { name: "Katabula", seat: "Buzirango – Buddu" },
+      { name: "Kavuma", seat: "Ddajje – Gomb. Ssabawaali Magonga – Busujju", head: "Kavuma Maliko" },
+      { name: "Namakaaga", seat: "Bugimba – Busiro" },
+      { name: "Nkulo", seat: "Bwende – Buddu" },
+      { name: "Kiseyeeye", seat: "Kawanga – Busujju" },
+      { name: "Nakabambagiza", seat: "Nalugamba – Busujju" },
+      { name: "Lubowa", seat: "Kiyanja – Kyaggwe" },
+      { name: "Lubowa", seat: "Butwala – Kyaggwe" },
+      { name: "Mwanje", seat: "Nnono – Busujju" },
+      { name: "Sseruku Lubambaza", seat: "Ntoloomwe – Butambala" },
+      { name: "Nakyejjwe", seat: "Mabanda – Mawokota" },
+      { name: "Kavuma", seat: "Butwala – Kyaggwe" },
+      { name: "Namuyimba", seat: "Kibuye – Kyaddondo" },
+    ],
+  },
+
+  mpologoma: {
+    archiveHeading: "Amasiga Mu Kika Ky'empologoma",
+    amasiga: [
+      { name: "Ssegamwenge", seat: "Lwadda – Kyaddondo" },
+      { name: "Ssembiro Ssemba", seat: "Kkulambiro – Kyaddondo", note: "Omuwandiisi ye Fredrick Edward Luwagga" },
+      { name: "Luguma", seat: "Bukakkata – Buddu", head: "John Walugembe", note: "Mulimu Omutuba gwa Ssaabaddu oguvaamu Olunyiriri lwa Mulanami" },
+      { name: "Kasumba", seat: "Kasalirwe – Kyaddondo" },
+      { name: "Kirubaale", seat: "Ziroobwe – Bulemeezi" },
+      { name: "Kakadde", seat: "Mpuku – Kyaggwe" },
+      { name: "Kawemula", seat: "Buwemula – Gomba" },
+      { name: "Kabengwa", seat: "Bubengwa – Bulemeezi" },
+      { name: "Kiroomu", seat: "Katalemwa – Kyaddondo" },
+      { name: "Kiyuuka", seat: "Birongo – Buddu", head: "Ssalongo Antonio Luwagga" },
+      { name: "Kkukumba", seat: "Kibindu – Buddu" },
+      { name: "Kanajje", seat: "Kijujuzi – Buddu", note: "Mulimu Olunyiriri lwa Madengede" },
+      { name: "Ssagala", seat: "Butenzi – Buddu" },
+      { name: "Kibira Nyalwe", seat: "Bbanda (Kalisizo) – Buddu" },
+      { name: "Mubbi Walutta", seat: "Bugiri – Kojja – Kyaggwe" },
+      { name: "Ndawula Lukanga", seat: "Bukoba – Kyaggwe" },
+      { name: "Ssebwana Ssebwakedde", seat: "Njego – Buddu" },
+      { name: "Makaayi", seat: "Namboole – Kyaddondo" },
+      { name: "Gonjaagaabwe", seat: "Kinoni – Ssingo" },
+      { name: "Lule", seat: "Mpofe – Buddu" },
+      { name: "Kimaka", seat: "Mumaga – Buvuma/Kyaggwe" },
+      { name: "Lubyaayi", seat: "Kasaka – Buddu" },
+      { name: "Katajjwa", seat: "Mitondo/Kasaka – Buddu" },
+      { name: "Mukinda", seat: "Kibindu/Mutondo – Buddu" },
+      { name: "Kasendwa", seat: "Kajuna – Buddu" },
+      { name: "Kagaaju", seat: "Vvuma/Vvumba – Buddu" },
+      { name: "Masengere Lumeeme", seat: "Manywa/Mpoma – Buddu" },
+      { name: "Ddongo", seat: "Banda/Bbanda – Buddu" },
+      { name: "Kapwaku/Kampwanku", seat: "Kayinja/Kojja – Buddu" },
+      { name: "Zzinaabala", seat: "Kyalusowe/Kyamusoke – Buddu" },
+      { name: "Muwuluzi/Muluuluzi", seat: "Kasenyi/Kasaayi – Buddu" },
+      { name: "Kakinda", seat: "Bulenge – Buddu" },
+      { name: "Muyiito", seat: "Kajuna – Buddu" },
+      { name: "Lwamalangala/Lwamulanga", seat: "Katera – Buddu" },
+      { name: "Mukulira", seat: "Njogo – Buddu" },
+    ],
+  },
+
+  mbwa: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Mbwa",
+    amasiga: [
+      { name: "Ssenkule", seat: "Gguluddene – Busiro" },
+      { name: "Nkumbinkalu", seat: "Kagwaba – Busiro" },
+      { name: "Ssenkomago", seat: "Kagoma – Busiro" },
+      { name: "Ssebakiggye", seat: "Jjawo (Bulindwa) – Gomba" },
+      { name: "Ssempungu", seat: "Zimuddi – Busiro" },
+      { name: "Kisolo", seat: "Kasaayi – Kyaggwe" },
+      { name: "Njala", seat: "Bagamba – Ssingo" },
+      { name: "Weekirevu", seat: "Kyamusisi – Ssingo" },
+      { name: "Ssekawunga", seat: "Maseruka – Gomba" },
+      { name: "Lugomuyina", seat: "Namulunja (Lufu) – Buvuma" },
+    ],
+  },
+
+  nseenene: {
+    archiveHeading: "Amasiga Mu Kika Ky'enseenene",
+    amasiga: [
+      { name: "Kalibbala", seat: "Nsiisi – Busujju", note: "Omutuba gwa Ssendawula Nsozi e Malyowe – Busujju" },
+      { name: "Mugalula Buyonga", seat: "Kisozi – Gomba" },
+      { name: "Mpagi Ssalannganya", seat: "Zimungwe – Mawokota" },
+      { name: "Malinzi", seat: "Mikoni – Buddu" },
+      { name: "Mutibwa", seat: "Malyowe – Gomba" },
+      { name: "Balitema Kajubi", seat: "Bujubi – Busujju", note: "Emituba: Katimpa – Kalanzi Kajubi; Babi (Nkata) e Kuka – Busujju; Seggoma e Kayenje – Butambala; Ssambya" },
+      { name: "Nkata", seat: "Lugo – Butambala" },
+      { name: "Bigogo", seat: "Bukandaganyi – Butambala" },
+      { name: "Kawalya", seat: "Kalamba – Butambala" },
+      { name: "Nabyonga ne Segoma", seat: "Kayenje – Butambala" },
+      { name: "Namisango", seat: "Kifamba – Butambala" },
+      { name: "Masembe Magembe", seat: "Maya – Busiro", note: "Emituba: Balugadde Nalwemanyidde e Majja – Gomba; Kanyerezi e Lugo – Butambala" },
+      { name: "Kikambi", seat: "Namugonga – Busiro" },
+      { name: "Kizza", seat: "Ssenge – Busiro" },
+      { name: "Nansikombi", seat: "Kapeeka ne Kawalira – Gomba" },
+      { name: "Salaŋŋanya Mpagi", seat: "Ziwungwe – Mawokota", note: "Omutuba Nnaggulumbya" },
+      { name: "Kibbula Kasumba Malinzi", seat: "Mukoni – Buddu", note: "Emituba: Kiddu e Kooki (Betty Kamya); Njalabirese mu Buddu (Bazira Ssewanyana); Kanyamaiso e Buddu (Bro Donasio Mwebe); Luyombya mu Buddu; Kitatta mu Buddu — awamu 13" },
+      { name: "Kalanzi Kalamaze", seat: "Lugo – Kyaddondo", note: "Emituba: James Masembe e Lugo; Kalibbala e Ndese – Nakifuma" },
+      { name: "Ssebbowa", seat: "Kawanga – Buweekula" },
+      { name: "Nsambya", seat: "Busumba – Bulemeezi" },
+    ],
+  },
+
+  nkima: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Nkima",
+    amasiga: [
+      { name: "Kinyolo Nasaabyenda Kkonkome-bbi", seat: "Kisugu – Kyaddondo", note: "Katikkiro" },
+      { name: "Ssebucu", seat: "Malangala – Busujju", head: "Balasi Kiwagalo" },
+      { name: "Lujumba", seat: "Bulenga – Bbira – Busiro" },
+      { name: "Jjumba", seat: "Bunjakko – Mawokota" },
+      { name: "Mmande Nkumbi Nabbamba", seat: "Kabembe – Kyaggwe" },
+      { name: "Kisambu Nabbamba Kibambire", seat: "Wankoba – Busambu – Bulemeezi" },
+      { name: "Mwanga Mugereka", seat: "Kyamuwooya – Bulemeezi" },
+      { name: "Ssenyondwa Lugulukira Ssemuggala Mawamba", seat: "Buggala – Ssese" },
+      { name: "Kamuwanda", seat: "Kigunda – Ssingo" },
+    ],
+  },
+
+  "ngabi-nsamba": {
+    archiveHeading: "Amasiga Mu Kika Ky'engabi",
+    amasiga: [
+      { name: "Mutaawe – Ssekyonda", seat: "Nandwagudde – Busujju", note: "Abakyondwa abayuunzi ba Kabaka" },
+      { name: "Muwonge", seat: "Jjalamba – Mawokota" },
+      { name: "Bukenya", seat: "Musuulangoma – Gomba" },
+      { name: "Mulindwa", seat: "Buyaga – Buddu" },
+      { name: "Yiga", seat: "Migamba – Mawokota", note: "Omuva His Excellence Prof. G. B. Bukenya" },
+      { name: "Kasumba Mpungu", seat: "Bujaju – Buddu" },
+      { name: "Ssemaganda", seat: "Mulole – Ssese", note: "Omuva Haji Kanaabi Hood, omusomesa e Kampala High School, omwana wa Nsamba e Kyotera" },
+      { name: "Ssendikaddiwa", seat: "Ssaka – Butambala", note: "Bagamba nti tebalina kakwate konna ne Nsamba; mulimu omutuba gwa Luberenga" },
+      { name: "Katomera", seat: "Bulungu – Butambala" },
+      { name: "Lugwa", seat: "Kibulala – Ssingo" },
+      { name: "Kitwe", seat: "Bweya – Butambala" },
+      { name: "Kaye Kyera", seat: "Bulera – Mawokota" },
+      { name: "Mateega", seat: "Nŋomanene – Gomba", note: "Ssentebe w'e Gayaaza – Musaale Ssentema – Mt II Kakiri – Busiro mw'asibuka era ayinza okuyamba" },
+      { name: "Jaawo", seat: "Maya – Busiro" },
+      { name: "Kalwanyi", seat: "Lambu – Busiro" },
+      { name: "Ssabalangira Muyomba", seat: "Kijjude – Mawokota", note: "Omuva Nsamba Owakasolya" },
+      { name: "Mutunzi", seat: "Bwamijja – Buddu", note: "Omuzaalibwa Nnamasole Evalini Kulabako Maasombira" },
+      { name: "Nakakakkulu", seat: "Kabuye – Buddu" },
+      { name: "Kalanda", seat: "Ddimo – Buddu" },
+      { name: "Kasanya", seat: "Nkalwe – Buddu" },
+      { name: "Lubyayi", seat: "Butale – Buddu" },
+      { name: "Gasubwa", seat: "Magando – Buddu" },
+      { name: "Bikwaya", seat: "Nakigalala – Busiro" },
+      { name: "Busajja", seat: "Buzooba – Buddu" },
+      { name: "Kasiita", seat: "Kabira – Buddu" },
+      { name: "Lwogerere", seat: "Bukoyolo – Buddu", note: "Tim Tusuubira Kiwanuka mu Kisiita – Butenga" },
+      { name: "Mulamago", seat: "Kyesimba – Bulemeezi" },
+    ],
+  },
+
+  njovu: {
+    archiveHeading: "Amasiga Mu Kika Ky'enjovu",
+    amasiga: [
+      { name: "Kiro Kikomeko", seat: "Luubu – Mawokota" },
+      { name: "Ggulu", seat: "Busaabala – Kyaddondo" },
+      { name: "Kakembo", seat: "Zzirannumbu – Kyaddondo" },
+      { name: "Ntambi*", seat: "Lubya – Kyaddondo", note: "Erikulemberwa Bishop Kakembo Kaweera owa S.D.A." },
+      { name: "Sebanyiiga", seat: "Kyaazi – Kojja – Kyaggwe" },
+      { name: "Ssentomero", seat: "Zzinga – Bukunja – Kyaggwe" },
+      { name: "Ssemmambo Ssebuwufu Ssewandigi", seat: "Buligi – Butambala" },
+    ],
+  },
+
+  mmamba: {
+    archiveHeading: "Amasiga Mu Kika Ky'emmamba Namakaka",
+    note: "The archive titles this register \"Emmamba Namakaka\" — attached here to the Mmamba (Gabunga) clan, the Mmamba clan distinct from Mmamba Kakoboza, which has its own register above.",
+    amasiga: [
+      { name: "Wampona Mubiru Kirimungo", seat: "Busami – Busiro" },
+      { name: "Ssebawutu", seat: "Nsaamu – Mawokota" },
+      { name: "Mugula", seat: "Entebe – Busiro" },
+      { name: "Katenda", seat: "Zziba – Kyaggwe" },
+      { name: "Kisuze", seat: "Katwe Nakawuka – Busiro" },
+      { name: "Kiruulu", seat: "Bwerenga – Busiro*" },
+      { name: "Ssenfuma", seat: "Kanyike – Mawokota" },
+      { name: "Kiyaga", seat: "Ssanda – Busiro" },
+      { name: "Mmiiro Musaazi", seat: "Luubu – Mawokota", head: "Namiiro Nayisati" },
+      { name: "Mmiiro", seat: "Kobero – Zzinga – Busiro" },
+      { name: "Namaaba Kiyaga Gutwegutwe", seat: "Kojja Kalulu – Kyaggwe" },
+      { name: "Luvule", seat: "Bubeke – Sserinnya – Ssese" },
+      { name: "Kasenke", seat: "Ntolomwe – Butambala" },
+      { name: "Ssennaku Katenda", seat: "Mayirikiti – Kyaggwe" },
+      { name: "Mulinde", seat: "Mulajje – Kyaggwe" },
+      { name: "Mulinda", seat: "Namaliri – Kyaggwe" },
+      { name: "Minyanya", seat: "Mpatta – Buvuma" },
+      { name: "Kibeevu", seat: "Ssi – Bukunja – Kyaggwe", note: "Okuva mu lya Katenda e Zziba" },
+      { name: "Kisanje", seat: "Maggyo – Buvuma" },
+      { name: "Wabbuzi – Muzito", seat: "Bugaya" },
+      { name: "Ssekibo", seat: "Kibanga – Ssese" },
+      { name: "Lugunju", seat: "Bbira – Busiro" },
+      { name: "Kagenda", seat: "Luwunga – Mawokota", note: "Okuva mu lya Mugula e Entebe" },
+      { name: "Balukake", seat: "Mpondwe – Mawokota" },
+      { name: "Kivuba", seat: "Buvuma – Buvuma" },
+      { name: "Nnyenje", seat: "Kkoome – Ssese" },
+      { name: "Bukulubwawadda", seat: "Kamunye – Busiro", note: "Okuva mu lya Mugula e Entebe" },
+      { name: "Ssempagama Sseggwanga", seat: "Manyago – Busiro" },
+      { name: "Lutimba", seat: "Kibulala – Ssingo" },
+      { name: "Mpumbu Mukalazi", seat: "Zziba (Buwaya) – Busiro", note: "Okuva mu lya Mugula e Entebe" },
+    ],
+  },
+
+  butiko: {
+    archiveHeading: "Amasiga Mu Kika Ky'obutiko",
+    amasiga: [
+      { name: "Kabanda", seat: "Nkoowe – Busiro" },
+      { name: "Nalumoso", seat: "Wagaba – Busiro" },
+      { name: "Katimbo", seat: "Ssewampaka – Wagaba – Busiro" },
+      { name: "Kajugujwe", seat: "Bukeerere – Kyaggwe" },
+      { name: "Bayegga", seat: "Lugeye – Busiro" },
+      { name: "Kimomera", seat: "Manze – Busiro" },
+      { name: "Ssemagonge", seat: "Nassaka – Kyaggwe" },
+      { name: "Binakutabira", seat: "Nnyanjo – Bulemeezi" },
+    ],
+  },
+
+  nvuma: {
+    archiveHeading: "Amasiga Mu Kika Ky'envuma",
+    amasiga: [
+      { name: "Walugumba", seat: "Tomi/Sebbajo – Kyaddondo" },
+      { name: "Kasirye", seat: "Naggyo – Kyaddondo" },
+      { name: "Ggita", seat: "Nansangwa – Kyaddondo" },
+      { name: "Ssekaggya", seat: "Bbumbu – Kyaddondo" },
+      { name: "Kasirivu", seat: "Nangabo – Kyaddondo" },
+      { name: "Gugu Ssekasiko*", seat: "Bubembe – Ssese" },
+      { name: "Ssendege", seat: "Bugambo/Bukasa* – Ssese" },
+      { name: "Mufuumula", seat: "Nyimu – Kyaggwe" },
+      { name: "Kibondwe/Makaka", seat: "Bulondo – Buvuma" },
+      { name: "Banoba", seat: "Buwe – Kyaggwe" },
+    ],
+  },
+
+  kibe: {
+    archiveHeading: "Amasiga Mu Kika Ky'ekibe",
+    amasiga: [
+      { name: "Ttaka", seat: "Wambogwe – Kyaggwe" },
+      { name: "Ssemakubire", seat: "Kigaya – Kyaggwe" },
+      { name: "Gwampa", seat: "Buwampa (Bugolo) – Kyaggwe" },
+      { name: "Mugerere", seat: "Namubiru – Kyaggwe" },
+      { name: "Muwooya", seat: "Namukono – Kyaggwe" },
+      { name: "Kiggo", seat: "Kkoba – Kyaggwe" },
+      { name: "Luvuuma", seat: "Masa – Kyaggwe" },
+      { name: "Bugudde", seat: "Kokotero – Kyaggwe" },
+      { name: "Ssembuya", seat: "Kikoma – Kyaggwe" },
+      { name: "Kyoto", seat: "Mpirivuma – Kyaggwe" },
+      { name: "Mpasa", seat: "Nakibe – Kyaggwe" },
+      { name: "Kayemba", seat: "Ssalye – Kyaggwe" },
+      { name: "Kalinge", seat: "Kisaasi – Kyaggwe" },
+      { name: "Bwogi", seat: "Ganjo – Kyaggwe" },
+      { name: "Mbugayamunyolo", seat: "Muluyobyo – Kyaggwe" },
+    ],
+  },
+
+  nkusu: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Enkusu",
+    note: "Balina amasiga 5 n'Omutuba Omulangira — the clan has 5 amasiga plus a royal Mutuba.",
+    amasiga: [
+      { name: "Kitogero", seat: "Nnyondo – Mawokota" },
+      { name: "Kinda", seat: "Bufumira/Namutamala – Ssese" },
+      { name: "Kiganga", seat: "Makonge – Kyaggwe" },
+      { name: "Kayemba", seat: "Ntolomwe – Butambala" },
+      { name: "Kadduwamala", seat: "Butega – Ssingo" },
+    ],
+  },
+
+  mbogo: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeembogo",
+    amasiga: [
+      { name: "Kaddu Ssekayiba", seat: "Ssenge – Busiro", head: "Omutaka Samuel Mukwaya" },
+      { name: "Walakira", seat: "Bbungo – Butambala", head: "Omutaka Haji Mustafa Nsonzi" },
+      { name: "Ssemitego", seat: "Nnyanzi – Ssingo", head: "Omutaka Mujujumbya Lule Edward", note: "Eyasikira Paul Kizire" },
+      { name: "Wavvuumira Kasamba", seat: "Busamba – Busiro", head: "Omutaka Deo Ssentamu" },
+      { name: "Kyaggambiddwa*", seat: "Kyasa (Kingo) – Buddu", head: "Omutaka Prof. Edward Patrick Ddumba Ssentamu" },
+    ],
+  },
+
+  musu: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Omusu",
+    amasiga: [
+      { name: "Muyingo", seat: "Ssama – Mawokota", note: "Omuli Obukulu bw'Ekika, era likulemberwa Muyingo yennyini" },
+      { name: "Kimuli", seat: "Koome – Kyaggwe" },
+      { name: "Kabanvu", seat: "Kibanda – Ssingo (Bulega)" },
+      { name: "Nakayima", seat: "Kiruddu – Kojja – Kyaggwe", head: "Bireese Yokana" },
+      { name: "Nakaddu Kikaawa*", seat: "Bunono – Busiro / Kawoko – Buddu" },
+      { name: "Kanyolo Kikaawa", seat: "Kawoko – Buddu" },
+      { name: "Nkalubo Ssebugwawo*", seat: "Bunono – Busiro", head: "Nsimbe Obadia ow'e Ndejje" },
+      { name: "Mugaaju*", seat: "Bugonzi – Buddu", head: "Dr. Jack Jjagwe", note: "Baali ba mu ssiga lya Muyingo" },
+      { name: "Kagombe*", seat: "Busula/Buttula – Rakai/Kooki", head: "Daniel Taamusange" },
+    ],
+  },
+
+  ndiga: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Endiga",
+    amasiga: [
+      { name: "Sserunkuuma", seat: "Mpami – Mawokota" },
+      { name: "Luwanga", seat: "Mpami – Mawokota" },
+      { name: "Nnamusota", seat: "Maziba – Mawokota" },
+      { name: "Ssemiti", seat: "Buyamba* – Mawokota" },
+      { name: "Ndalu", seat: "Mpanga – Mawokota" },
+      { name: "Nakabaale", seat: "Mmembe – Mawokota" },
+      { name: "Kiguli", seat: "Sseenene – Mawokota" },
+      { name: "Ssekkoba", seat: "Busanga* (Kkoome) – Kyaggwe" },
+      { name: "Buvvi", seat: "Bunamweri – Mawokota" },
+      { name: "Lutalo", seat: "Buyijja – Mawokota", note: "Omutuba Muligo n'Olunyiriri Ssebambulidde" },
+      { name: "Mpungu", seat: "Bweya – Butambala" },
+      { name: "Ssekanoni", seat: "Bussi (Bunnamweri) – Mawokota" },
+      { name: "Ssekassamba", seat: "Busamba (Mpami) – Mawokota" },
+      { name: "Kaggwe", seat: "Bukaggwe – Mawokota" },
+      { name: "Wakikunga", seat: "Kitiko (Mutungo) – Kyaggwe" },
+      { name: "Nakiyenje", seat: "Bungiri – Busiro" },
+      { name: "Kibeevu*", seat: "Ssi – Bukunja – Kyaggwe" },
+      { name: "Kabudama", seat: "Bbaale – Bugerere", note: "Lyatongozebwa mu 1964 Omutaka Lwomwa Rev. Canon Kezekia Ssekubunga Kaggwa" },
+    ],
+  },
+
+  kiwere: {
+    archiveHeading: "Amasiga Mu Kika Ky'ekiwere",
+    amasiga: [
+      { name: "Bijenge", seat: "Kirinda – Buweekula" },
+      { name: "Nkuuna", seat: "Kyenunze – Bulemeezi" },
+      { name: "Luswakere", seat: "Bikoma – Ssingo" },
+      { name: "Ngabo Tegwa Tega Busolo" },
+    ],
+  },
+
+  nsuma: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Nsuma",
+    amasiga: [
+      { name: "Ggulu", seat: "Kkobero – Bugulu – Buvuma" },
+      { name: "Vvunda", seat: "Bwanga – Bukibondwe – Buvuma" },
+      { name: "Ntambi", seat: "Bubaga – Buvuma" },
+      { name: "Zizinga", seat: "Buzinga – Buvuma" },
+      { name: "Mirambo", seat: "Butende – Buvuma" },
+      { name: "Zizinga", seat: "Buzizinga – Buvuma" },
+      { name: "Makaka", seat: "Bulimira – Bukibondwe – Buvuma" },
+      { name: "Wamwera", seat: "Bumwena – Buvuma" },
+      { name: "Kikuka", seat: "Lungujja – Buziri – Buvuma" },
+      { name: "Busoba", seat: "Busoba – Buvuma" },
+    ],
+  },
+
+  nswaswa: {
+    archiveHeading: "Amasiga Mu Kika Ky'enswaswa",
+    amasiga: [
+      { name: "Kisuule", seat: "Okuva e Bugabo (Buvuma) okudda e Makindu – Najja – Buikwe, Kyaggwe" },
+      { name: "Yihara", seat: "Buyihara – Buvuma" },
+      { name: "Munyingu", seat: "Okuva e Bugabo – Buvuma okudda e Bukubizi Bugolo – Nyenga, Kyaggwe" },
+      { name: "Kimbirye", seat: "Okuva e Bululi – Nakawando – Buvuma okudda e Ziba – Ndolwa – Buikwe, Kyaggwe" },
+      { name: "Mwavu", seat: "Okuva e Buwanzi – Buvuma okudda e Busemiyi Lweru – Buikwe, Kyaggwe" },
+      { name: "Kawundo", seat: "Buwanzi – Buvuma" },
+      { name: "Kambugu", seat: "Kasana – Luweero – Bulemeezi" },
+    ],
+  },
+
+  nnamungoona: {
+    archiveHeading: "Amasiga Mu Kika Kya Namuŋŋoona",
+    amasiga: [
+      { name: "Mugwe", seat: "Kyalusowe – Buddu" },
+      { name: "Kidiba", seat: "Mbule – Mawokota" },
+      { name: "Taliro", seat: "Bisanje – Buddu" },
+      { name: "Kabajjo", seat: "Kibindu – Buddu" },
+      { name: "Lukindu", seat: "Kasaka – Buddu" },
+    ],
+  },
+
+  kinyomo: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Kinyomo",
+    amasiga: [
+      { name: "Muwawu", seat: "Kinyaga – Buddu" },
+      { name: "Kagezi", seat: "Katinnyondo – Buddu" },
+      { name: "Kalinzi", seat: "Katinnyondo – Buddu" },
+      { name: "Kagogwe", seat: "Kyasa – Buddu" },
+      { name: "Kibunga", seat: "Zirizi – Buddu" },
+      { name: "Mutunga", seat: "Bugera – Buddu" },
+      { name: "Kanaaggwa", seat: "Kyambogo – Buddu" },
+      { name: "Nsanga", seat: "Nsangwa – Buddu" },
+      { name: "Kawannaku", seat: "Kyasa – Buddu" },
+      { name: "Ttabaalo", seat: "Kyakudduse – Buddu" },
+      { name: "Kyesige", seat: "Kyasa – Buddu" },
+      { name: "Bittino" },
+      { name: "Bbukka" },
+      { name: "Nsi" },
+    ],
+  },
+
+  kayozi: {
+    archiveHeading: "Amasiga Mu Kika Ky'akayozi",
+    amasiga: [
+      { name: "Ssendaaza", seat: "Bulaaza" },
+      { name: "Ssewanyaga", seat: "Mmanja – Katebo – Mawokota" },
+      { name: "Makaatu", seat: "Ggolola – Ggomba" },
+      { name: "Magambo", seat: "Kyango – Mawokota" },
+      { name: "Lusinga", seat: "Kyango – Mawokota" },
+    ],
+  },
+
+  ekkobe: {
+    archiveHeading: "Amasiga Mu Kika Ky'ekkobe",
+    amasiga: [
+      { name: "Namukangula", seat: "Bbongole – Gomb. Musaale Buwama – Mawokota" },
+      { name: "Lwabiriza", seat: "Katolingo – Gomb. Mutuba II Namayumba – Busiro" },
+      { name: "Kawuma Ssemanyomo", seat: "Wassozi – Mawokota" },
+      { name: "Kakinda", seat: "Jjalamba – Gomb. Musaale Buwama – Mawokota", note: "Omwana wa Ssekyemanywa" },
+      { name: "Kabengwa", seat: "Bulumbi – Gomb. Musaale Kasanje – Busiro" },
+      { name: "Kaseenya", seat: "Buseenya – Butambala", note: "Omwana wa Magere" },
+      { name: "Wanda", seat: "Misindye – Mawokota", note: "Omwana wa Wakinyankaali" },
+      { name: "Busuulwa", seat: "Nkozi – Gomb. Kituntu – Mawokota" },
+      { name: "Kayiwa", seat: "Buyiwa – Gomb. Musaale Buwama – Mawokota", note: "Omwana wa Bululu" },
+      { name: "Ssekweyama", seat: "Kibagga" },
+      { name: "Mabiriizi", seat: "Kimbo" },
+      { name: "Kasigala", seat: "Bulamba" },
+      { name: "Majugwa", seat: "Kikunye" },
+    ],
+  },
+
+  "mutima-muyanja": {
+    archiveHeading: "Amasiga Mu Kika Ky'omutima (Abayanja)",
+    note: "The archive prints a registry number after each essiga (e.g. \"- 6\"); those ordering digits are omitted here.",
+    amasiga: [
+      { name: "Lugemwa Lugaaju", seat: "Bulonge – Buddu", head: "Wajanzi e Lubaga Wakaliga – Kampala" },
+      { name: "Lujaganya", seat: "Kyabbogo – Buddu", head: "Emmanuel Lujaganya e Mpugwe – Buddu" },
+      { name: "Nattuuma Namuna", seat: "Nkuke – Buddu", head: "Y. Kayoto" },
+      { name: "Byuma", seat: "Nakiyaga – Buddu", head: "Y. Bbaale" },
+      { name: "Luswata", seat: "Kafuluma – Buddu", head: "Kizito Mugamba e Meeru" },
+      { name: "Lukaaga", seat: "Butale/Buggala – Buddu" },
+      { name: "Kaseegu", seat: "Kyamuyimba – Buddu", head: "Owek. Absolom Bwanika Bbaale e Luweero" },
+      { name: "Ndawula", seat: "Ssanje – Buddu", head: "Bbaale Serverino e Ssanje" },
+      { name: "Lunywnamunnyu", seat: "Namwanzi – Buddu", head: "Mayanja John Nkoba" },
+      { name: "Wanaana", seat: "Nabugabo – Buddu", head: "Bbaale e Nabugabo – Buddu" },
+      { name: "Omukundi", seat: "Mabowa – Buddu", head: "JB. Muyiggwa e Lukaya" },
+      { name: "Ddungu", seat: "Minyinya – Buddu", head: "James Mayanja" },
+      { name: "Yombo", seat: "Bugonzi – Buddu", head: "John Bbaale Ssajjalyabeene e Bugonzi" },
+      { name: "Kagolo", seat: "Ddegeya – Ggomba", head: "Swaibu Ddamulira" },
+      { name: "Lukanga", seat: "Matale", head: "Gayitakubibi Walusansa Eria Paulo Lukanga III" },
+    ],
+  },
+
+  "mutima-musagi": {
+    archiveHeading: "Amasiga Mu Kika Ky'Omutima Omusaggi",
+    amasiga: [
+      { name: "Lukanga", seat: "Lusiba – Gombolola Kasambya – Buweekula", note: "Lino ly'essiga ly'Obujjajja" },
+      { name: "Kagolo", seat: "Kyango – Buddu", note: "Yadda ku Lukanga mu kusumika Nakirembeka" },
+      { name: "Kalamazi", seat: "Kabira – Buddu" },
+      { name: "Kalizibwa", seat: "Mujuju – Buddu" },
+      { name: "Nakyana", seat: "Ŋŋono – Buddu" },
+      { name: "Lwamasaka", seat: "Kyabakuza – Buddu", note: "Omulondwa Nakirembeka" },
+      { name: "Kikama", seat: "Kamulegu – Buddu" },
+      { name: "Kinaalwa", seat: "Bulawula – Buddu" },
+      { name: "Balakwa", seat: "Bulenga – Busiro" },
+      { name: "Kyekoona", seat: "Nakatoogo – Buddu" },
+      { name: "Mukiibi", seat: "Kitenga – Buddu" },
+      { name: "Lubaama", seat: "Nkoni – Buddu" },
+      { name: "Kamemuko", seat: "Nkoma – Buddu" },
+      { name: "Munyolaaganze", seat: "Nsangwa – Buddu" },
+      { name: "Lukaaga", seat: "Butaale – Buddu" },
+    ],
+  },
+
+  ntalaganya: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Ntalaganya",
+    amasiga: [
+      { name: "Lutwama", seat: "Kakiri – Busiro" },
+      { name: "Balamaga Wasswa", seat: "Buwanguzi – Ggomba" },
+      { name: "Ssewaalinte", seat: "Ggaŋŋama – Bulemeezi" },
+      { name: "Nalumenya", seat: "Njolo – Busiro" },
+      { name: "Mugambajjolo", seat: "Kyaliwajjala – Kyaddondo" },
+      { name: "Bbambaga", seat: "Bbambaga – Bulemeezi" },
+      { name: "Ndimukazi", seat: "Buwanguzi – Ggomba" },
+      { name: "Kalamazi", seat: "Jjinja – Kyaddondo" },
+      { name: "Wadda", seat: "Kiwawu – Busujju" },
+      { name: "Kyaddondo", seat: "Kawempe – Kyaddondo" },
+      { name: "Bulijjanga", seat: "Bbambaga – Bulemeezi" },
+      { name: "Ssebabi", seat: "Buggala – Bulemeezi" },
+      { name: "Kiribatta", seat: "Kibutamu – Ggomba" },
+      { name: "Ssensamba", seat: "Kalyabayoga – Ggomba" },
+      { name: "Lusonzi", seat: "Kasozikake – Ggomba" },
+      { name: "Bukulu", seat: "Kabubula – Bulemeezi" },
+      { name: "Ssebunnya", seat: "Bunnya – Ggomba" },
+    ],
+  },
+
+  nte: {
+    archiveHeading: "Amasiga Mu Kika Ky'ente",
+    note: "Entries marked Lubombwe, Kaasa or Kayinda carry those grouping labels in the archive as printed.",
+    amasiga: [
+      { name: "Nakaana", seat: "Mulema – Buddu" },
+      { name: "Lukyamuzi", seat: "Mulema – Buddu" },
+      { name: "Lwegaba", seat: "Kabonero (Mulema) – Buddu" },
+      { name: "Kajojo", seat: "Kikukumbi – Buddu" },
+      { name: "Ddungu", seat: "Bukala – Kazinga – Buddu" },
+      { name: "Kagayo", seat: "Bukwale – Buddu" },
+      { name: "Mbiriire", seat: "Kasago – Buddu" },
+      { name: "Lwera", seat: "Nabugabo – Buddu" },
+      { name: "Lwera", seat: "Kyamabaale – Buddu" },
+      { name: "Namuyira", seat: "Bugabo – Kakira – Buddu" },
+      { name: "Bugala Kagolo", seat: "Kyamiiru – Buddu" },
+      { name: "Lubowa", seat: "Mugombe – Buddu" },
+      { name: "Luwondera", seat: "Bulaga – Kiyumba – Buddu" },
+      { name: "Njuki", seat: "Kasago – Buddu" },
+      { name: "Kiwaanyizi", seat: "Mulengeka – Buddu" },
+      { name: "Muganji", seat: "Nakayima – Buweekula" },
+      { name: "Bulondwa", seat: "Majiri – Buddu", note: "Aliko ye Kyakugambiddwa Kiwanuka Paul ow'e Kasoso – Butambala" },
+      { name: "Mulindwa", seat: "Buganga – Kalwanga – Mawokota" },
+      { name: "Muganji", seat: "Makulungo – Butambala", note: "Okuva waggulu ba Nte ya Nkuggu" },
+      { name: "Kalibata", seat: "Kagaba – Kiima – Ssingo", note: "Lubombwe" },
+      { name: "Nakaddu", seat: "Nabikasa – Buddu", note: "Lubombwe" },
+      { name: "Nakaddu", seat: "Lusiba – Ssingo", note: "Lubombwe" },
+      { name: "Namutale", seat: "Nsiisi – Ssingo", note: "Lubombwe" },
+      { name: "Kituzi", seat: "Nankwale – Ssingo", note: "Lubombwe" },
+      { name: "Ssebyayi", seat: "Kitama – Buweekula", note: "Lubombwe" },
+      { name: "Mugenyi", seat: "Nkwaju – Ndoddo – Ggomba", note: "Lubombwe" },
+      { name: "Kigombe", seat: "Mabaale – Kooki", note: "Lubombwe" },
+      { name: "Kazaana", seat: "Bunyala – Bugerere", note: "Lubombwe" },
+      { name: "Kitandwe", seat: "Gongwe – Kakindu – Buddu", note: "Lubombwe" },
+      { name: "Bbinga", seat: "Mubende – Buweekula", note: "Lubombwe" },
+      { name: "Nkoko", seat: "Kasambya – Mawogola", note: "Lubombwe" },
+      { name: "Sudani", seat: "Bugangazi", note: "Lubombwe" },
+      { name: "Kasowa", seat: "Buddu", note: "Lubombwe" },
+      { name: "Mbagyo", seat: "Kalagala – Kkooki", note: "Kaasa" },
+      { name: "Naganda", seat: "Lugongo – Kkooki", note: "Kaasa" },
+      { name: "Kitotera", seat: "Luwama – Bugangazi", note: "Kayinda" },
+      { name: "Ndingiro", seat: "Bugangazi", note: "Kayinda" },
+    ],
+  },
+
+  "mazzi-ga-kisasi": {
+    archiveHeading: "Amasiga Mu Kika Ky'amazzi G'ekisasi",
+    amasiga: [
+      { name: "Namutale", seat: "Bigga – Buddu" },
+      { name: "Kakooto", seat: "Kajuna – Buddu" },
+      { name: "Bwemi", seat: "Kabanga – Buddu" },
+      { name: "Lubaya", seat: "Kajuna – Buddu" },
+      { name: "Nnyalwa", seat: "Kyesiiga – Buddu" },
+      { name: "Mulindwa", seat: "Kasaka – Buddu" },
+    ],
+  },
+
+  nkejje: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Nkejje",
+    amasiga: [
+      { name: "Ssekindi", seat: "Ggamba – Kyaggwe" },
+      { name: "Kikanga", seat: "Lugala – Kyaggwe" },
+      { name: "Kinyonyi", seat: "Kiziba – Kyaggwe" },
+      { name: "Luminsa", seat: "Ssugu – Kyaggwe" },
+      { name: "Kibanda", seat: "Bbulamazzi – Kyaggwe" },
+      { name: "Kagiri", seat: "Butagaya – Kyaggwe" },
+      { name: "Luyima", seat: "Kkumbu – Kyaggwe" },
+      { name: "Kabere", seat: "Kikajja – Kyaggwe" },
+      { name: "Sserukundi", seat: "Bukasa – Ssese" },
+      { name: "Kkaaya", seat: "Buvuma" },
+      { name: "Nampunta", seat: "Mpuku – Kyaggwe" },
+      { name: "Mayemba", seat: "Ntunda – Bukunja – Kyaggwe" },
+    ],
+  },
+
+  ndiisa: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Ndiisa",
+    amasiga: [
+      { name: "Bikyekyere", seat: "Kabira – Buddu" },
+      { name: "Mulindwa", seat: "Nabutongwa – Buddu", head: "Vincent Kaliika" },
+      { name: "Kubabiswa", seat: "Ssunga – Gombolola Mutuba III – Buddu" },
+      { name: "Mwanamukyaze", seat: "Busere – Buddu" },
+      { name: "Sajjwa", seat: "Bulawula – Buddu" },
+      { name: "Kasoma", seat: "Kisabwe – Buddu" },
+      { name: "Kigeetwala", seat: "Sekinga – Buddu" },
+    ],
+  },
+
+  njobe: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Njobe",
+    amasiga: [
+      { name: "Magegere", seat: "Mpumudde – Ssingo" },
+      { name: "Ssebitoogo", seat: "Manyonyu – Ssingo" },
+      { name: "Ssemayengo", seat: "Kalyoowa – Bugerere" },
+      { name: "Kagga", seat: "Kiisi – Bugangazzi", note: "Erimu ku masaza ge twafiirizibwa mu 1964" },
+      { name: "Ssentubiro", seat: "Kiisi – Bugangazzi" },
+      { name: "Ssemyalo*", seat: "Kidduumi – Ssingo" },
+    ],
+  },
+
+  nkerebwe: {
+    archiveHeading: "Amasiga Mu Kika Ky'e Nkerebwe",
+    amasiga: [
+      { name: "Bbanga", seat: "Nneenyodde – Ssingo" },
+      { name: "Ssemugabi", seat: "Kabuuza – Kyaddondo" },
+      { name: "Matumpaggwa", seat: "Bwadda – Ssingo" },
+      { name: "Ssendyona", seat: "Mpakabula – Busiro" },
+      { name: "Mikira", seat: "Nakyerira – Ssingo" },
+    ],
+  },
+
+  ngabi: {
+    archiveHeading: "Amasiga Agakola Ekika Ky'engabi Ennyunga",
+    amasiga: [
+      { name: "Bwende", seat: "Kagere – Buddu" },
+      { name: "Sonzi", seat: "Kooki" },
+      { name: "Kyabukasa", seat: "Kaliisizo – Buddu", note: "Lukulemberwa Cardinal Emanuel Wamala" },
+      { name: "Ngoga", seat: "Kanabulemu – Buddu" },
+      { name: "Namuyimba" },
+      { name: "Kapupa" },
+      { name: "Kamiiru" },
+    ],
+  },
+
+  nkula: {
+    archiveHeading: "Amasiga Mu Kika Ky'abeddira Enkula",
+    amasiga: [
+      { name: "Migaya", seat: "Nabumbugu – Ssingo" },
+      { name: "Kasuku", seat: "Bukalango – Busiro" },
+      { name: "Masunsu", seat: "Nalongo – Bulemeezi" },
+      { name: "Kimata", seat: "Ttente/Mayobe – Bugerere" },
+      { name: "Mpirima", seat: "Kiwanda – Ssingo" },
+      { name: "Lubuto", seat: "Kyereere – Kiboga – Ssingo" },
+    ],
+  },
+};
+
+export function getClanAmasiga(slug: string): ClanAmasigaEntry | undefined {
+  return CLAN_AMASIGA[slug];
+}

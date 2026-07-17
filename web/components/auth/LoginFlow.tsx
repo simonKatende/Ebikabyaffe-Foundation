@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { isPhoneRegistered, getRegisteredName, registerPhone } from "@/lib/auth/registry";
+import { recordRegistration } from "@/lib/stats";
 
 // ── Frontend mock of the planned phone-first OTP sign-in ────────────────────
 //
@@ -119,6 +120,9 @@ export function LoginFlow({ initialMode = "create" }: { initialMode?: LoginMode 
             .join(" ");
           registerPhone(phone!, name);
           loginWithPhone({ name, phone: phone! });
+          // A genuinely new account — tick the site-wide "Baganda registered"
+          // counter everywhere it is displayed. Sign-in (below) does not.
+          recordRegistration();
           toast(`Welcome, ${firstName.trim()}! Now choose your clan.`);
         } else {
           loginWithPhone({ name: registeredName!, phone: phone! });

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardBody, DarkCard } from "@/components/ui/Card";
 import { EmpangoCountdown } from "@/components/home/EmpangoCountdown";
 import { getClan } from "@/lib/clans";
+import { useStats, clanMemberCount, formatMembers } from "@/lib/stats";
 
 export function HomeDashboard() {
   const { lang, user } = useAuth();
@@ -14,6 +15,9 @@ export function HomeDashboard() {
 
   const firstName = user.name.split(" ")[0];
   const clan = user.clanSlug ? getClan(user.clanSlug) : undefined;
+  // Live member count for the joined clan — ticks immediately on a join
+  const stats = useStats();
+  const liveCount = clan ? clanMemberCount(stats, clan.slug) : null;
 
   // Greeting text switches between English and Luganda based on the user's language preference
   const greeting =
@@ -85,7 +89,7 @@ export function HomeDashboard() {
             </div>
             <div className="ml-auto shrink-0 text-right">
               <span className="block text-[13px] text-muted">
-                {clan.memberCount ? `${clan.memberCount} members` : "Member count coming soon"}
+                {liveCount !== null ? formatMembers(liveCount) : "Member count coming soon"}
               </span>
               <Link href="/profile" className="text-[11px] text-royal2 no-underline hover:underline">
                 Manage in profile →

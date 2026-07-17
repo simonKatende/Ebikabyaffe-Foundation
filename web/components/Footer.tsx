@@ -1,4 +1,11 @@
+"use client";
+
+import { useStats, registeredTotal, verifiedTotal, formatCount } from "@/lib/stats";
+
 export function Footer() {
+  // Live counters — same store the hero stats bar reads (lib/stats.ts), so a
+  // new registration or verification updates this line immediately too.
+  const stats = useStats();
   return (
     // Sits in normal document flow (not fixed) — layout.tsx uses a flex
     // column with <main> set to flex-1, so this only appears pinned to the
@@ -13,10 +20,10 @@ export function Footer() {
         &ldquo;Okutumbula n&apos;okusitula Ebikabyaffe&rdquo; — To promote and uplift our heritage
       </p>
       <p className="text-[11px] text-white/50 mt-0.5">
-        <strong className="text-gold2">847,213</strong> Baganda ·{" "}
+        <strong className="text-gold2">{formatCount(registeredTotal(stats))}</strong> Baganda ·{" "}
         <strong className="text-gold2">56</strong> Clans ·{" "}
         <strong className="text-gold2">18</strong> Amasaza ·{" "}
-        <strong className="text-gold2">12,847</strong> Verified by Bataka · NGO
+        <strong className="text-gold2">{formatCount(verifiedTotal(stats))}</strong> Verified by Bataka · NGO
         Bureau Reg. 003/NGOB/2024
       </p>
       <p className="text-[10px] text-white/35 mt-0.5">

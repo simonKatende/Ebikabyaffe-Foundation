@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { seedMembers } from "./mockMembers";
+import { recordVerification } from "@/lib/stats";
 import type {
   PanelMember,
   AuditEntry,
@@ -124,11 +125,16 @@ function updateMember(
 }
 
 export function verifyMember(id: string) {
+  const wasVerified =
+    state.members.find((m) => m.id === id)?.status === "verified";
   updateMember(
     id,
     { status: "verified", decidedAt: today(), decisionNote: null },
     (m) => `Verified "${m.fullName}"`
   );
+  // Tick the site-wide "Verified by Bataka" counter — but never twice for
+  // the same member.
+  if (!wasVerified) recordVerification();
 }
 
 export function declineMember(id: string, reason: string) {
