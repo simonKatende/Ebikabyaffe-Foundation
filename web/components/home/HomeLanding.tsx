@@ -22,33 +22,30 @@ const ANIM = {
 const PILLARS = [
   {
     icon: "👑",
-    title: "Abalangira n'Abambejja",
-    sub: "The royal clan — princes and princesses",
+    title: "The Pillar of Abalangira n'Abambejja",
+    sub: "The pillar of Abalangira n'Abambejja is led by the Ssabalangira.",
     head: "Ssabalangira",
-    holder: "Interim: Prince Frederick Sunday Kateregga, following the death of Godfrey Kikulwe Musanje (3 Feb 2026, age 76)",
+    holder: "The interim Ssabalangira is Prince Frederick Sunday Kateregga, following the death of Godfrey Kikulwe Musanje (3 Feb 2026, age 76).",
     href: "/abalangira",
     cta: "Explore the Royal Clan",
   },
   {
     icon: "🐟",
-    title: "Ebika bya Baganda",
-    sub: "The 56 clans, each with its own totem, head, and ancestral seat",
-    head: "Omukulembeza w'Olukiiko lwa Bataka",
-    holder: "Omutaka Augustine Kizito Mutumba, Chairman of the Council of Clan Heads",
+    title: "The Pillar of Ebika bya Baganda",
+    sub: "The pillar of Ebika bya Baganda is led by the Omukubiriza w'Olukiiko lwa Bataka (Chairman of the Council of Clan Heads). There are 56 clans, each with its own totem, head, and ancestral seat.",
+    head: "Omukubiriza w'Olukiiko lwa Bataka",
+    holder: "Omutaka Augustine Kizito Mutumba is the current chairman of the Council of Clan Heads.",
     href: "/clans",
     cta: "Explore the 56 Clans",
   },
   {
     icon: "⚖️",
-    title: "Abakungu ba Ssaabasajja",
-    sub: "The territorial chiefs — Ssaza, Gombolola, Muluka",
-    head: "Katikkiro of Buganda — head of this pillar",
-    holder: "Owek. Charles Peter Mayiga — in office since 12 May 2013",
+    title: "The Pillar of Abakungu ba Ssaabasajja",
+    sub: "The pillar of Abakungu ba Ssaabasajja is led by the Katikkiro of Buganda.",
+    head: "Katikkiro of Buganda",
+    holder: "The current Katikkiro of Buganda is Owek. Charles Peter Mayiga — in office since 12 May 2013.",
     href: "/abakungu",
     cta: "Explore the Kingdom's Chiefs",
-    // Per user request (2026-07): the Katikkiro-is-head line renders at the
-    // TOP of this card (right under the title), not below the sub line.
-    headFirst: true,
   },
 ];
 
@@ -385,31 +382,21 @@ export function HomeLanding() {
           pillar links to its own full page already built on this site ── */}
       <section className="px-6 py-16" style={{ background: "var(--gd)" }}>
         <div className="max-w-[960px] mx-auto text-center">
-          <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-2">
+          <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-3">
             How the Kingdom Is Organised
           </p>
-          <h2 className="font-serif text-[26px] text-white font-normal mb-2">
-            The Three Pillars of Buganda
-          </h2>
-          <p className="text-[13px] text-white/55 mb-9 max-w-[520px] mx-auto">
+          <p className="text-[16px] md:text-[18px] text-white font-medium leading-relaxed mb-4 max-w-[560px] mx-auto">
             Buganda&apos;s traditional governance structure rests on three
             pillars, all ultimately under the authority of the Kabaka.
           </p>
+          <h2 className="font-serif text-[26px] text-white font-normal mb-9">
+            The Three Pillars of Buganda
+          </h2>
           <div
             className="grid gap-4 text-left"
             style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}
           >
             {PILLARS.map((p) => {
-              const headBlock = (
-                <>
-                  <p className="text-[11px] text-gold2 uppercase tracking-[.5px] mb-1">
-                    {p.head}
-                  </p>
-                  <p className="text-[12px] text-white/75 leading-relaxed mb-3">
-                    {p.holder}
-                  </p>
-                </>
-              );
               return (
                 <Link
                   key={p.title}
@@ -420,11 +407,15 @@ export function HomeLanding() {
                   <h3 className="font-serif text-[17px] text-white mb-0.5">
                     {p.title}
                   </h3>
-                  {p.headFirst && <div className="mt-2">{headBlock}</div>}
                   <p className="text-[11.5px] text-white/50 mb-3 leading-snug">
                     {p.sub}
                   </p>
-                  {!p.headFirst && headBlock}
+                  <p className="text-[11px] text-gold2 uppercase tracking-[.5px] mb-1">
+                    {p.head}
+                  </p>
+                  <p className="text-[12px] text-white/75 leading-relaxed mb-3">
+                    {p.holder}
+                  </p>
                   <span className="text-[11px] text-gold2 font-semibold uppercase tracking-[.5px]">
                     {p.cta} →
                   </span>
@@ -445,11 +436,37 @@ export function HomeLanding() {
           <p className="text-[11px] tracking-[2px] uppercase text-royal2 font-semibold mb-2">
             Flagship Initiative
           </p>
-          {/* The three-line rallying tagline maps 1:1 onto Projects I/II/III below */}
-          <h2 className="font-serif text-[22px] text-gd font-normal mb-4 leading-snug">
-            <span className="block">1. Yamba Ekikakyo</span>
-            <span className="block">2. Okutumbula Ebyenjigiriza</span>
-            <span className="block">3. Okutumbula Enkulaakulana</span>
+          {/* The three-line rallying tagline maps 1:1 onto Projects I/II/III below.
+              Numbers sit in a fixed-width left column (via inline-block + text-left)
+              so they line up vertically instead of each line centering independently. */}
+          <h2 className="font-serif text-[22px] text-gd font-normal mb-4 leading-snug inline-block text-left">
+            <span className="flex items-start gap-2 mb-2">
+              <span className="w-[20px] shrink-0">1.</span>
+              <span className="flex flex-col">
+                <span>Yamba Ekikakyo</span>
+                <span className="text-[14px] text-muted font-normal italic">
+                  &quot;contribute to your clan&quot;
+                </span>
+              </span>
+            </span>
+            <span className="flex items-start gap-2 mb-2">
+              <span className="w-[20px] shrink-0">2.</span>
+              <span className="flex flex-col">
+                <span>Okutumbula Ebyenjigiriza</span>
+                <span className="text-[14px] text-muted font-normal italic">
+                  &quot;contribute to education&quot;
+                </span>
+              </span>
+            </span>
+            <span className="flex items-start gap-2">
+              <span className="w-[20px] shrink-0">3.</span>
+              <span className="flex flex-col">
+                <span>Okutumbula Enkulaakulana</span>
+                <span className="text-[14px] text-muted font-normal italic">
+                  &quot;contribute to the SACCO&quot;
+                </span>
+              </span>
+            </span>
           </h2>
           <p className="text-[13px] text-muted leading-relaxed max-w-[560px] mx-auto">
             Three interconnected projects through which members of the clan
@@ -460,21 +477,57 @@ export function HomeLanding() {
 
         <div className="max-w-[680px] mx-auto flex flex-col gap-10 text-left">
 
-          {/* I · Ekikakyo — The Clan Fund */}
+          {/* I · Ekikakyo — The Clan Development Fund */}
           <div>
             <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-1">
-              Project I
+              <span className="font-extrabold">Project</span> I
             </p>
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
-              🛡️ Ekikakyo — The Clan Fund
+              🛡️ Ekikakyo — The Clan Development Fund
             </h3>
             <p className="text-[14px] text-gd leading-relaxed mb-3">
               Ekikakyo (&quot;your clan&quot;) is a modern extension of the
-              Akasolya, the Olukiiko lw&apos;Ekika, and Obutaka — a fund
-              through which members of a clan, wherever they live in Uganda
-              or the diaspora, pool resources for the education and welfare
-              of their own children. The aim: <strong>one clan, one
-              school</strong>, replicated across all 56 clans of the Kingdom.
+              Akasolya, the Olukiiko lw&apos;Ekika, and Obutaka — the fund
+              through which members of the clan, wherever they live, in
+              Uganda or in the diaspora, pool resources for the development
+              of their clan.
+            </p>
+            <p className="text-[13px] text-muted uppercase tracking-wide font-semibold mb-2">
+              Your contribution goes toward:
+            </p>
+            <ul className="mb-4 pl-5 list-disc text-[13.5px] text-gd leading-relaxed space-y-1.5">
+              <li>
+                Supporting the installation and functions of the clan head
+                (Ow&apos;akasolya) and sub-clan leadership
+              </li>
+              <li>
+                Organising an annual clan day/reunion to bring together
+                members from Uganda and the diaspora
+              </li>
+              <li>
+                Cultural education programs teaching younger members the
+                clan&apos;s history, roles, and responsibilities
+              </li>
+              <li>
+                Buying back or securing clan land (obutaka) that may have
+                been lost or is under dispute
+              </li>
+              <li>Maintaining ancestral burial grounds and clan shrines</li>
+              <li>
+                Building or renovating a clan meeting house/hall for
+                gatherings, elections of the clan head, and ceremonies
+              </li>
+              <li>
+                Documenting clan genealogy (lulyo), oral history, and
+                totems (omuziro/akabbiro) before elders who hold this
+                knowledge pass on
+              </li>
+            </ul>
+            <p className="text-[14px] text-gd leading-relaxed italic mb-4">
+              Dear clan members, every contribution — no matter the size —
+              strengthens our clan and secures our cultural heritage&apos;s
+              future. Please support our clan development fund today.
+              Together, we grow stronger.
             </p>
             <Link href="/give?campaign=ekikakyo" className="no-underline">
               <button
@@ -489,15 +542,22 @@ export function HomeLanding() {
           {/* II · The Pilot School — Wakivule */}
           <div>
             <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-1">
-              Project II
+              <span className="font-extrabold">Project</span> II
             </p>
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
               🏫 The Pilot School — Wakivule Village
             </h3>
             <p className="text-[14px] text-gd leading-relaxed mb-2">
-              Our pilot school in Wakivule Village, Kikyusa Sub-County,
-              Luwero District is the first physical proof point of the
-              Ekikakyo vision — showing that a clan-funded, clan-owned
+              A pilot school has been set up in Wakivule Village, Kikyusa
+              Sub-County, Luwero District. The purpose of this project is a
+              school with a holistic-value approach: the development of
+              physical, mental, and social values in a learner — including
+              the respect for elders and leaders in society.
+            </p>
+            <p className="text-[14px] text-gd leading-relaxed mb-2">
+              This pilot school is set up with a goal of constructing{" "}
+              <strong>56 more schools</strong> in future, representing each
+              of the 56 clans — showing that a clan-funded, clan-owned
               school can be built, opened, and sustained before the model
               scales to <strong>57 schools across Uganda</strong>, one
               representing the pilot and the rest built as each clan&apos;s
@@ -527,19 +587,47 @@ export function HomeLanding() {
           {/* III · The Sacco — Financial Arm */}
           <div>
             <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-1">
-              Project III
+              <span className="font-extrabold">Project</span> III
             </p>
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
               🤝 The Sacco — Financial Arm
             </h3>
             <p className="text-[14px] text-gd leading-relaxed mb-2">
-              The Ebikabyaffe Foundation Fraternity Sacco is the financial
-              engine behind the school project and the Foundation&apos;s
-              other initiatives.
+              The Ebikabyaffe Foundation Fraternity Savings and Credit
+              Cooperative (SACCO) has been formed. This is to act as the
+              financial engine behind all clan projects and initiatives.
             </p>
-            <p className="text-[13px] text-muted leading-relaxed mb-4">
-              This donation is particularly for raising funds to boost the
-              Sacco.
+            <p className="text-[13px] text-muted uppercase tracking-wide font-semibold mb-2">
+              Your contribution goes toward:
+            </p>
+            <ul className="mb-4 pl-5 list-disc text-[13.5px] text-gd leading-relaxed space-y-1.5">
+              <li>
+                Financing the Wakivule Pilot School and future clan schools
+                funded through Ekikakyo
+              </li>
+              <li>
+                Providing members with access to affordable savings and
+                credit facilities
+              </li>
+              <li>
+                Supporting other Foundation projects and community
+                initiatives as they arise
+              </li>
+              <li>
+                Building a strong, member-owned financial base that keeps
+                resources within the clans
+              </li>
+              <li>
+                Strengthening the Sacco&apos;s day-to-day operations and
+                institutional capacity
+              </li>
+            </ul>
+            <p className="text-[14px] text-gd leading-relaxed italic mb-4">
+              Dear clan members, you are called upon to contribute to raise
+              funds to boost the Sacco. You are further urged to become a
+              member of the Sacco. Contact us through the contacts listed
+              below, or visit the Sacco offices, for further details on
+              becoming a member if you wish to.
             </p>
             {/* Donations only — membership-fee and share-value tiles were
                 removed 2026-07 per direct request: this card exists purely

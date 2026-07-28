@@ -49,8 +49,10 @@ const CAMPAIGNS: Campaign[] = [
     description:
       "Help build a permanent school for the children of Luwero District in Bulemeezi Ssaza — " +
       "a Foundation priority project endorsed by the Bataka and aligned with the Bulungi Bwansi " +
-      "tradition of community self-help. The first physical proof point of the Ekikakyo vision: " +
-      "one clan, one school.",
+      "tradition of community self-help. This pilot school takes a holistic-value approach: the " +
+      "development of physical, mental, and social values in a learner, including the respect " +
+      "for elders and leaders in society. The first physical proof point of the Ekikakyo vision — " +
+      "the goal is to build 56 more schools in future, one representing each of Buganda's clans.",
     emoji: "🏫",
     raisedUGX: 47_000_000,
     donorCount: 1832,
@@ -60,19 +62,21 @@ const CAMPAIGNS: Campaign[] = [
   },
   {
     id: "ekikakyo",
-    title: "Ekikakyo — The Clan Fund",
+    title: "Ekikakyo — The Clan Development Fund",
     subtitle: "Ekika · Obutaka · Abataka — reviving the clan's duty of mutual welfare",
     description:
       "Ekikakyo (\"your clan\") is a modern extension of the Akasolya, the Olukiiko lw'Ekika, and " +
-      "Obutaka — a fund through which members of a clan, wherever they live, pool resources for " +
-      "the education and welfare of their own children. The long-term vision: a school for every " +
-      "one of Buganda's clans.",
+      "Obutaka — the fund through which members of the clan, wherever they live, in Uganda or in " +
+      "the diaspora, pool resources for the development of their clan.",
     emoji: "🛡️",
     aims: [
-      "Revive the traditional clan duty of mutual welfare (obulamu bw'ekika) as education",
-      "Give every clan a physical legacy — a school bearing its own identity",
-      "Scale one clan, one school to all 56 clans of the Kingdom",
-      "Reconnect younger generations with their Ekika beyond weddings and funerals",
+      "Support the installation and functions of the clan head (Ow'akasolya) and sub-clan leadership",
+      "Organise an annual clan day/reunion bringing together members from Uganda and the diaspora",
+      "Run cultural education programs teaching younger members the clan's history, roles, and responsibilities",
+      "Buy back or secure clan land (obutaka) that may have been lost or is under dispute",
+      "Maintain ancestral burial grounds and clan shrines",
+      "Build or renovate a clan meeting house/hall for gatherings, elections of the clan head, and ceremonies",
+      "Document clan genealogy (lulyo), oral history, and totems (omuziro/akabbiro) before elders who hold this knowledge pass on",
     ],
   },
   {
@@ -80,11 +84,16 @@ const CAMPAIGNS: Campaign[] = [
     title: "Ebikabyaffe Foundation Fraternity Sacco",
     subtitle: "The financial engine behind the school project and the Foundation's other initiatives",
     description:
-      "Where Ekikakyo gathers the clan around a shared cause, the Sacco gives that effort " +
-      "financial structure and discipline. This donation is particularly for raising funds " +
-      "to boost the Sacco — every donation becomes part of the same fund carrying the clan " +
-      "school project forward.",
+      "The Ebikabyaffe Foundation Fraternity Savings and Credit Cooperative (SACCO) has been " +
+      "formed to act as the financial engine behind all clan projects and initiatives.",
     emoji: "🤝",
+    aims: [
+      "Financing the Wakivule Pilot School and future clan schools funded through Ekikakyo",
+      "Providing members with access to affordable savings and credit facilities",
+      "Supporting other Foundation projects and community initiatives as they arise",
+      "Building a strong, member-owned financial base that keeps resources within the clans",
+      "Strengthening the Sacco's day-to-day operations and institutional capacity",
+    ],
     // Membership-fee and share-value options were removed 2026-07 per direct
     // request — the online Sacco flow is donations only; membership itself is
     // arranged with the Sacco officials in person.
@@ -92,9 +101,10 @@ const CAMPAIGNS: Campaign[] = [
       { key: "donation", label: "Donations", value: "Any amount, voluntary" },
     ],
     contactNote:
-      "Donations to the Sacco are voluntary and of any amount — complete yours below. " +
-      "Sacco membership itself is arranged with the Foundation's clan leadership or Sacco " +
-      "officials directly.",
+      "Dear clan members, you are called upon to contribute to raise funds to boost the Sacco. " +
+      "You are further urged to become a member of the Sacco. Contact us through the details " +
+      "in the footer below, or visit the Sacco offices, for further details on becoming a " +
+      "member if you wish to.",
   },
 ];
 
