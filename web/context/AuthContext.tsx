@@ -91,6 +91,14 @@ const AuthContext = createContext<AuthContextValue>({
   updateUser: () => {},
 });
 
+// Session-only member profile snapshots keyed by phone — so signing out and
+// back in (same session, no reload) restores the member's own edits (clan,
+// avatar, Sacco status, verification, lineage...) instead of a blank
+// DEFAULT_USER. Same module-level Map pattern as lib/auth/registry.ts and
+// lib/batakaPanel/store.ts; resets on a hard reload like the rest of the
+// app's mocks. In Phase 2 this is just the real backend's user row.
+const profilesByPhone = new Map<string, AppUser>();
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [lang, setLang] = useState<"en" | "lg">("en");
@@ -103,19 +111,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithPhone = useCallback(
     ({ name, phone, clanSlug }: { name: string; phone: string; clanSlug?: string | null }) => {
-      setUser({
-        ...DEFAULT_USER,
-        name,
-        phone,
-        // Every account is created from a specific clan's "Join" button, so
-        // clanSlug is already known at creation time — no post-signup
-        // "pick a clan" gap. Sign-in (no clanSlug passed) leaves it unset.
-        clanSlug: clanSlug ?? null,
-        memberSince: new Date().toLocaleDateString("en-UG", {
-          month: "long",
-          year: "numeric",
-        }),
-      });
+      // Sign-in (mode==="signin") recognizes an already-registered phone and
+      // passes no clanSlug — restore that member's own saved profile rather
+      // than starting a fresh one. Account creation (clanSlug provided) always
+      // starts a new profile, since it's a brand-new member.
+      const existing = clanSlug == null ? profilesByPhone.get(phone) : undefined;
+      const nextUser: AppUser = existing
+        ? { ...existing, name, phone }
+        : {
+            ...DEFAULT_USER,
+            name,
+            phone,
+            // Every account is created from a specific clan's "Join" button, so
+            // clanSlug is already known at creation time — no post-signup
+            // "pick a clan" gap.
+            clanSlug: clanSlug ?? null,
+            memberSince: new Date().toLocaleDateString("en-UG", {
+              month: "long",
+              year: "numeric",
+            }),
+          };
+      profilesByPhone.set(phone, nextUser);
+      setUser(nextUser);
       setIsLoggedIn(true);
     },
     []
@@ -128,7 +145,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateUser = useCallback(
-    (patch: Partial<AppUser>) => setUser((u) => ({ ...u, ...patch })),
+    (patch: Partial<AppUser>) =>
+      setUser((u) => {
+        const next = { ...u, ...patch };
+        if (next.phone) profilesByPhone.set(next.phone, next);
+        return next;
+      }),
     []
   );
 
