@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 const TABS = [
   { href: "/batakaPanel", label: "Dashboard" },
   { href: "/batakaPanel/members", label: "Members" },
+  { href: "/batakaPanel/businesses", label: "Business Listings" },
   { href: "/batakaPanel/announcements", label: "Announcements" },
 ];
 

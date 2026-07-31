@@ -53,8 +53,15 @@ function MobileMenu({ pathname }: { pathname: string }) {
 
   return (
     <div ref={wrapRef} className="contents">
-      {/* Hamburger toggle — fills the space the tab row occupies on md+ */}
-      <div className="flex md:hidden flex-1 justify-end">
+      {/* Hamburger toggle — fills the space the tab row occupies on xl+.
+          Breakpoint is xl (1280px), not the more usual md (768px): with all
+          7 tabs + language toggle + sign-in/avatar, the full row measures
+          ~851px, which still doesn't fit at 1024px (lg) — confirmed via a
+          real overflow measurement, not a guess. It just barely fits at
+          1280px with zero spare margin, so the hamburger — which renders
+          cleanly at every width — covers the whole tablet range instead of
+          silently clipping tab labels with no scroll indicator. */}
+      <div className="flex xl:hidden flex-1 justify-end">
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -74,7 +81,7 @@ function MobileMenu({ pathname }: { pathname: string }) {
       {/* Dropdown menu — list of all nav tabs, shown below the bar when the hamburger is open */}
       {menuOpen && (
         <div
-          className="md:hidden fixed left-0 right-0 z-[100] border-t border-white/10 shadow-xl overflow-y-auto"
+          className="xl:hidden fixed left-0 right-0 z-[100] border-t border-white/10 shadow-xl overflow-y-auto"
           style={{
             top: "var(--nav-h)",
             maxHeight: "calc(100vh - var(--nav-h))",
@@ -152,8 +159,10 @@ export function Nav() {
         </div>
       </Link>
 
-      {/* Nav links — full tab row on md+ screens, hidden on mobile in favor of the hamburger menu */}
-      <div className="hidden md:flex gap-0.5 flex-1 overflow-x-auto">
+      {/* Nav links — full tab row on xl+ screens (see MobileMenu's comment
+          above for why xl, not the usual md, is the right cutoff here),
+          hidden below that in favor of the hamburger menu */}
+      <div className="hidden xl:flex gap-0.5 flex-1 overflow-x-auto">
         {navLinks.map((link) => {
           const isActive = isLinkActive(pathname, link.href);
           return (
@@ -195,10 +204,22 @@ export function Nav() {
               href="/profile"
               className="flex items-center gap-2 text-white text-[13px] no-underline"
             >
-              {/* Initials avatar — replace with real user photo when auth is live */}
-              <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center font-bold text-gd text-[13px]">
-                {initials}
-              </div>
+              {/* Shows the member's own uploaded photo (set on /profile) once
+                  they have one; initials remain the fallback until then. */}
+              {user.avatarDataUrl ? (
+                <Image
+                  src={user.avatarDataUrl}
+                  alt={user.name}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center font-bold text-gd text-[13px]">
+                  {initials}
+                </div>
+              )}
               <span>{firstName}</span>
             </Link>
             <button
@@ -209,8 +230,13 @@ export function Nav() {
             </button>
           </>
         ) : (
+          // "Sign in" means a returning member logging back into an existing
+          // account, so it goes straight to the sign-in side of /login — no
+          // clan re-selection needed, that only happens once, at account
+          // creation. New members instead find their clan first and use
+          // that clan page's own "Join the {clan} clan" button.
           <Link
-            href="/login"
+            href="/login?mode=signin"
             className="bg-gold text-gd font-semibold text-[13px] px-4 py-1.5 rounded cursor-pointer whitespace-nowrap hover:bg-gold2 transition-colors no-underline"
           >
             Sign in

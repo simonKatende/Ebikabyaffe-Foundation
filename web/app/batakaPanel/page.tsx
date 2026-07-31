@@ -6,8 +6,10 @@ import {
   membersForSession,
   auditForSession,
 } from "@/lib/batakaPanel/store";
+import { useBusinessStore, listingsForReviewer } from "@/lib/businesses/store";
 import { getClan } from "@/lib/clans";
 import { StatusBadge } from "@/components/batakaPanel/StatusBadge";
+import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 
 // Panel dashboard — the queue summary an officer sees first.
@@ -15,6 +17,13 @@ export default function PanelDashboard() {
   const state = usePanelStore();
   const members = membersForSession(state);
   const audit = auditForSession(state);
+
+  const businessState = useBusinessStore();
+  const isAdmin = state.session?.isAdmin ?? false;
+  const listings = listingsForReviewer(businessState, state.session?.clanSlug ?? null, isAdmin);
+  const pendingListings = listings.filter(
+    (l) => l.status === "pending" || l.status === "info_requested"
+  );
 
   const pending = members.filter(
     (m) => m.status === "pending" || m.status === "info_requested"
@@ -55,11 +64,11 @@ export default function PanelDashboard() {
         ))}
       </div>
 
-      {/* Review queue */}
+      {/* Member review queue */}
       <Card className="mb-4">
         <CardHeader>
           <span className="text-[15px] text-gd font-semibold flex-1">
-            Review Queue
+            Member Review Queue
           </span>
           <Link
             href="/batakaPanel/members"
@@ -93,6 +102,49 @@ export default function PanelDashboard() {
                     </p>
                   </div>
                   <StatusBadge status={m.status} />
+                </Link>
+              ))}
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Business listings review queue — same officers, a second domain */}
+      <Card className="mb-4">
+        <CardHeader>
+          <span className="text-[15px] text-gd font-semibold flex-1">
+            Business Listings Awaiting Review
+          </span>
+          <Link
+            href="/batakaPanel/businesses"
+            className="text-[12px] text-royal2 no-underline hover:underline"
+          >
+            All listings →
+          </Link>
+        </CardHeader>
+        <CardBody>
+          {pendingListings.length === 0 ? (
+            <p className="text-[13px] text-muted text-center py-4">
+              🎉 Nothing waiting for review.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {pendingListings.slice(0, 5).map((l) => (
+                <Link
+                  key={l.id}
+                  href={`/batakaPanel/businesses/${l.id}`}
+                  className="flex items-center gap-3 no-underline bg-cream2 border border-eborder rounded-[6px] px-3.5 py-2.5 hover:border-gold transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13.5px] text-gd font-semibold truncate">
+                      {l.businessName}
+                    </p>
+                    <p className="text-[11px] text-muted">
+                      {isAdmin && <>{getClan(l.clanSlug)?.name} clan · </>}
+                      {l.ownerName} · Submitted {l.submittedAt}
+                    </p>
+                  </div>
+                  <BusinessStatusBadge status={l.status} />
                 </Link>
               ))}
             </div>

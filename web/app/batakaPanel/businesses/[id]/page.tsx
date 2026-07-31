@@ -1,0 +1,243 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { usePanelStore } from "@/lib/batakaPanel/store";
+import {
+  useBusinessStore,
+  listingsForReviewer,
+  verifyListing,
+  declineListing,
+  requestListingInfo,
+} from "@/lib/businesses/store";
+import { getClan } from "@/lib/clans";
+import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
+
+// One business listing's full detail + the officer's three actions:
+// Verify · Request more information (confirmation / proof of business) · Decline.
+export default function BusinessListingDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const panelState = usePanelStore();
+  const businessState = useBusinessStore();
+  const { toast } = useToast();
+
+  const isAdmin = panelState.session?.isAdmin ?? false;
+  // Scoped lookup — an officer can only ever open listings from their own clan.
+  const listing = listingsForReviewer(businessState, panelState.session?.clanSlug ?? null, isAdmin).find(
+    (l) => l.id === id
+  );
+
+  const [mode, setMode] = useState<"none" | "info" | "decline">("none");
+  const [note, setNote] = useState("");
+
+  if (!listing) {
+    return (
+      <p className="text-[13px] text-muted text-center py-10">
+        Listing not found in your clan.{" "}
+        <Link href="/batakaPanel/businesses" className="text-royal2">
+          Back to business listings
+        </Link>
+      </p>
+    );
+  }
+
+  const clan = getClan(listing.clanSlug);
+  const reviewable = listing.status === "pending" || listing.status === "info_requested";
+
+  const inputClass =
+    "w-full border border-eborder rounded px-3 py-2.5 text-[14px] outline-none focus:border-gold";
+
+  return (
+    <>
+      <Link
+        href="/batakaPanel/businesses"
+        className="inline-block text-[12px] text-royal2 no-underline hover:underline mb-3"
+      >
+        ← All business listings
+      </Link>
+
+      {/* Identity */}
+      <Card className="mb-3.5">
+        <CardHeader>
+          <div className="w-11 h-11 rounded-[8px] bg-cream2 border border-eborder flex items-center justify-center text-[20px] shrink-0">
+            🏪
+          </div>
+          <div className="flex-1">
+            <h2 className="text-[16px] text-gd font-semibold">{listing.businessName}</h2>
+            <p className="text-[12px] text-muted">
+              {clan?.name} clan · {listing.ownerName} · Submitted {listing.submittedAt}
+            </p>
+          </div>
+          <BusinessStatusBadge status={listing.status} />
+        </CardHeader>
+      </Card>
+
+      {/* Listing details */}
+      <Card className="mb-3.5">
+        <CardHeader>
+          <span className="text-[15px] text-gd font-semibold">Listing Details</span>
+        </CardHeader>
+        <CardBody>
+          <div className="flex items-start gap-4 mb-4">
+            {listing.photoDataUrl ? (
+              <Image
+                src={listing.photoDataUrl}
+                alt={listing.businessName}
+                width={96}
+                height={96}
+                className="w-24 h-24 rounded-[6px] object-cover border border-eborder shrink-0"
+                unoptimized
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-[6px] bg-cream2 border border-eborder flex items-center justify-center text-[36px] shrink-0">
+                🏪
+              </div>
+            )}
+            <div className="flex-1">
+              <Field label="Category" value={listing.category} />
+              <p className="text-[13.5px] text-gd leading-relaxed mt-2">{listing.description}</p>
+            </div>
+          </div>
+
+          <div
+            className="grid gap-3 bg-cream2 border border-eborder rounded-[6px] px-4 py-3"
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}
+          >
+            <Field label="Owner" value={`${listing.ownerName} · ${listing.ownerPhone}`} />
+            <Field label="Contact phone" value={listing.contactPhone} />
+            {listing.contactEmail && <Field label="Contact email" value={listing.contactEmail} />}
+            {listing.location && <Field label="Location" value={listing.location} />}
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* Decision record / actions */}
+      <Card>
+        <CardHeader>
+          <span className="text-[15px] text-gd font-semibold">Decision</span>
+        </CardHeader>
+        <CardBody>
+          {listing.status === "verified" && (
+            <p className="text-[13px] text-gm leading-relaxed">
+              ✓ Verified on {listing.decidedAt}. This listing is now visible
+              in the public Business Owners directory.
+            </p>
+          )}
+
+          {listing.status === "declined" && (
+            <>
+              <p className="text-[13px] leading-relaxed mb-1" style={{ color: "#b03a2e" }}>
+                Declined on {listing.decidedAt}.
+              </p>
+              <p className="text-[12.5px] text-muted leading-relaxed">
+                Reason recorded: {listing.decisionNote}
+              </p>
+            </>
+          )}
+
+          {listing.status === "info_requested" && (
+            <p className="text-[13px] text-muted leading-relaxed mb-3">
+              More information was requested on {listing.decidedAt}:{" "}
+              <em>{listing.decisionNote}</em> — contact {listing.ownerName} at{" "}
+              {listing.ownerPhone} if they haven&apos;t already responded.
+            </p>
+          )}
+
+          {reviewable && mode === "none" && (
+            <div className="flex gap-2.5 flex-wrap">
+              <Button
+                variant="green"
+                size="sm"
+                onClick={() => {
+                  verifyListing(listing.id);
+                  toast(`${listing.businessName} is now live in the Business Owners directory.`);
+                }}
+              >
+                ✓ Verify listing
+              </Button>
+              <Button
+                variant="gold"
+                size="sm"
+                onClick={() => { setMode("info"); setNote(""); }}
+              >
+                Request confirmation / proof of business
+              </Button>
+              <button
+                onClick={() => { setMode("decline"); setNote(""); }}
+                className="inline-flex items-center justify-center cursor-pointer px-4 py-2 text-[13px] rounded bg-white border border-red-300 text-red-700 hover:bg-red-50 transition-colors"
+              >
+                Decline
+              </button>
+            </div>
+          )}
+
+          {reviewable && mode !== "none" && (
+            <div className="mt-1">
+              <label className="block mb-2">
+                <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
+                  {mode === "info"
+                    ? "What should the owner confirm or provide as proof of business?"
+                    : "Reason for declining (recorded and sent to the owner)"}
+                </span>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={3}
+                  className={inputClass}
+                />
+              </label>
+              <div className="flex gap-2.5 flex-wrap">
+                {mode === "info" ? (
+                  <Button
+                    variant="gold"
+                    size="sm"
+                    disabled={!note.trim()}
+                    onClick={() => {
+                      requestListingInfo(listing.id, note.trim());
+                      toast("Request for more information sent to the owner.");
+                      setMode("none");
+                    }}
+                  >
+                    Send request
+                  </Button>
+                ) : (
+                  <button
+                    disabled={!note.trim()}
+                    onClick={() => {
+                      declineListing(listing.id, note.trim());
+                      toast("Listing declined — reason recorded.");
+                      setMode("none");
+                    }}
+                    className="inline-flex items-center justify-center cursor-pointer px-4 py-2 text-[13px] rounded bg-red-700 text-white hover:bg-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-0"
+                  >
+                    Confirm decline
+                  </button>
+                )}
+                <button
+                  onClick={() => setMode("none")}
+                  className="inline-flex items-center justify-center cursor-pointer px-4 py-2 text-[13px] rounded bg-cream2 text-gd border border-eborder hover:bg-cream3 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+    </>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10.5px] uppercase tracking-[.5px] text-muted mb-0.5">{label}</p>
+      <p className="text-[13.5px] text-gd">{value}</p>
+    </div>
+  );
+}

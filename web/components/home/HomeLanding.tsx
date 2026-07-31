@@ -155,6 +155,16 @@ function RecentActivityList() {
   );
 }
 
+// Smooth-scrolls to one of the Flagship Initiative project sections,
+// offsetting for the sticky nav (--nav-h) so the heading isn't hidden under it.
+function scrollToProject(id: "ekikakyo" | "wakivule" | "sacco") {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 72;
+  const top = el.getBoundingClientRect().top + window.scrollY - navH - 16;
+  window.scrollTo({ top, behavior: "smooth" });
+}
+
 export function HomeLanding() {
   const router = useRouter();
   // Live counters — tick immediately when someone registers or an Omutaka
@@ -283,8 +293,10 @@ export function HomeLanding() {
                 </button>
               </Link>
 
+              {/* Returning members sign back in directly — "Find your clan"
+                  (left) is the path for people who don't have an account yet */}
               <button
-                onClick={() => router.push("/login")}
+                onClick={() => router.push("/login?mode=signin")}
                 className="font-medium text-[15px] px-7 py-2.5 sm:py-3.5 rounded-[5px] cursor-pointer transition-all duration-200 pointer-events-auto"
                 style={{
                   background: "rgba(255,255,255,0.10)",
@@ -440,7 +452,11 @@ export function HomeLanding() {
               Numbers sit in a fixed-width left column (via inline-block + text-left)
               so they line up vertically instead of each line centering independently. */}
           <h2 className="font-serif text-[22px] text-gd font-normal mb-4 leading-snug inline-block text-left">
-            <span className="flex items-start gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => scrollToProject("ekikakyo")}
+              className="flex items-start gap-2 mb-2 text-left cursor-pointer hover:text-royal2 transition-colors w-full bg-transparent border-0 p-0 font-serif"
+            >
               <span className="w-[20px] shrink-0">1.</span>
               <span className="flex flex-col">
                 <span>Yamba Ekikakyo</span>
@@ -448,8 +464,12 @@ export function HomeLanding() {
                   &quot;contribute to your clan&quot;
                 </span>
               </span>
-            </span>
-            <span className="flex items-start gap-2 mb-2">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToProject("wakivule")}
+              className="flex items-start gap-2 mb-2 text-left cursor-pointer hover:text-royal2 transition-colors w-full bg-transparent border-0 p-0 font-serif"
+            >
               <span className="w-[20px] shrink-0">2.</span>
               <span className="flex flex-col">
                 <span>Okutumbula Ebyenjigiriza</span>
@@ -457,8 +477,12 @@ export function HomeLanding() {
                   &quot;contribute to education&quot;
                 </span>
               </span>
-            </span>
-            <span className="flex items-start gap-2">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToProject("sacco")}
+              className="flex items-start gap-2 text-left cursor-pointer hover:text-royal2 transition-colors w-full bg-transparent border-0 p-0 font-serif"
+            >
               <span className="w-[20px] shrink-0">3.</span>
               <span className="flex flex-col">
                 <span>Okutumbula Enkulaakulana</span>
@@ -466,7 +490,7 @@ export function HomeLanding() {
                   &quot;contribute to the SACCO&quot;
                 </span>
               </span>
-            </span>
+            </button>
           </h2>
           <p className="text-[13px] text-muted leading-relaxed max-w-[560px] mx-auto">
             Three interconnected projects through which members of the clan
@@ -478,12 +502,12 @@ export function HomeLanding() {
         <div className="max-w-[680px] mx-auto flex flex-col gap-10 text-left">
 
           {/* I · Ekikakyo — The Clan Development Fund */}
-          <div>
+          <div id="ekikakyo">
             <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-1">
               <span className="font-extrabold">Project</span> I
             </p>
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
-              🛡️ Ekikakyo — The Clan Development Fund
+              🛡️ Yamba Ekikakyo
             </h3>
             <p className="text-[14px] text-gd leading-relaxed mb-3">
               Ekikakyo (&quot;your clan&quot;) is a modern extension of the
@@ -540,12 +564,12 @@ export function HomeLanding() {
           </div>
 
           {/* II · The Pilot School — Wakivule */}
-          <div>
+          <div id="wakivule">
             <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-1">
               <span className="font-extrabold">Project</span> II
             </p>
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
-              🏫 The Pilot School — Wakivule Village
+              🏫 Yamba Eby&apos;enjigiriza
             </h3>
             <p className="text-[14px] text-gd leading-relaxed mb-2">
               A pilot school has been set up in Wakivule Village, Kikyusa
@@ -585,12 +609,12 @@ export function HomeLanding() {
           </div>
 
           {/* III · The Sacco — Financial Arm */}
-          <div>
+          <div id="sacco">
             <p className="text-[11px] tracking-[2px] uppercase text-gold2 font-semibold mb-1">
               <span className="font-extrabold">Project</span> III
             </p>
             <h3 className="font-serif text-[20px] text-gd font-normal mb-2">
-              🤝 The Sacco — Financial Arm
+              🤝 Yamba Ebikabyaffe Foundation Fraternity SACCO
             </h3>
             <p className="text-[14px] text-gd leading-relaxed mb-2">
               The Ebikabyaffe Foundation Fraternity Savings and Credit

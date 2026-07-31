@@ -6,16 +6,16 @@ import { Clan, WAVE_LABELS } from "@/lib/clans";
 import { getClanImages, type TotemImage } from "@/lib/clanImages";
 import { useStats, clanMemberCount, formatCount } from "@/lib/stats";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
 import {
   AmasigaArchiveSection,
   OmubalaSection,
 } from "@/components/clans/ClanArchiveSections";
 import { getClanAmasiga } from "@/lib/clanAmasiga";
+import { useJoinClan } from "@/lib/useJoinClan";
 
 export function GenericClanDetail({ clan }: { clan: Clan }) {
-  const router = useRouter();
+  const joinClan = useJoinClan();
   // Live member count — ticks immediately when someone joins this clan
   const stats = useStats();
   const liveCount = clanMemberCount(stats, clan.slug);
@@ -94,7 +94,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
         <div className="mt-5">
           <Button
             variant="primary"
-            onClick={() => router.push("/login")}
+            onClick={() => joinClan(clan.slug, clan.name)}
           >
             Join the {clan.name} clan →
           </Button>
@@ -256,7 +256,7 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
           </p>
           <Button
             variant="primary"
-            onClick={() => router.push("/login")}
+            onClick={() => joinClan(clan.slug, clan.name)}
           >
             Join your clan →
           </Button>

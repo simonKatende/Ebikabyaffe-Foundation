@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
 import { LugaveLineageExplorer } from "@/components/clans/LugaveLineageExplorer";
 import { useStats, clanMemberCount, formatCount } from "@/lib/stats";
+import { useJoinClan } from "@/lib/useJoinClan";
 
 const LUGAVE_TOTEM: LightboxImage = {
   src: "/images/totems/lugave.jpg",
@@ -26,7 +26,7 @@ const LUGAVE_TOTEM: LightboxImage = {
 // The full information (and photographs) only appears when the reader clicks —
 // so the page reads as a scannable index of the archive first.
 export function LugaveDetail() {
-  const router = useRouter();
+  const joinClan = useJoinClan();
   const [lightbox, setLightbox] = useState<LightboxImage | null>(null);
   // Live member count (base from clans.ts) — ticks immediately on a join
   const stats = useStats();
@@ -79,7 +79,7 @@ export function LugaveDetail() {
         <div className="mt-5">
           <Button
             variant="primary"
-            onClick={() => router.push("/login")}
+            onClick={() => joinClan("lugave", "Lugave")}
           >
             Join the Lugave clan →
           </Button>
@@ -548,7 +548,7 @@ export function LugaveDetail() {
           </p>
           <Button
             variant="primary"
-            onClick={() => router.push("/login")}
+            onClick={() => joinClan("lugave", "Lugave")}
           >
             Join your clan →
           </Button>

@@ -42,6 +42,11 @@ export interface AppUser {
   // Whether the member has paid the Sacco's one-time UGX 10,000 membership fee.
   saccoMember: boolean;
   memberSince: string; // display string, e.g. "January 2026"
+  // Profile picture, added from /profile after registration — a data: URL
+  // read straight from the chosen file (no upload backend yet, same pattern
+  // as the business listing photo in BusinessListingCard). Undefined until
+  // the member sets one; the initials avatar is the fallback everywhere.
+  avatarDataUrl?: string;
 }
 
 // Seeded to match the identity that was previously hardcoded across Nav and
@@ -64,8 +69,10 @@ interface AuthContextValue {
   user: AppUser;
   login: () => void;
   // Phone-OTP sign-in (the /login flow): starts a fresh member record with the
-  // details the person typed, rather than the seeded demo identity.
-  loginWithPhone: (details: { name: string; phone: string }) => void;
+  // details the person typed, rather than the seeded demo identity. clanSlug
+  // is set on account creation (the clan the person joined via the clan
+  // page's "Join the {clan} clan" button) — undefined/null on a sign-in.
+  loginWithPhone: (details: { name: string; phone: string; clanSlug?: string | null }) => void;
   logout: () => void;
   toggleLang: () => void;
   updateUser: (patch: Partial<AppUser>) => void;
@@ -95,13 +102,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => setIsLoggedIn(false), []);
 
   const loginWithPhone = useCallback(
-    ({ name, phone }: { name: string; phone: string }) => {
+    ({ name, phone, clanSlug }: { name: string; phone: string; clanSlug?: string | null }) => {
       setUser({
         ...DEFAULT_USER,
         name,
         phone,
-        // A genuinely new member: no clan joined yet — they pick one on /profile.
-        clanSlug: null,
+        // Every account is created from a specific clan's "Join" button, so
+        // clanSlug is already known at creation time — no post-signup
+        // "pick a clan" gap. Sign-in (no clanSlug passed) leaves it unset.
+        clanSlug: clanSlug ?? null,
         memberSince: new Date().toLocaleDateString("en-UG", {
           month: "long",
           year: "numeric",

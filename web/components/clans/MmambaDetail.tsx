@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
 import { ImageLightbox, type LightboxImage } from "@/components/ui/ImageLightbox";
 import { useStats, clanMemberCount, formatCount } from "@/lib/stats";
 import {
   AmasigaArchiveSection,
   OmubalaSection,
 } from "@/components/clans/ClanArchiveSections";
+import { useJoinClan } from "@/lib/useJoinClan";
 
 const MMAMBA_TOTEM: LightboxImage = {
   src: "/images/totems/mmamba.jpg",
@@ -21,7 +21,7 @@ const MMAMBA_TOTEM: LightboxImage = {
 // Mmamba is the only clan with a fully hand-curated deep page.
 // All other clans use GenericClanDetail which is data-driven from clans.ts.
 export function MmambaDetail() {
-  const router = useRouter();
+  const joinClan = useJoinClan();
   const [lightbox, setLightbox] = useState<LightboxImage | null>(null);
   // Live member count (base from clans.ts) — ticks immediately on a join
   const stats = useStats();
@@ -76,7 +76,7 @@ export function MmambaDetail() {
         <div className="mt-5">
           <Button
             variant="primary"
-            onClick={() => router.push("/login")}
+            onClick={() => joinClan("mmamba", "Mmamba")}
           >
             Join the Mmamba clan →
           </Button>
@@ -255,7 +255,7 @@ export function MmambaDetail() {
           </p>
           <Button
             variant="primary"
-            onClick={() => router.push("/login")}
+            onClick={() => joinClan("mmamba", "Mmamba")}
           >
             Join your clan →
           </Button>

@@ -271,8 +271,9 @@ export function AbakunguContent() {
 
         {/* ── Officeholders since 1993 ── */}
         <Section title="Officeholders Since the 1993 Restoration">
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd">Katikkiro</th>
@@ -483,8 +484,9 @@ export function AbakunguContent() {
             &quot;Ssaabasajja&quot; chiefs in the area, working alongside —
             and at times in tension with — the Ssabaluuli faction.
           </p>
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto mb-3">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd">Name</th>
@@ -525,8 +527,9 @@ export function AbakunguContent() {
             NTV report in which Kooki residents said poor service delivery
             stemmed from friction between the two authorities.
           </p>
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto mb-3">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd">Name</th>
@@ -556,8 +559,9 @@ export function AbakunguContent() {
 
         {/* ── Other named chiefs elsewhere ── */}
         <Section title="Other Named Chiefs Elsewhere in Buganda">
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto mb-2">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd">Name</th>
@@ -676,8 +680,9 @@ export function AbakunguContent() {
             kingdom-wide, not only in Buluuli/Kooki. Traditional county-chief
             titles are given alongside the modern name where known.
           </p>
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto mb-2">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd">Name</th>
@@ -731,8 +736,9 @@ export function AbakunguContent() {
             ministerial structure but scaled for the diaspora. This list is
             current as published by BugandaUK as of 2025.
           </p>
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto mb-2">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd w-10">#</th>

@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { seedMembers } from "./mockMembers";
+import { seedAnnouncements } from "./mockAnnouncements";
 import { recordVerification } from "@/lib/stats";
 import type {
   PanelMember,
@@ -32,7 +33,7 @@ let state: PanelState = {
   session: null,
   members: seedMembers(),
   audit: [],
-  announcements: [],
+  announcements: seedAnnouncements(),
 };
 
 const listeners = new Set<() => void>();
@@ -77,6 +78,15 @@ export function announcementsForSession(s: PanelState): Announcement[] {
   return s.announcements.filter((a) => a.clanSlug === s.session!.clanSlug);
 }
 
+// Member-facing: what a signed-in member sees on their own Home dashboard —
+// only their OWN joined clan's announcements, no panel session involved.
+// This is the fix for a real bug where a hardcoded "From the Mmamba Clan"
+// card used to show to every member regardless of their clan. Newest first
+// is already the array's natural order (postAnnouncement prepends).
+export function announcementsForClan(s: PanelState, clanSlug: string): Announcement[] {
+  return s.announcements.filter((a) => a.clanSlug === clanSlug);
+}
+
 // ── Actions ──────────────────────────────────────────────────────────────────
 
 function today(): string {
@@ -100,6 +110,14 @@ function log(clanSlug: string, action: string) {
     action,
   };
   return [entry, ...state.audit];
+}
+
+// Lets other domains that reuse the same officer/admin reviewers (e.g.
+// lib/businesses/store.ts's listing review actions) append to this one
+// shared audit trail, so "Recent Panel Activity" reads as a single feed of
+// everything an officer has done — not a separate log per feature.
+export function logExternalAction(clanSlug: string, action: string) {
+  setState({ ...state, audit: log(clanSlug, action) });
 }
 
 export function panelSignIn(session: PanelSession) {

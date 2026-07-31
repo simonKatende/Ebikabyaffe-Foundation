@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
@@ -8,9 +9,12 @@ import { SectionHead } from "@/components/ui/SectionHead";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { VerificationCard } from "@/components/profile/VerificationCard";
+import { BusinessListingCard } from "@/components/profile/BusinessListingCard";
+import { LineageArchiveCard } from "@/components/profile/LineageArchiveCard";
 import { cn } from "@/lib/utils";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 import { useStats, clanMemberCount, formatMembers, recordClanChange } from "@/lib/stats";
+import { readPhotoAsDataUrl, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
 
 // Clan picker groups the 56 clans by origin wave (same grouping used for the
 // /clans filter tabs) so the <select> isn't just one flat alphabetical wall.
@@ -31,7 +35,10 @@ export function ProfileContent() {
             Sign in to register your clan membership, track your Sacco status,
             and support the Foundation&apos;s school projects.
           </p>
-          <Link href="/login">
+          {/* A returning member signs back in directly — new members instead
+              find their clan first and use that clan page's own "Join the
+              {clan} clan" button, which is what actually creates an account. */}
+          <Link href="/login?mode=signin">
             <Button variant="gold">Sign in →</Button>
           </Link>
         </div>
@@ -48,6 +55,19 @@ function ProfileDashboard() {
   const [name,  setName]  = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [phone, setPhone] = useState(user.phone);
+  const [avatarDataUrl, setAvatarDataUrl] = useState(user.avatarDataUrl);
+
+  // See lib/photoUpload.ts — rejects unsupported formats (e.g. iPhone HEIC
+  // photos, which read fine but then fail to decode in an <img>) and
+  // oversized files upfront with a clear message instead of a silent no-op.
+  async function handlePhotoChange(file: File | undefined) {
+    if (!file) return;
+    try {
+      setAvatarDataUrl(await readPhotoAsDataUrl(file));
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Couldn't read that photo — please try again.");
+    }
+  }
 
   // Clan picker — local draft, separate from user.clanSlug until confirmed.
   const [draftClanSlug, setDraftClanSlug] = useState(user.clanSlug ?? "");
@@ -68,7 +88,7 @@ function ProfileDashboard() {
 
   function handleSaveIdentity() {
     if (!name.trim()) return;
-    updateUser({ name: name.trim(), email: email.trim(), phone: phone.trim() });
+    updateUser({ name: name.trim(), email: email.trim(), phone: phone.trim(), avatarDataUrl });
     toast("Profile updated.");
   }
 
@@ -95,9 +115,28 @@ function ProfileDashboard() {
       {/* ── Identity card ─────────────────────────────────────────────────── */}
       <Card className="mb-3.5">
         <CardHeader>
-          <div className="w-12 h-12 rounded-full bg-gold flex items-center justify-center font-bold text-gd text-[17px] shrink-0">
-            {initials || "?"}
-          </div>
+          {avatarDataUrl ? (
+            <Image
+              src={avatarDataUrl}
+              alt={user.name}
+              width={48}
+              height={48}
+              className="w-12 h-12 rounded-full object-cover shrink-0 border border-eborder"
+              unoptimized
+              // Belt-and-braces: handlePhotoChange already rejects unsupported
+              // formats by MIME type, but if a browser ever accepts one at
+              // the picker and then fails to actually decode it, fall back
+              // to initials instead of leaving a blank, unexplained circle.
+              onError={() => {
+                setAvatarDataUrl(undefined);
+                toast("That photo couldn't be displayed — please try a different one.");
+              }}
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-gold flex items-center justify-center font-bold text-gd text-[17px] shrink-0">
+              {initials || "?"}
+            </div>
+          )}
           <div className="flex-1">
             <h3 className="text-[16px] text-gd mb-0.5">{user.name}</h3>
             <p className="text-[12px] text-muted">Member since {user.memberSince}</p>
@@ -132,6 +171,15 @@ function ProfileDashboard() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full border border-eborder rounded px-3 py-2 text-[14px] outline-none focus:border-gold"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">Profile picture</span>
+              <input
+                type="file"
+                accept={PHOTO_ACCEPT_ATTR}
+                onChange={(e) => handlePhotoChange(e.target.files?.[0])}
+                className="w-full text-[12px] text-muted file:mr-3 file:py-2 file:px-3 file:rounded file:border-0 file:bg-cream2 file:text-gd file:text-[12px] file:cursor-pointer"
               />
             </label>
           </div>
@@ -185,49 +233,72 @@ function ProfileDashboard() {
             </div>
           )}
 
-          <label className="block mb-3">
-            <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
-              {clan ? "Change your clan" : "Choose your clan"}
-            </span>
-            <select
-              value={draftClanSlug}
-              onChange={(e) => setDraftClanSlug(e.target.value)}
-              className="w-full border border-eborder rounded px-3 py-2.5 text-[14px] outline-none focus:border-gold bg-white"
-            >
-              <option value="" disabled>Select a clan…</option>
-              {WAVE_ORDER.map((wave) => (
-                <optgroup key={wave} label={WAVE_LABELS[wave].label}>
-                  {clans
-                    .filter((c) => c.originWave === wave)
-                    .map((c) => (
-                      <option key={c.slug} value={c.slug}>
-                        {c.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
-          </label>
+          {clan ? (
+            // Once attached to a clan (every account is created already
+            // joined to one, via a clan page's "Join" button — see
+            // LoginFlow), the choice is final. No picker, no way to switch —
+            // clan membership isn't something to browse between.
+            <p className="text-[12px] text-muted leading-relaxed">
+              Your clan is set for good, chosen when you created your
+              account. If this needs to change, contact the Foundation.
+            </p>
+          ) : (
+            <>
+              <label className="block mb-3">
+                <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
+                  Choose your clan
+                </span>
+                <select
+                  value={draftClanSlug}
+                  onChange={(e) => setDraftClanSlug(e.target.value)}
+                  className="w-full border border-eborder rounded px-3 py-2.5 text-[14px] outline-none focus:border-gold bg-white"
+                >
+                  <option value="" disabled>Select a clan…</option>
+                  {WAVE_ORDER.map((wave) => (
+                    <optgroup key={wave} label={WAVE_LABELS[wave].label}>
+                      {clans
+                        .filter((c) => c.originWave === wave)
+                        .map((c) => (
+                          <option key={c.slug} value={c.slug}>
+                            {c.name}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
 
-          <Button
-            variant="green"
-            size="sm"
-            onClick={handleConfirmClan}
-            disabled={!draftClanSlug || !clanChanged}
-          >
-            {clan ? "Confirm clan change" : "Join this clan"}
-          </Button>
-          <p className="text-[11px] text-muted mt-2 leading-relaxed">
-            Self-declared membership counts you among your clan&apos;s registered members
-            right away. Verification by your Omutaka is a separate step below.
-          </p>
+              <Button
+                variant="green"
+                size="sm"
+                onClick={handleConfirmClan}
+                disabled={!draftClanSlug || !clanChanged}
+              >
+                Join this clan
+              </Button>
+              <p className="text-[11px] text-muted mt-2 leading-relaxed">
+                Self-declared membership counts you among your clan&apos;s registered members
+                right away. Verification by your Omutaka is a separate step below. Once
+                joined, this can&apos;t be changed from here.
+              </p>
+            </>
+          )}
         </CardBody>
       </Card>
 
       {/* ── Omutaka verification — only once a clan is joined. Keyed on the
           clan so switching clans remounts it with a fresh form (the repo's
           key-remount pattern; effect-based resets are lint-blocked). ── */}
-      {clan && <VerificationCard key={clan.slug} clan={clan} />}
+      {clan && <VerificationCard key={`verification-${clan.slug}`} clan={clan} />}
+
+      {/* ── Advertise your business — every member can list one business or
+          organisation against their account; it appears in the public
+          Business Owners directory tagged with their clan. ── */}
+      {clan && <BusinessListingCard key={`business-${clan.slug}`} clan={clan} />}
+
+      {/* ── Clan lineage archive contribution — optional, emails the
+          Foundation's archive team; see LineageArchiveCard. ── */}
+      {clan && <LineageArchiveCard key={`lineage-archive-${clan.slug}`} clan={clan} />}
 
       {/* ── Sacco & contribution status ──────────────────────────────────── */}
       <Card className="mb-3.5">

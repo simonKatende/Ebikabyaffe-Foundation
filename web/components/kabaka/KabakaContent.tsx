@@ -135,8 +135,9 @@ export function KabakaContent() {
             king-list, running continuously from Kabaka Kato Kintu to the
             present reign:
           </p>
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-[13px]">
+            <table className="w-full min-w-[600px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd w-10">No.</th>
@@ -318,8 +319,9 @@ export function KabakaContent() {
             title that is most often translated into English simply as
             &quot;Queen of Buganda&quot; today.
           </p>
+          <p className="sm:hidden text-[11px] text-muted text-center mb-1.5">← Swipe to see more →</p>
           <div className="overflow-x-auto mt-3">
-            <table className="w-full border-collapse text-[12.5px]">
+            <table className="w-full min-w-[760px] border-collapse text-[12.5px]">
               <thead>
                 <tr className="text-left">
                   <th className="border border-eborder bg-gold3 px-3 py-2 text-[11px] uppercase tracking-[1px] text-gd w-[130px]"></th>

@@ -8,6 +8,9 @@ import { Card, CardHeader, CardBody, DarkCard } from "@/components/ui/Card";
 import { EmpangoCountdown } from "@/components/home/EmpangoCountdown";
 import { getClan } from "@/lib/clans";
 import { useStats, clanMemberCount, formatMembers } from "@/lib/stats";
+import { useBusinessStore, listingForPhone } from "@/lib/businesses/store";
+import { ContactFoundationCard } from "@/components/home/ContactFoundationCard";
+import { usePanelStore, announcementsForClan } from "@/lib/batakaPanel/store";
 
 export function HomeDashboard() {
   const { lang, user } = useAuth();
@@ -18,6 +21,14 @@ export function HomeDashboard() {
   // Live member count for the joined clan — ticks immediately on a join
   const stats = useStats();
   const liveCount = clan ? clanMemberCount(stats, clan.slug) : null;
+  // Whether this member already has a business listing posted
+  const businessState = useBusinessStore();
+  const myListing = listingForPhone(businessState, user.phone);
+  // Announcements from THIS member's own clan office only — posted via the
+  // Bataka Panel (app/batakaPanel/announcements). A clan's news must never
+  // leak to members of other clans, so this is filtered strictly by clanSlug.
+  const panelState = usePanelStore();
+  const clanAnnouncements = clan ? announcementsForClan(panelState, clan.slug) : [];
 
   // Greeting text switches between English and Luganda based on the user's language preference
   const greeting =
@@ -111,6 +122,45 @@ export function HomeDashboard() {
             </Link>
           </CardBody>
         )}
+      </Card>
+
+      {/* Business Owners directory — every member can advertise a business or
+          organisation from their profile; this is the entry point to browse
+          what's been posted, plus a nudge to list your own if you haven't. */}
+      <Card className="mb-3.5">
+        <CardHeader>
+          <span className="text-[20px]">🏪</span>
+          <div>
+            <h3 className="text-[15px] text-gd">Business Owners</h3>
+            <p className="text-[12px] text-muted">
+              Businesses and organisations run by fellow members
+            </p>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <p className="text-[13px] text-muted leading-relaxed mb-3">
+            {!myListing &&
+              "Advertise your own business or organisation — post your contacts, a photo, and a short description for other members to find."}
+            {myListing?.status === "pending" &&
+              `Your listing, ${myListing.businessName}, is awaiting review by your clan's office.`}
+            {myListing?.status === "info_requested" &&
+              `Your clan's office has asked for more information on ${myListing.businessName} — check your profile.`}
+            {myListing?.status === "declined" &&
+              `Your listing, ${myListing.businessName}, was declined — check your profile for the reason.`}
+            {myListing?.status === "verified" &&
+              `Your listing, ${myListing.businessName}, is live in the directory.`}
+          </p>
+          <div className="flex gap-2.5 flex-wrap">
+            <Link href="/businesses">
+              <Button variant="green" size="sm">Browse Business Owners →</Button>
+            </Link>
+            <Link href="/profile">
+              <Button size="sm" className="bg-cream2 text-gd border border-eborder hover:bg-cream3">
+                {myListing ? "Manage your listing →" : "List your business →"}
+              </Button>
+            </Link>
+          </div>
+        </CardBody>
       </Card>
 
       {/* Dark card for the Bataka call to action — needs visual weight to prompt action */}
@@ -217,37 +267,30 @@ export function HomeDashboard() {
         </CardBody>
       </Card>
 
-      {/* Clan notice from the Omutaka */}
-      <Card className="mb-3.5">
-        <CardHeader>
-          <span className="text-[20px]">🐟</span>
-          <div>
-            <h3 className="text-[15px] text-gd">From the Mmamba Clan</h3>
-            <p className="text-[12px] text-muted">
-              Posted by Ssabataka Ndiwalana · 3 days ago
-            </p>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <p className="text-[14px] leading-relaxed mb-2.5">
-            The annual Mmamba clan gathering at Munyonyo will be held on 20
-            July 2026 — ahead of the Empango celebrations. All Mmamba members
-            are invited. Verified members receive priority registration.
-          </p>
-          <Button
-            variant="green"
-            size="sm"
-            onClick={() =>
-              toast("You're registered for the Mmamba gathering.")
-            }
-          >
-            Register →
-          </Button>
-        </CardBody>
-      </Card>
+      {/* Clan notices — posted by this member's OWN clan office via the
+          Bataka Panel (app/batakaPanel/announcements). Strictly clan-scoped:
+          a Mmamba announcement must never appear to a Lugave member, so this
+          only renders when the signed-in member's own clan has posted one. */}
+      {clan &&
+        clanAnnouncements.map((a) => (
+          <Card key={a.id} className="mb-3.5">
+            <CardHeader>
+              <span className="text-[20px]">{clan.totemEmoji}</span>
+              <div>
+                <h3 className="text-[15px] text-gd">From the {clan.name} Clan</h3>
+                <p className="text-[12px] text-muted">
+                  Posted by the {clan.clanHead}&apos;s office · {a.at}
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <p className="text-[14px] leading-relaxed">{a.body}</p>
+            </CardBody>
+          </Card>
+        ))}
 
       {/* Heritage education card */}
-      <Card>
+      <Card className="mb-3.5">
         <CardHeader>
           <span className="text-[20px]">🏛️</span>
           <div>
@@ -276,6 +319,11 @@ export function HomeDashboard() {
           </Link>
         </CardBody>
       </Card>
+
+      {/* Have a question, comment, or observation? — sent silently to the
+          Foundation via app/api/contact/route.ts (Resend); see
+          ContactFoundationCard. */}
+      <ContactFoundationCard />
     </div>
   );
 }

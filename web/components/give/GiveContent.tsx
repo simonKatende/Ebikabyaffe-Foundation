@@ -13,8 +13,7 @@ import { OneTimeForm } from "./OneTimeForm";
 export type Campaign = {
   id: string;
   title: string;
-  subtitle: string;      // Ssaza · Chief · tradition tag shown under the title
-  description: string;
+  description?: string;
   emoji: string;         // decorative watermark emoji on the dark-green card
   // Funding stats — only present for campaigns with a real, tracked goal (e.g. Wakivule).
   // Leave undefined for movement-wide/programme cards so we never show invented numbers.
@@ -45,14 +44,6 @@ const CAMPAIGNS: Campaign[] = [
   {
     id: "wakivule",
     title: "Wakivule School — Bulemeezi, Luwero",
-    subtitle: "Bulemeezi Ssaza · Saza Chief: Kangawo · Bulungi Bwansi community project",
-    description:
-      "Help build a permanent school for the children of Luwero District in Bulemeezi Ssaza — " +
-      "a Foundation priority project endorsed by the Bataka and aligned with the Bulungi Bwansi " +
-      "tradition of community self-help. This pilot school takes a holistic-value approach: the " +
-      "development of physical, mental, and social values in a learner, including the respect " +
-      "for elders and leaders in society. The first physical proof point of the Ekikakyo vision — " +
-      "the goal is to build 56 more schools in future, one representing each of Buganda's clans.",
     emoji: "🏫",
     raisedUGX: 47_000_000,
     donorCount: 1832,
@@ -63,50 +54,35 @@ const CAMPAIGNS: Campaign[] = [
   {
     id: "ekikakyo",
     title: "Ekikakyo — The Clan Development Fund",
-    subtitle: "Ekika · Obutaka · Abataka — reviving the clan's duty of mutual welfare",
-    description:
-      "Ekikakyo (\"your clan\") is a modern extension of the Akasolya, the Olukiiko lw'Ekika, and " +
-      "Obutaka — the fund through which members of the clan, wherever they live, in Uganda or in " +
-      "the diaspora, pool resources for the development of their clan.",
     emoji: "🛡️",
-    aims: [
-      "Support the installation and functions of the clan head (Ow'akasolya) and sub-clan leadership",
-      "Organise an annual clan day/reunion bringing together members from Uganda and the diaspora",
-      "Run cultural education programs teaching younger members the clan's history, roles, and responsibilities",
-      "Buy back or secure clan land (obutaka) that may have been lost or is under dispute",
-      "Maintain ancestral burial grounds and clan shrines",
-      "Build or renovate a clan meeting house/hall for gatherings, elections of the clan head, and ceremonies",
-      "Document clan genealogy (lulyo), oral history, and totems (omuziro/akabbiro) before elders who hold this knowledge pass on",
-    ],
   },
   {
     id: "sacco",
     title: "Ebikabyaffe Foundation Fraternity Sacco",
-    subtitle: "The financial engine behind the school project and the Foundation's other initiatives",
-    description:
-      "The Ebikabyaffe Foundation Fraternity Savings and Credit Cooperative (SACCO) has been " +
-      "formed to act as the financial engine behind all clan projects and initiatives.",
     emoji: "🤝",
-    aims: [
-      "Financing the Wakivule Pilot School and future clan schools funded through Ekikakyo",
-      "Providing members with access to affordable savings and credit facilities",
-      "Supporting other Foundation projects and community initiatives as they arise",
-      "Building a strong, member-owned financial base that keeps resources within the clans",
-      "Strengthening the Sacco's day-to-day operations and institutional capacity",
-    ],
-    // Membership-fee and share-value options were removed 2026-07 per direct
-    // request — the online Sacco flow is donations only; membership itself is
-    // arranged with the Sacco officials in person.
+    // Not rendered as a visible tile (per direct request, the "Any amount,
+    // voluntary / Donations" card was removed from this hero card) — kept
+    // purely so /give?campaign=sacco&option=donation still pre-selects this
+    // preset, which drives OneTimeForm's "Contributing to: Donations" label.
+    // Without this, that deep link (used by HomeLanding's Sacco CTAs and
+    // ProfileContent's "Donate to the Sacco" button) silently degraded to a
+    // bare free-amount picker with no guided label.
     saccoStats: [
       { key: "donation", label: "Donations", value: "Any amount, voluntary" },
     ],
-    contactNote:
-      "Dear clan members, you are called upon to contribute to raise funds to boost the Sacco. " +
-      "You are further urged to become a member of the Sacco. Contact us through the details " +
-      "in the footer below, or visit the Sacco offices, for further details on becoming a " +
-      "member if you wish to.",
   },
 ];
+
+// The campaign switcher is numbered 1/2/3 to match the home page's Flagship
+// Initiative Project I/II/III order (Ekikakyo, then the school project, then
+// the Sacco) — independent of CAMPAIGNS' own array order (Wakivule stays
+// first there so a bare /give with no ?campaign= still lands on it, unchanged).
+const SWITCHER_ORDER = ["ekikakyo", "wakivule", "sacco"];
+const SWITCHER_LABELS: Record<string, string> = {
+  ekikakyo: "1. Contribution to Ekikakyo",
+  wakivule: "2. Contribution to the school project",
+  sacco: "3. Contribution to the Ebikabyaffe Foundation Fraternity SACCO",
+};
 
 type Tab = "onetime" | "transparency";
 
@@ -146,32 +122,36 @@ export function GiveContent({ initialCampaignId, initialSaccoOption }: Props) {
 
   return (
     <>
-      <SectionHead title="Support the Foundation" sub="Every shilling goes directly to the work" />
+      <SectionHead title="Support the Initiatives" sub="Every shilling goes directly to the work" />
 
       <div className="max-w-[720px] mx-auto px-5 py-7">
 
         {/* ── Campaign switcher ────────────────────────────────────────────── */}
         {/* Only rendered when there is more than one active campaign.        */}
-        {/* Each chip shows the campaign emoji + short name.                  */}
+        {/* Arranged vertically, numbered 1/2/3 to match Project I/II/III.    */}
         {CAMPAIGNS.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-5">
-            {CAMPAIGNS.map((c, i) => (
-              <button
-                key={c.id}
-                onClick={() => {
-                  setActiveCampaignIdx(i);
-                  setSaccoPreset(null);
-                }}
-                className={cn(
-                  "shrink-0 px-4 py-2 rounded-full text-[13px] font-semibold border transition-all",
-                  i === activeCampaignIdx
-                    ? "border-[var(--gd)] bg-[var(--gd)] text-white"
-                    : "border-[var(--border)] text-[var(--muted)] hover:border-[var(--gm)]"
-                )}
-              >
-                {c.emoji} {c.title.split("—")[0].trim()}
-              </button>
-            ))}
+          <div className="flex flex-col gap-2 mb-5">
+            {SWITCHER_ORDER.map((id) => {
+              const c = CAMPAIGNS.find((x) => x.id === id)!;
+              const i = CAMPAIGNS.findIndex((x) => x.id === id);
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => {
+                    setActiveCampaignIdx(i);
+                    setSaccoPreset(null);
+                  }}
+                  className={cn(
+                    "w-full text-left px-4 py-3 rounded-[8px] text-[13px] font-semibold border transition-all",
+                    i === activeCampaignIdx
+                      ? "border-[var(--gd)] bg-[var(--gd)] text-white"
+                      : "border-[var(--border)] text-[var(--muted)] hover:border-[var(--gm)]"
+                  )}
+                >
+                  {c.emoji} {SWITCHER_LABELS[c.id]}
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -190,8 +170,9 @@ export function GiveContent({ initialCampaignId, initialSaccoOption }: Props) {
           </span>
 
           <h3 className="font-serif text-[20px] text-white font-normal mb-1">{campaign.title}</h3>
-          <p className="text-[11px] text-[var(--gold2)] tracking-wide mb-2">{campaign.subtitle}</p>
-          <p className="text-[13px] text-white/65 mb-4 leading-relaxed">{campaign.description}</p>
+          {campaign.description && (
+            <p className="text-[13px] text-white/65 mb-4 leading-relaxed">{campaign.description}</p>
+          )}
 
           {/* Funding campaigns (real tracked goal, e.g. Wakivule): raised · donors · progress bar */}
           {hasFundingStats && (
@@ -226,33 +207,11 @@ export function GiveContent({ initialCampaignId, initialSaccoOption }: Props) {
             </>
           )}
 
-          {/* Sacco-style campaigns: real fixed fee/share/donation figures, no invented goal. */}
-          {/* Each stat is clickable — picking one carries its amount into the payment form below. */}
-          {campaign.saccoStats && (
-            <div className="flex gap-3 mb-2 flex-wrap">
-              {campaign.saccoStats.map((stat) => {
-                const isActive = saccoPreset?.key === stat.key;
-                return (
-                  <button
-                    key={stat.key}
-                    onClick={() => {
-                      setSaccoPreset(stat);
-                      setActiveTab("onetime");
-                    }}
-                    className={cn(
-                      "text-left rounded-[6px] border px-3.5 py-2.5 transition-all cursor-pointer",
-                      isActive
-                        ? "border-[var(--gold)] bg-white/10"
-                        : "border-white/20 hover:border-[var(--gold)] hover:bg-white/5"
-                    )}
-                  >
-                    <span className="block text-[16px] font-bold text-[var(--gold2)]">{stat.value}</span>
-                    <span className="text-[11px] text-white/50">{stat.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          {/* Sacco-style campaigns previously showed a clickable "Any amount,
+              voluntary / Donations" tile here — removed from view per direct
+              request. campaign.saccoStats still exists (see CAMPAIGNS above)
+              purely to power the ?option=donation deep-link preset; there is
+              currently nothing to render inline in this hero card. */}
 
           {/* Programme cards (Ekikakyo): aim list instead of a fabricated progress bar */}
           {campaign.aims && (
