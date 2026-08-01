@@ -88,7 +88,11 @@ export function BusinessListingCard({ clan }: { clan: Clan }) {
   const labelClass = "block text-[11px] uppercase tracking-wide text-muted mb-1";
 
   return (
-    <Card className="mb-3.5">
+    // id + scrollMarginTop let the home dashboard's "List your business →"
+    // button deep-link straight here (/profile#advertise-business) instead
+    // of just landing at the top of the profile page and leaving the member
+    // to scroll past the identity/clan/Sacco cards to find this one.
+    <Card className="mb-3.5" id="advertise-business" style={{ scrollMarginTop: "var(--nav-h)" }}>
       <CardHeader>
         <span className="text-[15px] text-gd font-semibold flex-1">Advertise Your Business</span>
         {listing && <BusinessStatusBadge status={listing.status} />}

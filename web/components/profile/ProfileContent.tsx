@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 import { useStats, clanMemberCount, formatMembers, recordClanChange } from "@/lib/stats";
 import { readPhotoAsDataUrl, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
+import { MemberTabs } from "@/components/home/MemberTabs";
 
 // Clan picker groups the 56 clans by origin wave (same grouping used for the
 // /clans filter tabs) so the <select> isn't just one flat alphabetical wall.
@@ -60,10 +61,22 @@ function ProfileDashboard() {
   // See lib/photoUpload.ts — rejects unsupported formats (e.g. iPhone HEIC
   // photos, which read fine but then fail to decode in an <img>) and
   // oversized files upfront with a clear message instead of a silent no-op.
+  //
+  // Saves immediately via updateUser rather than waiting for the "Save
+  // changes" button below — the preview appears the instant a photo is
+  // chosen, so leaving it un-persisted until a separate click was a real bug:
+  // a member picks a photo, sees it applied, signs out (or just navigates
+  // away) without noticing the unrelated identity-form button still needs
+  // pressing, and the picture silently reverts. Name/email/phone keep the
+  // explicit-save behavior since those have no equivalent "looks already
+  // done" visual cue.
   async function handlePhotoChange(file: File | undefined) {
     if (!file) return;
     try {
-      setAvatarDataUrl(await readPhotoAsDataUrl(file));
+      const url = await readPhotoAsDataUrl(file);
+      setAvatarDataUrl(url);
+      updateUser({ avatarDataUrl: url });
+      toast("Profile picture updated.");
     } catch (err) {
       toast(err instanceof Error ? err.message : "Couldn't read that photo — please try again.");
     }
@@ -112,6 +125,11 @@ function ProfileDashboard() {
   return (
     <div className="max-w-[720px] mx-auto px-5 py-7">
 
+      {/* Dashboard ⇄ Profile toggle — same idea as the Bataka Panel's own
+          tab bar, so a signed-in member can flip between their two "home
+          base" views without going back through the full main nav. */}
+      <MemberTabs />
+
       {/* ── Identity card ─────────────────────────────────────────────────── */}
       <Card className="mb-3.5">
         <CardHeader>
@@ -129,6 +147,7 @@ function ProfileDashboard() {
               // to initials instead of leaving a blank, unexplained circle.
               onError={() => {
                 setAvatarDataUrl(undefined);
+                updateUser({ avatarDataUrl: undefined });
                 toast("That photo couldn't be displayed — please try a different one.");
               }}
             />

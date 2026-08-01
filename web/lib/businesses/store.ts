@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { seedBusinesses } from "./mockBusinesses";
 import { logExternalAction } from "@/lib/batakaPanel/store";
+import { saveSynced, withCrossTabSync } from "@/lib/crossTabSync";
 import type { BusinessListing } from "./types";
 
 // ── Business Owners directory — single data-access layer (mock implementation) ──
@@ -19,10 +20,17 @@ import type { BusinessListing } from "./types";
 // see app/batakaPanel/businesses/. Review decisions are also logged to the
 // panel's shared audit trail via logExternalAction, so officers see business
 // reviews alongside member-verification activity in one feed.
+//
+// Cross-tab sync (2026-08, see lib/crossTabSync.ts): every write here also
+// broadcasts to other open tabs in the same browser, so a member posting a
+// listing in one tab shows up in the Bataka Panel in another tab immediately
+// — this is the whole reason cross-tab sync was added in the first place.
 
 export interface BusinessState {
   listings: BusinessListing[];
 }
+
+const SYNC_NAME = "businesses";
 
 let state: BusinessState = {
   listings: seedBusinesses(),
@@ -30,17 +38,27 @@ let state: BusinessState = {
 
 const listeners = new Set<() => void>();
 
-function setState(next: BusinessState) {
+// Applies a state change and notifies this tab's own listeners, WITHOUT
+// re-broadcasting — used both for local writes (setState, which also
+// broadcasts) and for values arriving from another tab (which already did).
+function applyState(next: BusinessState) {
   state = next;
   listeners.forEach((l) => l());
 }
 
-function subscribe(listener: () => void) {
+function setState(next: BusinessState) {
+  applyState(next);
+  saveSynced(SYNC_NAME, next);
+}
+
+function baseSubscribe(listener: () => void) {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
   };
 }
+
+const subscribe = withCrossTabSync<BusinessState>(SYNC_NAME, baseSubscribe, applyState);
 
 const getSnapshot = () => state;
 

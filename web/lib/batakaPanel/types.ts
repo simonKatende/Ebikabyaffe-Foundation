@@ -49,6 +49,13 @@ export interface Announcement {
   clanSlug: string;
   title: string;
   body: string;
+  // True when the Foundation admin posted this on behalf of the clan (2026-08:
+  // admin can post to any clan, not just read). Undefined/false means it was
+  // posted by that clan's own Omutaka/officer — the original, unchanged path.
+  // Both member-facing and panel-facing views use this to show a clear
+  // "posted by the Foundation" note so it's never mistaken for the clan's
+  // own office speaking.
+  postedByAdmin?: boolean;
 }
 
 // Who is using the panel right now (mock session):

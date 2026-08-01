@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/Toast";
 import { isPhoneRegistered, getRegisteredName, registerPhone } from "@/lib/auth/registry";
 import { recordRegistration, recordClanChange } from "@/lib/stats";
 import { getClan } from "@/lib/clans";
+import { cn } from "@/lib/utils";
 
 // ── Frontend mock of the planned phone-first OTP sign-in ────────────────────
 //
@@ -134,6 +135,15 @@ function toE164(national: string, c: Country): string {
   return `+${c.dial}${national}`;
 }
 
+// Each name field (surname / first name / given name) is meant to hold
+// exactly one name — stripping spaces as they're typed stops someone from
+// typing a full name like "Simon Katende" into a single field (e.g. pasting
+// it all into "Surname"), which would otherwise silently defeat the
+// surname/first-name split the rest of the app relies on for display order.
+function stripSpaces(value: string): string {
+  return value.replace(/\s+/g, "");
+}
+
 // Human-friendly international display: "+256 772 345 678"
 function displayPhone(national: string, c: Country): string {
   const groups = national.match(/.{1,3}/g) ?? [national];
@@ -167,6 +177,14 @@ function ShieldIcon() {
   );
 }
 
+function ChevronDownIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
 export function LoginFlow({
   initialMode = "create",
   initialClanSlug = null,
@@ -194,6 +212,30 @@ export function LoginFlow({
   // Step 2 — phone (country defaults to Uganda; the diaspora picks theirs)
   const [countryIso, setCountryIso] = useState("UG");
   const [phoneRaw, setPhoneRaw] = useState("");
+
+  // Custom country picker (flag + dial code collapsed, full list on click —
+  // 2026-08 redesign replacing the native <select>, per a reference SMS
+  // capture form). Closes on Escape or a click outside the picker.
+  const [countryPickerOpen, setCountryPickerOpen] = useState(false);
+  const countryPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!countryPickerOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setCountryPickerOpen(false);
+    }
+    function onClickOutside(e: MouseEvent) {
+      if (countryPickerRef.current && !countryPickerRef.current.contains(e.target as Node)) {
+        setCountryPickerOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClickOutside);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClickOutside);
+    };
+  }, [countryPickerOpen]);
 
   // Step 3 — OTP (generated locally; demo only)
   const [otpCode, setOtpCode] = useState<string | null>(null);
@@ -267,9 +309,11 @@ export function LoginFlow({
           loginWithPhone({ name: registeredName!, phone: phoneDisplay });
           toast(`Welcome back, ${registeredName!.split(" ")[0]}!`);
         }
-        // A brand-new account lands on the home dashboard, not the profile
-        // page — returning members (sign-in) keep going to /profile.
-        router.push(mode === "create" ? "/" : "/profile");
+        // Both a brand-new account and a returning sign-in land on the home
+        // dashboard (2026-08 — sign-in used to go to /profile instead, which
+        // felt inconsistent: create-mode already landed on the dashboard, and
+        // a returning member expects the same "front door" every time).
+        router.push("/");
       } else {
         setOtpError(true);
       }
@@ -328,7 +372,7 @@ export function LoginFlow({
         <div className="px-6 py-10 sm:px-10 sm:py-12">
           <div className="mb-7">
             <h1 className="font-serif text-[26px] text-gd font-normal mb-1.5">
-              {mode === "create" ? "Sign in / Create account" : "Sign in"}
+              {mode === "create" ? "Okwewandiisa (Signup) / Sign in" : "Sign in"}
             </h1>
             <p className="text-[13px] text-muted leading-relaxed">
               {mode === "create"
@@ -395,7 +439,7 @@ export function LoginFlow({
                         <input
                           type="text"
                           value={surname}
-                          onChange={(e) => setSurname(e.target.value)}
+                          onChange={(e) => setSurname(stripSpaces(e.target.value))}
                           placeholder="e.g. Kironde"
                           className={`${fieldFull} pl-11`}
                         />
@@ -410,7 +454,7 @@ export function LoginFlow({
                         <input
                           type="text"
                           value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
+                          onChange={(e) => setFirstName(stripSpaces(e.target.value))}
                           placeholder="e.g. Mike"
                           className={`${fieldFull} pl-11`}
                         />
@@ -421,7 +465,7 @@ export function LoginFlow({
                       <input
                         type="text"
                         value={givenName}
-                        onChange={(e) => setGivenName(e.target.value)}
+                        onChange={(e) => setGivenName(stripSpaces(e.target.value))}
                         className={fieldFull}
                       />
                     </label>
@@ -439,45 +483,80 @@ export function LoginFlow({
               <div className="mb-3">
                 <span className={labelClass}>Phone (for the one-time code)</span>
                 <div className="flex gap-2">
-                  {/* Country picker — Uganda default; the diaspora picks theirs.
-                      The flag renders as its own span OUTSIDE the native
-                      <select> box: option rendering inside a select is drawn
-                      by the OS (not the page's font stack), and on Windows
-                      that often falls back to plain "UG"-style text instead
-                      of an actual flag glyph — this span guarantees the flag
-                      is always visible regardless. min-w-0 + flex sizing per
-                      the repo's mobile-overflow rule. */}
-                  <div className="relative w-[38%] shrink-0 min-w-0">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none">
-                      {country.flag}
-                    </span>
-                    <select
-                      value={countryIso}
+                  {/* Country picker — collapsed to just flag + dial code
+                      (e.g. "🇺🇬 +256"), matching a standard SMS-capture-form
+                      pattern: click to open the full scrollable list of
+                      countries (flag + name + dial code), pick one, and it
+                      collapses back down. Custom dropdown rather than a
+                      native <select> specifically so the collapsed state can
+                      show just the flag+code — a native select always shows
+                      its selected <option>'s full text, which would defeat
+                      the compact collapsed look this was asked for. */}
+                  <div className="relative w-[38%] shrink-0 min-w-0" ref={countryPickerRef}>
+                    <button
+                      type="button"
                       disabled={!namesReady}
-                      onChange={(e) => {
-                        setCountryIso(e.target.value);
-                        // Clear the number too, not just the OTP state — the
-                        // phone input is re-validated against whichever
-                        // country is currently selected on every render, so
-                        // leaving already-typed digits in place would
-                        // silently reinterpret them under the new country's
-                        // dial code (e.g. a Ugandan number surviving a
-                        // switch to Kenya, minting the wrong E.164 identity
-                        // with no warning shown).
-                        setPhoneRaw("");
-                        setOtpCode(null);
-                        setOtpInput("");
-                        setOtpError(false);
-                      }}
+                      onClick={() => setCountryPickerOpen((o) => !o)}
+                      aria-haspopup="listbox"
+                      aria-expanded={countryPickerOpen}
                       aria-label="Country"
-                      className={`${fieldBase} disabled:opacity-50 w-full min-w-0 pl-8 pr-1`}
+                      className={`${fieldBase} disabled:opacity-50 w-full min-w-0 pl-3 pr-2 flex items-center justify-between gap-1 cursor-pointer bg-white text-left`}
                     >
-                      {COUNTRIES.map((c) => (
-                        <option key={c.iso} value={c.iso}>
-                          {c.flag} {c.name} (+{c.dial})
-                        </option>
-                      ))}
-                    </select>
+                      <span className="flex items-center gap-1.5 text-[14px] min-w-0">
+                        <span className="text-[16px] leading-none shrink-0">{country.flag}</span>
+                        <span className="truncate">+{country.dial}</span>
+                      </span>
+                      <span
+                        className={cn(
+                          "text-muted shrink-0 transition-transform",
+                          countryPickerOpen && "rotate-180"
+                        )}
+                      >
+                        <ChevronDownIcon />
+                      </span>
+                    </button>
+
+                    {countryPickerOpen && (
+                      <div
+                        role="listbox"
+                        aria-label="Select a country"
+                        className="absolute z-20 top-full left-0 mt-1 w-[270px] max-w-[85vw] max-h-[280px] overflow-y-auto bg-white border border-eborder rounded-lg shadow-[0_12px_30px_-8px_rgba(0,0,0,0.25)] py-1"
+                      >
+                        {COUNTRIES.map((c) => (
+                          <button
+                            type="button"
+                            key={c.iso}
+                            role="option"
+                            aria-selected={c.iso === countryIso}
+                            onClick={() => {
+                              setCountryIso(c.iso);
+                              // Clear the number too, not just the OTP state
+                              // — the phone input is re-validated against
+                              // whichever country is currently selected on
+                              // every render, so leaving already-typed
+                              // digits in place would silently reinterpret
+                              // them under the new country's dial code (e.g.
+                              // a Ugandan number surviving a switch to
+                              // Kenya, minting the wrong E.164 identity with
+                              // no warning shown).
+                              setPhoneRaw("");
+                              setOtpCode(null);
+                              setOtpInput("");
+                              setOtpError(false);
+                              setCountryPickerOpen(false);
+                            }}
+                            className={cn(
+                              "w-full flex items-center gap-2.5 px-3 py-2 text-left text-[13.5px] cursor-pointer hover:bg-cream2 transition-colors bg-transparent border-0",
+                              c.iso === countryIso ? "bg-cream2 font-semibold text-gd" : "text-gd"
+                            )}
+                          >
+                            <span className="text-[16px] leading-none shrink-0">{c.flag}</span>
+                            <span className="flex-1 truncate">{c.name}</span>
+                            <span className="text-muted shrink-0">+{c.dial}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="relative flex-1 min-w-0">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none">

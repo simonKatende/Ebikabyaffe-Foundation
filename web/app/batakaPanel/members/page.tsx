@@ -26,8 +26,15 @@ export default function MembersPage() {
 
   const members = all.filter((m) => {
     if (filter !== "all" && m.status !== filter) return false;
-    if (query && !m.fullName.toLowerCase().includes(query.toLowerCase()))
-      return false;
+    // Matches by member name OR clan name — mainly useful for the admin's
+    // all-clans view (e.g. searching "Mmamba" to find every Mmamba member),
+    // since an officer's own list is already scoped to one clan.
+    if (query) {
+      const q = query.toLowerCase();
+      const matchesName = m.fullName.toLowerCase().includes(q);
+      const matchesClan = (getClan(m.clanSlug)?.name ?? "").toLowerCase().includes(q);
+      if (!matchesName && !matchesClan) return false;
+    }
     return true;
   });
 
@@ -39,7 +46,7 @@ export default function MembersPage() {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name…"
+          placeholder="Search by name or clan…"
           className="border border-eborder rounded px-3 py-2 text-[13px] outline-none focus:border-gold bg-white min-w-[180px]"
         />
         <div className="flex gap-1.5 flex-wrap">

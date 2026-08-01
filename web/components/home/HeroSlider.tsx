@@ -76,7 +76,7 @@ const slides: Slide[] = [
     placeholder: "linear-gradient(155deg,#2b1a3d 0%,#5a3080 50%,#150a1e 100%)",
     src: "/images/hero/bulange-mengo.jpg",
     credit: "Photo: Jim Joel · Wikimedia Commons · CC BY-SA 4.0",
-    href: "/abakungu",
+    href: "/abakungu#amasaza",
     cta: "The 18 Amasaza",
   },
 ];

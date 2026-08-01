@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HeroSlider } from "@/components/home/HeroSlider";
@@ -165,11 +165,36 @@ function scrollToProject(id: "ekikakyo" | "wakivule" | "sacco") {
   window.scrollTo({ top, behavior: "smooth" });
 }
 
+// Manual scroll-position memory for the "1./2./3." Flagship links to /give —
+// each project's own "Support"/"Donate" button leaves the home page. If the
+// browser's native back-forward restore doesn't kick in (evicted cache, no
+// bfcache on some mobile browsers, etc.), the visitor lands back at the very
+// top of Home instead of wherever they were reading, making it awkward to
+// then try a different project. sessionStorage-based save/restore makes the
+// "back returns to exactly where I was" behavior deterministic everywhere,
+// independent of the browser's own history/scroll-restoration quirks.
+const HOME_SCROLL_KEY = "ebikabyaffe:home-scroll-y";
+
+function saveHomeScrollPosition() {
+  sessionStorage.setItem(HOME_SCROLL_KEY, String(window.scrollY));
+}
+
 export function HomeLanding() {
   const router = useRouter();
   // Live counters — tick immediately when someone registers or an Omutaka
   // verifies a member, everywhere they're displayed (see lib/stats.ts).
   const stats = useStats();
+
+  // One-shot restore: if a scroll position was saved right before leaving for
+  // /give, jump straight back to it (no smooth animation — this should feel
+  // instant, like the page never left) and clear the flag so a later, fresh
+  // visit to Home doesn't jump anywhere unexpected.
+  useEffect(() => {
+    const saved = sessionStorage.getItem(HOME_SCROLL_KEY);
+    if (saved == null) return;
+    sessionStorage.removeItem(HOME_SCROLL_KEY);
+    window.scrollTo({ top: Number(saved), behavior: "auto" });
+  }, []);
 
   return (
     <>
@@ -341,7 +366,7 @@ export function HomeLanding() {
               {[
                 { num: formatCount(registeredTotal(stats)), lbl: "Baganda registered" },
                 { num: "56", lbl: "Ebika bya Baganda", href: "/clans" },
-                { num: "18", lbl: "Amasaza", href: "/abakungu" },
+                { num: "18", lbl: "Amasaza", href: "/abakungu#amasaza" },
                 { num: formatCount(verifiedTotal(stats)), lbl: "Verified by Bataka" },
               ].map(({ num, lbl, href }, i, arr) => {
                 const inner = (
@@ -553,7 +578,7 @@ export function HomeLanding() {
               future. Please support our clan development fund today.
               Together, we grow stronger.
             </p>
-            <Link href="/give?campaign=ekikakyo" className="no-underline">
+            <Link href="/give?campaign=ekikakyo" className="no-underline" onClick={saveHomeScrollPosition}>
               <button
                 className="font-semibold text-[13px] px-5 py-2.5 rounded-[5px] cursor-pointer"
                 style={{ background: "var(--gold)", color: "var(--gd)" }}
@@ -598,7 +623,7 @@ export function HomeLanding() {
                 title="Wakivule Project school launch"
               />
             </div>
-            <Link href="/give?campaign=wakivule" className="no-underline">
+            <Link href="/give?campaign=wakivule" className="no-underline" onClick={saveHomeScrollPosition}>
               <button
                 className="font-semibold text-[13px] px-5 py-2.5 rounded-[5px] cursor-pointer"
                 style={{ background: "var(--gold)", color: "var(--gd)" }}
@@ -659,6 +684,7 @@ export function HomeLanding() {
             <Link
               href="/give?campaign=sacco&option=donation"
               className="block max-w-[320px] bg-white border border-eborder rounded-[6px] px-3.5 py-3 no-underline hover:border-gold transition-colors mb-5"
+              onClick={saveHomeScrollPosition}
             >
               <p className="text-[10px] uppercase tracking-wide text-muted mb-1">
                 Donations
@@ -667,7 +693,7 @@ export function HomeLanding() {
                 Any amount, voluntary
               </p>
             </Link>
-            <Link href="/give?campaign=sacco&option=donation" className="no-underline">
+            <Link href="/give?campaign=sacco&option=donation" className="no-underline" onClick={saveHomeScrollPosition}>
               <button
                 className="font-semibold text-[13px] px-5 py-2.5 rounded-[5px] cursor-pointer"
                 style={{ background: "var(--gold)", color: "var(--gd)" }}

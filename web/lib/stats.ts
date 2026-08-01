@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { getClan } from "@/lib/clans";
+import { saveSynced, withCrossTabSync } from "@/lib/crossTabSync";
 
 // ── Live site-wide counters (mock implementation) ────────────────────────────
 //
@@ -37,19 +38,31 @@ let state: SiteStats = {
   clanDeltas: {},
 };
 
+const SYNC_NAME = "stats";
+
 const listeners = new Set<() => void>();
 
-function setState(next: SiteStats) {
+function applyState(next: SiteStats) {
   state = next;
   listeners.forEach((l) => l());
 }
 
-function subscribe(listener: () => void) {
+function setState(next: SiteStats) {
+  applyState(next);
+  saveSynced(SYNC_NAME, next);
+}
+
+function baseSubscribe(listener: () => void) {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
   };
 }
+
+// Cross-tab sync (2026-08, see lib/crossTabSync.ts) — a registration/
+// verification/clan-join in one tab updates the counters everywhere else
+// they're displayed (hero stats bar, footer, clan pages) in other open tabs.
+const subscribe = withCrossTabSync<SiteStats>(SYNC_NAME, baseSubscribe, applyState);
 
 const getSnapshot = () => state;
 

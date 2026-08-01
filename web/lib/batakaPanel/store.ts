@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { seedMembers } from "./mockMembers";
 import { seedAnnouncements } from "./mockAnnouncements";
 import { recordVerification } from "@/lib/stats";
+import { saveSynced, withCrossTabSync } from "@/lib/crossTabSync";
 import type {
   PanelMember,
   AuditEntry,
@@ -21,6 +22,13 @@ import type {
 // Mock mechanics: a module-level store + useSyncExternalStore, so state
 // survives client-side navigation anywhere in the app and resets on a hard
 // reload — the same convention as the rest of the app's mocks.
+//
+// Cross-tab sync (2026-08, see lib/crossTabSync.ts): members/audit/
+// announcements broadcast to other open tabs so an officer's or admin's
+// panel session sees changes live. `session` is deliberately EXCLUDED from
+// the sync — each tab keeps its own signed-in identity, so one tab can stay
+// signed in as a member (via AuthContext, a separate store) while another is
+// signed in here as a clan officer or the Foundation admin.
 
 export interface PanelState {
   session: PanelSession | null;
@@ -28,6 +36,10 @@ export interface PanelState {
   audit: AuditEntry[];
   announcements: Announcement[];
 }
+
+type SyncedPanelData = Pick<PanelState, "members" | "audit" | "announcements">;
+
+const SYNC_NAME = "panel-data";
 
 let state: PanelState = {
   session: null,
@@ -38,17 +50,31 @@ let state: PanelState = {
 
 const listeners = new Set<() => void>();
 
-function setState(next: PanelState) {
-  state = next;
+// Merges synced data into the CURRENT tab's state, preserving this tab's own
+// session (never overwritten by another tab's sync) — see the note above.
+function applySyncedData(data: SyncedPanelData) {
+  state = { ...state, ...data };
   listeners.forEach((l) => l());
 }
 
-function subscribe(listener: () => void) {
+function setState(next: PanelState) {
+  state = next;
+  listeners.forEach((l) => l());
+  saveSynced<SyncedPanelData>(SYNC_NAME, {
+    members: next.members,
+    audit: next.audit,
+    announcements: next.announcements,
+  });
+}
+
+function baseSubscribe(listener: () => void) {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
   };
 }
+
+const subscribe = withCrossTabSync<SyncedPanelData>(SYNC_NAME, baseSubscribe, applySyncedData);
 
 const getSnapshot = () => state;
 
@@ -171,17 +197,34 @@ export function requestInfo(id: string, note: string) {
   );
 }
 
-export function postAnnouncement(clanSlug: string, title: string, body: string) {
+// postedByAdmin defaults to false — the original path, a clan's own Omutaka
+// posting to their own members. The Foundation admin can also post to ANY
+// clan (2026-08 request) by passing postedByAdmin: true, which both the
+// panel's own announcement list and the member-facing dashboard card use to
+// show a clear "posted by the Foundation" note instead of attributing it to
+// the clan's own office.
+export function postAnnouncement(
+  clanSlug: string,
+  title: string,
+  body: string,
+  postedByAdmin = false
+) {
   const a: Announcement = {
     id: `ann-${Date.now()}`,
     at: today(),
     clanSlug,
     title,
     body,
+    postedByAdmin,
   };
   setState({
     ...state,
     announcements: [a, ...state.announcements],
-    audit: log(clanSlug, `Posted announcement "${title}"`),
+    audit: log(
+      clanSlug,
+      postedByAdmin
+        ? `Posted announcement "${title}" (Foundation admin, on behalf of the clan)`
+        : `Posted announcement "${title}"`
+    ),
   });
 }

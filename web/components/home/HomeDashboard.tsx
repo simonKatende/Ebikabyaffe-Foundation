@@ -11,6 +11,18 @@ import { useStats, clanMemberCount, formatMembers } from "@/lib/stats";
 import { useBusinessStore, listingForPhone } from "@/lib/businesses/store";
 import { ContactFoundationCard } from "@/components/home/ContactFoundationCard";
 import { usePanelStore, announcementsForClan } from "@/lib/batakaPanel/store";
+import { MemberTabs } from "@/components/home/MemberTabs";
+
+// Time-of-day greeting — computed from the visitor's local clock. Coarse
+// buckets only (morning/afternoon/evening), same tolerance the existing
+// EmpangoCountdown time logic already relies on, so a same-second SSR/client
+// hydration mismatch isn't a practical concern here either.
+function timeOfDayGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 export function HomeDashboard() {
   const { lang, user } = useAuth();
@@ -30,16 +42,28 @@ export function HomeDashboard() {
   const panelState = usePanelStore();
   const clanAnnouncements = clan ? announcementsForClan(panelState, clan.slug) : [];
 
-  // Greeting text switches between English and Luganda based on the user's language preference
+  // Greeting text switches between English and Luganda based on the user's
+  // language preference. The English greeting is time-of-day aware (Good
+  // morning/afternoon/evening); the subline thanks the member for the
+  // specific clan they joined rather than a generic "your clan is waiting"
+  // line, falling back to a plain line for the rare case a signed-in member
+  // has no clan yet (the mock sign-in's known gap — see AuthContext.tsx).
   const greeting =
-    lang === "lg" ? `Mwasuze otya, ${firstName}.` : `Good morning, ${firstName}.`;
+    lang === "lg" ? `Mwasuze otya, ${firstName}.` : `${timeOfDayGreeting()}, ${firstName}.`;
   const greetingSub =
     lang === "lg"
       ? "Ekika lyo likukyalira. Laba ebikula."
-      : "Your clan is waiting. Here's what's happening today.";
+      : clan
+        ? `Thank you for joining the ${clan.name} clan. Here's what's happening today.`
+        : "Here's what's happening today.";
 
   return (
     <div className="max-w-[720px] mx-auto px-5 py-7">
+
+      {/* Dashboard ⇄ Profile toggle — same idea as the Bataka Panel's own
+          tab bar, so a signed-in member can flip between their two "home
+          base" views without going back through the full main nav. */}
+      <MemberTabs />
 
       {/* Personalised greeting */}
       <div className="mb-6">
@@ -57,7 +81,7 @@ export function HomeDashboard() {
       <div className="grid grid-cols-3 gap-2.5 mb-3.5">
         {[
           { icon: "🐟",  title: "56 Clans",     sub: "Ebika encyclopedia",    href: "/clans"        },
-          { icon: "🗺️", title: "18 Amasaza",   sub: "Counties & chiefs",     href: "/abakungu"     },
+          { icon: "🗺️", title: "18 Amasaza",   sub: "Counties & chiefs",     href: "/abakungu#amasaza" },
           { icon: "🦔",  title: "Lugave",       sub: "New clan archive",      href: "/clans/lugave" },
         ].map(({ icon, title, sub, href }) => (
           <Link
@@ -154,7 +178,7 @@ export function HomeDashboard() {
             <Link href="/businesses">
               <Button variant="green" size="sm">Browse Business Owners →</Button>
             </Link>
-            <Link href="/profile">
+            <Link href="/profile#advertise-business">
               <Button size="sm" className="bg-cream2 text-gd border border-eborder hover:bg-cream3">
                 {myListing ? "Manage your listing →" : "List your business →"}
               </Button>
@@ -275,11 +299,18 @@ export function HomeDashboard() {
         clanAnnouncements.map((a) => (
           <Card key={a.id} className="mb-3.5">
             <CardHeader>
-              <span className="text-[20px]">{clan.totemEmoji}</span>
+              <span className="text-[20px]">{a.postedByAdmin ? "🏛️" : clan.totemEmoji}</span>
               <div>
                 <h3 className="text-[15px] text-gd">From the {clan.name} Clan</h3>
                 <p className="text-[12px] text-muted">
-                  Posted by the {clan.clanHead}&apos;s office · {a.at}
+                  {/* Admin-posted announcements (2026-08: the Foundation can
+                      post on behalf of any clan) are clearly attributed to
+                      the Foundation's office, not the clan's own — never let
+                      this read as if the Omutaka said it when he didn't. */}
+                  {a.postedByAdmin
+                    ? "Posted by the Ebikabyaffe Foundation Administration Office"
+                    : `Posted by the ${clan.clanHead}'s office`}{" "}
+                  · {a.at}
                 </p>
               </div>
             </CardHeader>
@@ -309,7 +340,7 @@ export function HomeDashboard() {
             UNESCO as a World Heritage Site, they sit in Busiro Ssaza — the
             county whose very name is bound up with royal burial.
           </p>
-          <Link href="/abakungu">
+          <Link href="/abakungu#amasaza">
             <Button
               size="sm"
               className="bg-cream2 text-gd border border-eborder hover:bg-cream3"

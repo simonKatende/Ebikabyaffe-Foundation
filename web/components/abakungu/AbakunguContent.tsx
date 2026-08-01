@@ -70,59 +70,6 @@ export function AbakunguContent() {
 
       <div className="max-w-[860px] mx-auto px-6 py-7">
 
-        {/* ── What "Ssaabasajja" means ── */}
-        <Section title="What &quot;Ssaabasajja&quot; Means">
-          <p>
-            <strong>Ssaabasajja</strong> (also spelled Ssabasajja) is a royal
-            honorific for the Kabaka of Buganda himself — used in the same
-            register as &quot;Kabaka,&quot; &quot;Maasomoogi,&quot; or
-            &quot;Ekitiibwa&quot; — appearing throughout kingdom media as{" "}
-            <em>&quot;Ssaabasajja Kabaka.&quot;</em> It carries the sense of
-            &quot;Chief/Father of Men&quot; or &quot;His Majesty,&quot; and is
-            the form typically used when a chief, minister, or subject is
-            quoted addressing or referring directly to the King in a formal or
-            reverential context.
-          </p>
-          <div className="bg-gold3 border border-gold/30 rounded-[5px] p-4 mt-3">
-            <p className="text-[13px] text-gd leading-relaxed">
-              <strong>Terminology overlap, deliberately separated here:</strong>{" "}
-              &quot;Omwami wa Ssaabasajja Kabaka&quot; (or interchangeably
-              &quot;Omwami wa Kabaka&quot;) is, in current kingdom media,
-              simply the standard formal way of referring to a{" "}
-              <strong>sitting Ssaza (county) chief</strong> — i.e.,
-              &quot;the Kabaka&apos;s man/chief.&quot; It is used for chiefs
-              holding the traditional named county titles (Ssekiboobo of
-              Kyaggwe, Ppookino of Buddu, Kaggo of Kyaddondo, Ssebwana of
-              Busiro, the chiefs of Mawokota and Buweekula, and so on) just as
-              often as it is used for chiefs in contested areas. It is{" "}
-              <strong>not</strong> a separate or exotic office confined to
-              frontier territories — it is the everyday honorific for
-              &quot;county chief acting for the Kabaka,&quot; used across the
-              whole kingdom.
-            </p>
-          </div>
-          <p className="mt-3 mb-2">
-            That said, the phrase carries extra political weight in three
-            settings, which is why it surfaces so often in news coverage of
-            them:
-          </p>
-          <ul className="list-none flex flex-col gap-1.5 p-0 m-0">
-            {[
-              ["Contested or frontier territories", "inside Uganda, where Buganda's authority overlaps with a rival or historic claim (Bunyoro's residual claim over Buluuli; the Kamuswaga's hereditary chieftaincy over Kooki) — here, calling a chief “Ssaabasajja’s man” is a pointed assertion of loyalty to the Kabaka over a rival authority."],
-              ["Ordinary Ssaza-level installations and reshuffles", "anywhere in Buganda, where the phrase is simply the formal title used in the announcement."],
-              ["The diaspora", "the United Kingdom (via BugandaUK) and, it turns out, at least North America (“essaza lya New England”) — where the kingdom maintains formal representative chiefs answering to the Kabaka directly, using the same “Ssaabasajja/Kabaka” language as the home counties."],
-            ].map(([head, body]) => (
-              <li
-                key={head}
-                className="flex gap-2.5 items-start bg-white border border-eborder rounded-[5px] px-3.5 py-2.5 text-[13px] text-gd leading-relaxed"
-              >
-                <span className="text-gold shrink-0 mt-0.5">⚑</span>
-                <span><strong>{head}</strong> — {body}</span>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
         {/* ── Where the Katikkiro fits — hierarchy card, same visual pattern
             as the Bataka page's "How the Bataka fit in the Kingdom" ── */}
         <div
@@ -594,7 +541,7 @@ export function AbakunguContent() {
         </Section>
 
         {/* ── The 18 counties, then their named chiefs ── */}
-        <Section title="The 18 Amasaza Today">
+        <Section title="The 18 Amasaza Today and Their Chiefs" id="amasaza">
           <p className="mb-1">
             Each Ssaza carries its own traditional chief title — some, like
             Ssekiboobo of Kyaggwe or Pokino of Buddu, among the best-known
@@ -873,9 +820,20 @@ export function AbakunguContent() {
 }
 
 // Section: titled content block with a ruled bottom border — same pattern as /amasaza
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+  id,
+}: {
+  title: string;
+  children: React.ReactNode;
+  // Optional anchor id — lets other pages deep-link straight to this section
+  // (e.g. "/abakungu#amasaza"). scrollMarginTop keeps the fixed nav bar from
+  // covering the heading once the browser jumps to the anchor.
+  id?: string;
+}) {
   return (
-    <div className="mb-7">
+    <div id={id} className="mb-7" style={id ? { scrollMarginTop: "var(--nav-h)" } : undefined}>
       <h3
         className="font-serif text-[18px] text-gd font-normal mb-3 pb-2"
         style={{ borderBottom: "1px solid var(--border)" }}

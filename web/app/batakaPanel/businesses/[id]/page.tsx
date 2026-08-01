@@ -18,8 +18,15 @@ import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 
-// One business listing's full detail + the officer's three actions:
-// Verify · Request more information (confirmation / proof of business) · Decline.
+// One business listing's full detail. Business-listing decisions are
+// FOUNDATION-ADMIN-ONLY (2026-08 request): Verify · Request more information
+// (confirmation / proof of business) · Decline are only rendered when
+// isAdmin. A clan officer opening a listing from their own clan sees
+// everything — status, submitted details, and the admin's recorded
+// reason/note on any past decision — but no action buttons; they have view
+// privileges here, not decision-making ones. This is the opposite scoping
+// from member-lineage verification, where the officer IS the decider — the
+// two workflows are deliberately different, don't unify them.
 export default function BusinessListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const panelState = usePanelStore();
@@ -47,7 +54,11 @@ export default function BusinessListingDetailPage() {
   }
 
   const clan = getClan(listing.clanSlug);
-  const reviewable = listing.status === "pending" || listing.status === "info_requested";
+  // Only the Foundation admin can act on a listing — a clan officer sees the
+  // same pending/info_requested state but no decision controls (see the
+  // header comment above).
+  const reviewable =
+    isAdmin && (listing.status === "pending" || listing.status === "info_requested");
 
   const inputClass =
     "w-full border border-eborder rounded px-3 py-2.5 text-[14px] outline-none focus:border-gold";
@@ -145,6 +156,20 @@ export default function BusinessListingDetailPage() {
               More information was requested on {listing.decidedAt}:{" "}
               <em>{listing.decisionNote}</em> — contact {listing.ownerName} at{" "}
               {listing.ownerPhone} if they haven&apos;t already responded.
+            </p>
+          )}
+
+          {listing.status === "pending" && !isAdmin && (
+            <p className="text-[13px] text-muted leading-relaxed">
+              Awaiting review by the Foundation admin. You&apos;ll see the
+              decision and reasoning here once it&apos;s made — business
+              listings are reviewed by the Foundation, not by clan officers.
+            </p>
+          )}
+
+          {listing.status === "info_requested" && !isAdmin && (
+            <p className="text-[12px] text-muted leading-relaxed italic">
+              Only the Foundation admin can verify or decline this listing.
             </p>
           )}
 

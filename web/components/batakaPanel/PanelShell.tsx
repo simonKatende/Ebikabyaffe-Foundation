@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { getClan } from "@/lib/clans";
 import { panelSignOut } from "@/lib/batakaPanel/store";
 import type { PanelSession } from "@/lib/batakaPanel/types";
@@ -26,17 +27,48 @@ export function PanelShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const clan = session.clanSlug ? getClan(session.clanSlug) : undefined;
 
   const title = session.isAdmin
     ? "Foundation Admin Console"
     : `${clan?.name ?? ""} Clan — Office of the ${clan?.clanHead ?? "Omutaka"}`;
 
+  // The officer's and admin's sign-in screens are separate URLs with no
+  // cross-link between them (see PanelSignIn.tsx / AdminSignIn.tsx) — so on
+  // exit, send each back to their OWN entry point rather than letting the
+  // admin land on the clan-officer form they never used to sign in.
+  function handleExit() {
+    const wasAdmin = session.isAdmin;
+    panelSignOut();
+    if (wasAdmin) router.push("/foundationAdmin");
+  }
+
   return (
     <div className="min-h-[70vh]" style={{ background: "var(--cream)" }}>
       {/* Panel header — dark green, distinct from the public pages */}
       <div className="px-5 py-4" style={{ background: "var(--gd)" }}>
         <div className="max-w-[860px] mx-auto flex items-center gap-3 flex-wrap">
+          {/* Foundation brand lockup — appears in this same header on every
+              panel page (PanelShell wraps all of them), so an officer/admin
+              always sees who the system belongs to, not just the panel's own
+              internal name. Links back to the panel's own dashboard. */}
+          <Link href="/batakaPanel" className="flex items-center gap-2 shrink-0 no-underline">
+            <Image
+              src="/logo.png"
+              alt="Ebikabyaffe Foundation logo"
+              width={32}
+              height={29}
+              className="w-8 h-[29px] shrink-0 object-contain"
+            />
+            <div className="text-white leading-tight hidden sm:block">
+              <span className="font-serif text-[13px] block">Ebikabyaffe</span>
+              <span className="text-gold2 text-[8px] tracking-[1.5px] uppercase block">
+                Foundation
+              </span>
+            </div>
+          </Link>
+          <span className="w-px h-8 bg-white/20 hidden sm:block" aria-hidden />
           <span className="text-[22px]">{session.isAdmin ? "🏛️" : "🪶"}</span>
           <div className="flex-1 min-w-[200px]">
             <p className="text-[10px] tracking-[2px] uppercase text-gold2 font-semibold">
@@ -50,7 +82,7 @@ export function PanelShell({
             DEMO — SAMPLE DATA
           </span>
           <button
-            onClick={panelSignOut}
+            onClick={handleExit}
             className="border border-white/30 text-white/70 text-[11px] px-2.5 py-1 rounded cursor-pointer hover:border-white/60 hover:text-white transition-all bg-transparent"
           >
             Exit panel

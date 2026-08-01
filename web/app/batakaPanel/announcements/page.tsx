@@ -6,13 +6,16 @@ import {
   announcementsForSession,
   postAnnouncement,
 } from "@/lib/batakaPanel/store";
-import { getClan } from "@/lib/clans";
+import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 
-// Announcements — how the Omutaka's office speaks to its members. This is
-// the panel side of the "get notified by your Omutaka" promise the clan
+const WAVE_ORDER: OriginWave[] = ["nansangwa", "kintu", "kimera", "later"];
+
+// Announcements — how a clan's own office speaks to its members, OR (2026-08)
+// how the Foundation admin can post on behalf of ANY clan when needed. This
+// is the panel side of the "get notified by your Omutaka" promise the clan
 // pages already make; delivery to members' apps arrives with the backend.
 export default function AnnouncementsPage() {
   const state = usePanelStore();
@@ -21,76 +24,102 @@ export default function AnnouncementsPage() {
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  // Admin-only: which clan this announcement is being posted on behalf of.
+  const [targetClanSlug, setTargetClanSlug] = useState("");
 
   const isAdmin = state.session?.isAdmin ?? false;
-  const clanSlug = state.session?.clanSlug ?? null;
+  const officerClanSlug = state.session?.clanSlug ?? null;
+  const postingClanSlug = isAdmin ? targetClanSlug : officerClanSlug;
 
   const inputClass =
     "w-full border border-eborder rounded px-3 py-2.5 text-[14px] outline-none focus:border-gold";
 
   function handlePost() {
-    if (!clanSlug || !title.trim() || !body.trim()) return;
-    postAnnouncement(clanSlug, title.trim(), body.trim());
+    if (!postingClanSlug || !title.trim() || !body.trim()) return;
+    postAnnouncement(postingClanSlug, title.trim(), body.trim(), isAdmin);
+    const clanName = getClan(postingClanSlug)?.name ?? "the clan's";
     setTitle("");
     setBody("");
-    toast("Announcement posted to your clan's members.");
+    if (isAdmin) setTargetClanSlug("");
+    toast(
+      isAdmin
+        ? `Announcement posted to the ${clanName} clan's members, as the Foundation.`
+        : "Announcement posted to your clan's members."
+    );
   }
 
   return (
     <>
-      {!isAdmin && (
-        <Card className="mb-4">
-          <CardHeader>
-            <span className="text-[15px] text-gd font-semibold">
-              New Announcement
+      <Card className="mb-4">
+        <CardHeader>
+          <span className="text-[15px] text-gd font-semibold">
+            New Announcement
+          </span>
+        </CardHeader>
+        <CardBody>
+          {isAdmin && (
+            <label className="block mb-3">
+              <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
+                Post on behalf of…
+              </span>
+              <select
+                value={targetClanSlug}
+                onChange={(e) => setTargetClanSlug(e.target.value)}
+                className={inputClass}
+              >
+                <option value="" disabled>Select a clan…</option>
+                {WAVE_ORDER.map((wave) => (
+                  <optgroup key={wave} label={WAVE_LABELS[wave].label}>
+                    {clans
+                      .filter((c) => c.originWave === wave)
+                      .map((c) => (
+                        <option key={c.slug} value={c.slug}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+          )}
+          <label className="block mb-3">
+            <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
+              Title
             </span>
-          </CardHeader>
-          <CardBody>
-            <label className="block mb-3">
-              <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
-                Title
-              </span>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Clan general meeting — Katende, 30 July"
-                className={inputClass}
-              />
-            </label>
-            <label className="block mb-3">
-              <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
-                Message
-              </span>
-              <textarea
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                rows={4}
-                className={inputClass}
-              />
-            </label>
-            <Button
-              variant="gold"
-              size="sm"
-              disabled={!title.trim() || !body.trim()}
-              onClick={handlePost}
-            >
-              Post to clan members →
-            </Button>
-            <p className="text-[11px] text-muted mt-2 leading-relaxed">
-              Demo: in the live system this reaches your clan&apos;s registered
-              members in the app (and later by SMS).
-            </p>
-          </CardBody>
-        </Card>
-      )}
-
-      {isAdmin && (
-        <p className="text-[12.5px] text-muted mb-4 leading-relaxed">
-          Announcements are per-clan and posted by each clan&apos;s own office —
-          as admin you can read them all below.
-        </p>
-      )}
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Clan general meeting — Katende, 30 July"
+              className={inputClass}
+            />
+          </label>
+          <label className="block mb-3">
+            <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">
+              Message
+            </span>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={4}
+              className={inputClass}
+            />
+          </label>
+          <Button
+            variant="gold"
+            size="sm"
+            disabled={!postingClanSlug || !title.trim() || !body.trim()}
+            onClick={handlePost}
+          >
+            {isAdmin ? "Post on behalf of this clan →" : "Post to clan members →"}
+          </Button>
+          <p className="text-[11px] text-muted mt-2 leading-relaxed">
+            {isAdmin
+              ? "This will be clearly marked to members and to the clan's own office as posted by the Ebikabyaffe Foundation Administration Office, not the clan itself."
+              : "Demo: in the live system this reaches your clan's registered members in the app (and later by SMS)."}
+          </p>
+        </CardBody>
+      </Card>
 
       {announcements.length === 0 ? (
         <p className="text-[13px] text-muted text-center py-8">
@@ -107,6 +136,11 @@ export default function AnnouncementsPage() {
               <p className="text-[13px] text-muted leading-relaxed mb-1.5">
                 {a.body}
               </p>
+              {a.postedByAdmin && (
+                <p className="text-[11px] text-royal2 font-semibold mb-1">
+                  🏛️ Posted by the Ebikabyaffe Foundation Administration Office
+                </p>
+              )}
               <p className="text-[11px] text-muted">
                 {a.at}
                 {isAdmin && <> · {getClan(a.clanSlug)?.name} clan</>}

@@ -230,16 +230,20 @@ export function Nav() {
             </button>
           </>
         ) : (
-          // "Sign in" means a returning member logging back into an existing
-          // account, so it goes straight to the sign-in side of /login — no
-          // clan re-selection needed, that only happens once, at account
-          // creation. New members instead find their clan first and use
-          // that clan page's own "Join the {clan} clan" button.
+          // 2026-08: renamed "Sign in" → "Sign up" and pointed at plain
+          // /login (the create/signup side, default mode) rather than
+          // /login?mode=signin — the top-right nav button's primary job is
+          // funnelling NEW visitors in, and the label should say what it
+          // does. A returning member without a clan param lands on /login's
+          // "Choose your clan first" state, which has its own link to
+          // /clans (accounts are always created from a clan page's "Join"
+          // button) — and the card's own "Already have an account? Sign in"
+          // toggle still covers the sign-in path from right there.
           <Link
-            href="/login?mode=signin"
+            href="/login"
             className="bg-gold text-gd font-semibold text-[13px] px-4 py-1.5 rounded cursor-pointer whitespace-nowrap hover:bg-gold2 transition-colors no-underline"
           >
-            Sign in
+            Sign up
           </Link>
         )}
       </div>
