@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/context/AuthContext";
+import { hasRsvped, recordRsvp } from "@/lib/eventRsvps";
 import { Button } from "@/components/ui/Button";
+
+// Stable slug for this card's signup — not a database row, just an
+// event_rsvps.event_key value (see lib/eventRsvps.ts). Bump this if the
+// Empango date below ever moves to a different year.
+const EMPANGO_EVENT_KEY = "empango-2026";
 
 // Calculates how much time remains until the next Empango (31 July each year).
 // Returns zeros if the date has already passed.
@@ -27,6 +33,7 @@ export function EmpangoCountdown() {
   // Only ever rendered inside HomeDashboard (a signed-in-only view), so
   // `user` is always a real signed-in member here.
   const { user } = useAuth();
+  const [signedUp, setSignedUp] = useState(false);
 
   // Refresh the countdown every 60 seconds.
   // The cleanup function cancels the interval when the component unmounts.
@@ -34,6 +41,11 @@ export function EmpangoCountdown() {
     const id = setInterval(() => setTime(getTimeLeft()), 60_000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    if (!user.id) return;
+    void hasRsvped(user.id, EMPANGO_EVENT_KEY).then(setSignedUp);
+  }, [user.id]);
 
   return (
     <div
@@ -84,18 +96,22 @@ export function EmpangoCountdown() {
       <Button
         variant="gold"
         size="sm"
-        onClick={() => {
-          // No real Empango-updates backend yet — nudge toward a real,
-          // usable email instead of a hollow "you're signed up" toast when
-          // there'd be nowhere to actually send anything.
-          if (!user.email.trim()) {
-            toast("Add your email on your profile so we can send you Empango updates.");
-          } else {
-            toast(`You're signed up! Empango updates will go to ${user.email}.`);
+        disabled={signedUp}
+        onClick={async () => {
+          const { error } = await recordRsvp(user.id, EMPANGO_EVENT_KEY, user.email);
+          if (error) {
+            toast(error);
+            return;
           }
+          setSignedUp(true);
+          toast(
+            user.email.trim()
+              ? `You're signed up! Empango updates will go to ${user.email}.`
+              : "You're signed up! Add your email on your profile so we can send you updates."
+          );
         }}
       >
-        Get Empango updates →
+        {signedUp ? "✓ Signed up for updates" : "Get Empango updates →"}
       </Button>
     </div>
   );

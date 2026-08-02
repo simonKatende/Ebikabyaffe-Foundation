@@ -14,7 +14,12 @@ import type { BusinessListing } from "@/lib/businesses/types";
 import { ContactFoundationCard } from "@/components/home/ContactFoundationCard";
 import { fetchClanAnnouncements } from "@/lib/batakaPanel/store";
 import type { Announcement } from "@/lib/batakaPanel/types";
+import { hasRsvped, recordRsvp } from "@/lib/eventRsvps";
 import { MemberTabs } from "@/components/home/MemberTabs";
+
+// Stable slug for the Parliament land-law meeting CTA card below — not a
+// database row, just an event_rsvps.event_key value (see lib/eventRsvps.ts).
+const PARLIAMENT_EVENT_KEY = "parliament-land-law-2026-05-15";
 
 // Time-of-day greeting — computed from the visitor's local clock. Coarse
 // buckets only (morning/afternoon/evening), same tolerance the existing
@@ -58,6 +63,12 @@ export function HomeDashboard() {
     void fetchClanAnnouncements(clan.slug).then(setClanAnnouncements);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clan?.slug]);
+  // Whether this member has already RSVP'd to the Parliament meeting below.
+  const [rsvped, setRsvped] = useState(false);
+  useEffect(() => {
+    if (!user.id) return;
+    void hasRsvped(user.id, PARLIAMENT_EVENT_KEY).then(setRsvped);
+  }, [user.id]);
 
   // Greeting text switches between English and Luganda based on the user's
   // language preference. The English greeting is time-of-day aware (Good
@@ -221,22 +232,25 @@ export function HomeDashboard() {
             Committee. Add your voice as a registered clan member.
           </p>
           <div className="flex gap-2.5">
-            {/* toast() gives instant feedback before real RSVP backend is
-                wired up — nudges toward a real, usable email instead of a
-                hollow "recorded" toast when there'd be nowhere to send
-                anything */}
             <Button
               variant="gold"
               size="sm"
-              onClick={() => {
-                if (!user.email.trim()) {
-                  toast("Add your email on your profile so we can send you event details.");
-                } else {
-                  toast(`RSVP recorded! We'll send details to ${user.email}.`);
+              disabled={rsvped}
+              onClick={async () => {
+                const { error } = await recordRsvp(user.id, PARLIAMENT_EVENT_KEY, user.email);
+                if (error) {
+                  toast(error);
+                  return;
                 }
+                setRsvped(true);
+                toast(
+                  user.email.trim()
+                    ? `RSVP recorded! We'll send details to ${user.email}.`
+                    : "RSVP recorded! Add your email on your profile so we can send you details."
+                );
               }}
             >
-              RSVP — I&apos;ll attend
+              {rsvped ? "✓ You're on the list" : "RSVP — I'll attend"}
             </Button>
             <Link href="/give">
               <Button variant="outline-white" size="sm">
