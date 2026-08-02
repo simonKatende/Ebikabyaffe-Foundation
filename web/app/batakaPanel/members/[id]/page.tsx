@@ -12,6 +12,7 @@ import {
 } from "@/lib/batakaPanel/store";
 import { getClan } from "@/lib/clans";
 import { StatusBadge } from "@/components/batakaPanel/StatusBadge";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
@@ -73,7 +74,10 @@ export default function MemberDetailPage() {
             {member.fullName.split(" ").map((p) => p[0]).join("").slice(0, 2)}
           </div>
           <div className="flex-1">
-            <h2 className="text-[16px] text-gd font-semibold">{member.fullName}</h2>
+            <h2 className="text-[16px] text-gd font-semibold flex items-center gap-1.5">
+              {member.fullName}
+              {member.status === "verified" && <VerifiedBadge size={15} />}
+            </h2>
             <p className="text-[12px] text-muted">
               {clan?.name} clan · {member.phone} · Joined {member.memberSince}
             </p>

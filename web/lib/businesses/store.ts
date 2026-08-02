@@ -1,8 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { createPanelClient } from "@/lib/supabase/panelClient";
-import { logExternalAction } from "@/lib/batakaPanel/store";
+import { getActivePanelClient, logExternalAction } from "@/lib/batakaPanel/store";
 import type { BusinessListing, BusinessCategory, ListingStatus } from "./types";
 
 // ── Business Owners directory — real Supabase implementation ────────────────
@@ -47,11 +46,26 @@ function formatDate(iso: string): string {
   });
 }
 
-function mapRow(r: ListingRow): BusinessListing {
+// Public-safe verified-status lookup (public_verified_owner_ids RPC, see the
+// matching migration) — works whether the caller is signed out (the public
+// directory), a signed-in member, or a panel officer/admin, since it's
+// granted to anon+authenticated and returns only an id set, never profile
+// data. Shared here rather than duplicated per fetch function below.
+async function fetchVerifiedOwnerIds(ownerIds: string[]): Promise<Set<string>> {
+  if (ownerIds.length === 0) return new Set();
+  const { data, error } = await createClient().rpc("public_verified_owner_ids", {
+    target_ids: [...new Set(ownerIds)],
+  });
+  if (error || !data) return new Set();
+  return new Set((data as { id: string }[]).map((r) => r.id));
+}
+
+function mapRow(r: ListingRow, verifiedIds: Set<string>): BusinessListing {
   return {
     id: r.id,
     ownerId: r.owner_id,
     ownerName: r.owner_name,
+    ownerVerified: verifiedIds.has(r.owner_id),
     clanSlug: r.clan_slug,
     businessName: r.business_name,
     category: r.category as BusinessCategory,
@@ -76,7 +90,9 @@ export async function fetchVisibleListings(): Promise<BusinessListing[]> {
     .eq("status", "verified")
     .order("submitted_at", { ascending: false });
   if (error || !data) return [];
-  return (data as ListingRow[]).map(mapRow);
+  const rows = data as ListingRow[];
+  const verifiedIds = await fetchVerifiedOwnerIds(rows.map((r) => r.owner_id));
+  return rows.map((r) => mapRow(r, verifiedIds));
 }
 
 // ── The signed-in member's own listing ───────────────────────────────────
@@ -89,14 +105,17 @@ export async function fetchListingForOwner(ownerId: string): Promise<BusinessLis
     .eq("owner_id", ownerId)
     .maybeSingle();
   if (error || !data) return null;
-  return mapRow(data as ListingRow);
+  const verifiedIds = await fetchVerifiedOwnerIds([ownerId]);
+  return mapRow(data as ListingRow, verifiedIds);
 }
 
 // One listing per member: upsert-and-resubmit, same as the mock. Any
 // submission — first time or a re-edit — goes back to "pending" (the
 // database default), so editing live content can't bypass review.
+// `ownerVerified` is excluded — it's a read-time-only derived field (see
+// mapRow), never something a submission itself sets.
 export async function submitListing(
-  input: Omit<BusinessListing, "id" | "status" | "submittedAt" | "decidedAt" | "decisionNote">
+  input: Omit<BusinessListing, "id" | "status" | "submittedAt" | "decidedAt" | "decisionNote" | "ownerVerified">
 ): Promise<{ error?: string }> {
   const { error } = await createClient()
     .from("business_listings")
@@ -133,12 +152,16 @@ export async function removeOwnListing(ownerId: string): Promise<void> {
 // enforces this; isAdmin/clanSlug here are only used to pick the query
 // shape, not as the actual security boundary.
 export async function fetchListingsForReviewer(): Promise<BusinessListing[]> {
-  const { data, error } = await createPanelClient()
+  const panelSupabase = getActivePanelClient();
+  if (!panelSupabase) return [];
+  const { data, error } = await panelSupabase
     .from("business_listings")
     .select("*")
     .order("submitted_at", { ascending: false });
   if (error || !data) return [];
-  return (data as ListingRow[]).map(mapRow);
+  const rows = data as ListingRow[];
+  const verifiedIds = await fetchVerifiedOwnerIds(rows.map((r) => r.owner_id));
+  return rows.map((r) => mapRow(r, verifiedIds));
 }
 
 async function decideListing(
@@ -146,14 +169,17 @@ async function decideListing(
   patch: { status: ListingStatus; decision_note: string | null },
   auditAction: (listing: BusinessListing) => string
 ): Promise<void> {
-  const panelSupabase = createPanelClient();
+  const panelSupabase = getActivePanelClient();
+  if (!panelSupabase) return;
   const { data: existing } = await panelSupabase
     .from("business_listings")
     .select("*")
     .eq("id", id)
     .maybeSingle();
   if (!existing) return;
-  const listing = mapRow(existing as ListingRow);
+  // ownerVerified isn't read by any auditAction below — an empty set avoids
+  // an unnecessary extra round trip just to compute a field nothing here uses.
+  const listing = mapRow(existing as ListingRow, new Set());
 
   const { error } = await panelSupabase
     .from("business_listings")

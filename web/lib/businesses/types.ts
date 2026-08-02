@@ -40,6 +40,12 @@ export interface BusinessListing {
   // another clan's officer has RLS access to read an arbitrary profiles row.
   ownerId: string;
   ownerName: string;
+  // Whether the owner's own clan membership is Omutaka-verified (drives the
+  // blue VerifiedBadge next to their name) — looked up separately via
+  // public_verified_owner_ids() at fetch time (see store.ts), not a stored
+  // column, so it can never go stale between a member's own listing and a
+  // later verification decision.
+  ownerVerified: boolean;
   clanSlug: string;
   businessName: string;
   category: BusinessCategory;

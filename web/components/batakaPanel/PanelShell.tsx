@@ -19,6 +19,11 @@ const TABS = [
   { href: "/batakaPanel/announcements", label: "Announcements" },
 ];
 
+// Foundation-wide "send to the Foundation" messages — admin-only (no clan
+// concept here, unlike every other tab above), so it's appended separately
+// rather than living in the shared TABS array a clan officer also renders.
+const ADMIN_ONLY_TABS = [{ href: "/batakaPanel/messages", label: "Messages" }];
+
 export function PanelShell({
   session,
   children,
@@ -38,9 +43,14 @@ export function PanelShell({
   // cross-link between them (see PanelSignIn.tsx / AdminSignIn.tsx) — so on
   // exit, send each back to their OWN entry point rather than letting the
   // admin land on the clan-officer form they never used to sign in.
-  function handleExit() {
+  //
+  // `panelSignOut()` is awaited before navigating — pushing first and
+  // signing out after (or not waiting) races the sign-out's own auth event
+  // against the door we're navigating to re-checking the (still briefly
+  // stale) session, which can bounce the visitor straight back in here.
+  async function handleExit() {
     const wasAdmin = session.isAdmin;
-    panelSignOut();
+    await panelSignOut();
     if (wasAdmin) router.push("/foundationAdmin");
   }
 
@@ -91,7 +101,7 @@ export function PanelShell({
 
         {/* Tab bar */}
         <div className="max-w-[860px] mx-auto flex gap-1.5 mt-3 flex-wrap">
-          {TABS.map((t) => {
+          {[...TABS, ...(session.isAdmin ? ADMIN_ONLY_TABS : [])].map((t) => {
             const active =
               t.href === "/batakaPanel"
                 ? pathname === "/batakaPanel"

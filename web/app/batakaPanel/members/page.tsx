@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePanelStore, membersForSession } from "@/lib/batakaPanel/store";
 import { getClan } from "@/lib/clans";
 import { StatusBadge } from "@/components/batakaPanel/StatusBadge";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import type { MemberStatus } from "@/lib/batakaPanel/types";
 import { cn } from "@/lib/utils";
 
@@ -87,8 +88,9 @@ export default function MembersPage() {
                 {m.fullName.split(" ").map((p) => p[0]).join("").slice(0, 2)}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] text-gd font-semibold truncate">
+                <p className="text-[14px] text-gd font-semibold truncate flex items-center gap-1">
                   {m.fullName}
+                  {m.status === "verified" && <VerifiedBadge size={13} />}
                 </p>
                 <p className="text-[11.5px] text-muted truncate">
                   {state.session?.isAdmin && (

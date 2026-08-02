@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 
 // All nav links in one array so adding a new route only requires a single edit here
 const navLinks = [
@@ -220,7 +221,10 @@ export function Nav() {
                   {initials}
                 </div>
               )}
-              <span>{firstName}</span>
+              <span className="inline-flex items-center gap-1">
+                {firstName}
+                {user.clanVerified && <VerifiedBadge size={12} />}
+              </span>
             </Link>
             <button
               onClick={logout}

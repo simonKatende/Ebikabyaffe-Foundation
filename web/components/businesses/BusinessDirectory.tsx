@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { cn } from "@/lib/utils";
 import { fetchVisibleListings } from "@/lib/businesses/store";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { getClan } from "@/lib/clans";
 import { BUSINESS_CATEGORIES, type BusinessListing } from "@/lib/businesses/types";
 
@@ -121,7 +122,10 @@ export function BusinessDirectory() {
                     {listing.location && <> · 📍 {listing.location}</>}
                   </p>
                   <div className="flex items-center justify-between pt-2.5 border-t border-eborder">
-                    <span className="text-[12px] text-muted">{listing.ownerName}</span>
+                    <span className="text-[12px] text-muted inline-flex items-center gap-1">
+                      {listing.ownerName}
+                      {listing.ownerVerified && <VerifiedBadge size={12} />}
+                    </span>
                     {clan && (
                       <Link
                         href={`/clans/${clan.slug}`}

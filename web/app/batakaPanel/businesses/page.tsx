@@ -6,6 +6,7 @@ import { usePanelStore } from "@/lib/batakaPanel/store";
 import { fetchListingsForReviewer } from "@/lib/businesses/store";
 import { getClan } from "@/lib/clans";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import type { BusinessListing, ListingStatus } from "@/lib/businesses/types";
 import { cn } from "@/lib/utils";
 
@@ -104,7 +105,9 @@ export default function BusinessListingsPage() {
                 </p>
                 <p className="text-[11.5px] text-muted truncate">
                   {isAdmin && <>{getClan(l.clanSlug)?.name} clan · </>}
-                  {l.ownerName} · {l.category} · Submitted {l.submittedAt}
+                  {l.ownerName}
+                  {l.ownerVerified && <VerifiedBadge size={11} className="mx-0.5" />}
+                  {" "}· {l.category} · Submitted {l.submittedAt}
                 </p>
               </div>
               <BusinessStatusBadge status={l.status} />

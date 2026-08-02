@@ -14,6 +14,7 @@ import {
 import type { BusinessListing } from "@/lib/businesses/types";
 import { getClan } from "@/lib/clans";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
@@ -89,7 +90,9 @@ export default function BusinessListingDetailPage() {
           <div className="flex-1">
             <h2 className="text-[16px] text-gd font-semibold">{listing.businessName}</h2>
             <p className="text-[12px] text-muted">
-              {clan?.name} clan · {listing.ownerName} · Submitted {listing.submittedAt}
+              {clan?.name} clan · {listing.ownerName}
+              {listing.ownerVerified && <VerifiedBadge size={11} className="mx-0.5" />}
+              {" "}· Submitted {listing.submittedAt}
             </p>
           </div>
           <BusinessStatusBadge status={listing.status} />

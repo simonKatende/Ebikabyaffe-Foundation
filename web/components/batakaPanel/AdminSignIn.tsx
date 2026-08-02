@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { createPanelClient } from "@/lib/supabase/panelClient";
+import { createAdminPanelClient } from "@/lib/supabase/panelClient";
+import { completeSignIn } from "@/lib/batakaPanel/store";
 import { LockIcon, VisibilityToggle, fieldFull, labelClass, pillPrimary } from "@/components/batakaPanel/authFormShared";
 
 // The FOUNDATION ADMIN's own dedicated entry point — /foundationAdmin.
@@ -35,11 +36,15 @@ export function AdminSignIn() {
         return;
       }
       const { access_token, refresh_token } = await res.json();
-      const { error: sessionError } = await createPanelClient().auth.setSession({
+      const { error: sessionError } = await createAdminPanelClient().auth.setSession({
         access_token,
         refresh_token,
       });
       if (sessionError) throw sessionError;
+      // Explicitly pins this tab to the admin role — see completeSignIn's
+      // own header comment for why relying solely on the store's reactive
+      // onAuthStateChange listener isn't enough here.
+      await completeSignIn("admin");
     } catch {
       setError("Something went wrong signing in — please try again.");
     } finally {

@@ -16,6 +16,7 @@ import { fetchClanAnnouncements } from "@/lib/batakaPanel/store";
 import type { Announcement } from "@/lib/batakaPanel/types";
 import { hasRsvped, recordRsvp } from "@/lib/eventRsvps";
 import { MemberTabs } from "@/components/home/MemberTabs";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 
 // Stable slug for the Parliament land-law meeting CTA card below — not a
 // database row, just an event_rsvps.event_key value (see lib/eventRsvps.ts).
@@ -76,8 +77,9 @@ export function HomeDashboard() {
   // specific clan they joined rather than a generic "your clan is waiting"
   // line, falling back to a plain line for the rare case a signed-in member
   // has no clan yet (the mock sign-in's known gap — see AuthContext.tsx).
-  const greeting =
-    lang === "lg" ? `Mwasuze otya, ${firstName}.` : `${timeOfDayGreeting()}, ${firstName}.`;
+  // Split into a prefix (rather than one interpolated string) so the
+  // verified badge can sit right after the member's own name.
+  const greetingPrefix = lang === "lg" ? "Mwasuze otya" : timeOfDayGreeting();
   const greetingSub =
     lang === "lg"
       ? "Ekika lyo likukyalira. Laba ebikula."
@@ -96,7 +98,8 @@ export function HomeDashboard() {
       {/* Personalised greeting */}
       <div className="mb-6">
         <h2 className="font-serif text-[24px] font-normal text-gd mb-1">
-          {greeting}
+          {greetingPrefix}, {firstName}
+          {user.clanVerified && <VerifiedBadge size={16} className="ml-1.5 -mt-0.5" />}.
         </h2>
         <p className="text-[14px] text-muted">{greetingSub}</p>
       </div>

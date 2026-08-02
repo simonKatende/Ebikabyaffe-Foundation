@@ -9,6 +9,8 @@ import {
 } from "@/lib/batakaPanel/store";
 import { fetchListingsForReviewer } from "@/lib/businesses/store";
 import type { BusinessListing } from "@/lib/businesses/types";
+import { fetchMessagesForAdmin } from "@/lib/contactMessages/store";
+import type { AdminContactMessage } from "@/lib/contactMessages/types";
 import { getClan } from "@/lib/clans";
 import { StatusBadge } from "@/components/batakaPanel/StatusBadge";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
@@ -29,6 +31,16 @@ export default function PanelDashboard() {
   const pendingListings = listings.filter(
     (l) => l.status === "pending" || l.status === "info_requested"
   );
+
+  // Foundation-wide "send to the Foundation" messages — admin-only queue
+  // (no clan concept here), same reasoning as PanelShell.tsx's
+  // ADMIN_ONLY_TABS: a clan officer has no legitimate reason to see these.
+  const [messages, setMessages] = useState<AdminContactMessage[]>([]);
+  useEffect(() => {
+    if (!isAdmin) return;
+    void fetchMessagesForAdmin().then(setMessages);
+  }, [isAdmin]);
+  const awaitingMessages = messages.filter((m) => !m.replyBody);
 
   const pending = members.filter(
     (m) => m.status === "pending" || m.status === "info_requested"
@@ -156,6 +168,52 @@ export default function PanelDashboard() {
           )}
         </CardBody>
       </Card>
+
+      {/* "Send to the Foundation" messages — admin-only, no clan concept
+          here, so this card doesn't render at all for a clan officer (unlike
+          the two queues above, which they can view even though they can't
+          decide business listings). */}
+      {isAdmin && (
+        <Card className="mb-4">
+          <CardHeader>
+            <span className="text-[15px] text-gd font-semibold flex-1">
+              Messages Awaiting Reply
+            </span>
+            <Link
+              href="/batakaPanel/messages"
+              className="text-[12px] text-royal2 no-underline hover:underline"
+            >
+              All messages →
+            </Link>
+          </CardHeader>
+          <CardBody>
+            {awaitingMessages.length === 0 ? (
+              <p className="text-[13px] text-muted text-center py-4">
+                🎉 Nothing waiting for a reply.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {awaitingMessages.slice(0, 5).map((m) => (
+                  <Link
+                    key={m.id}
+                    href={`/batakaPanel/messages/${m.id}`}
+                    className="flex items-center gap-3 no-underline bg-cream2 border border-eborder rounded-[6px] px-3.5 py-2.5 hover:border-gold transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13.5px] text-gd font-semibold truncate">
+                        {m.subject}
+                      </p>
+                      <p className="text-[11px] text-muted">
+                        {m.senderName} · Sent {m.createdAt}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardBody>
+        </Card>
+      )}
 
       {/* Recent panel activity (audit trail) */}
       <Card>

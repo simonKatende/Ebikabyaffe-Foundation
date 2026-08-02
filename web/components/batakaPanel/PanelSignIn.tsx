@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
-import { createPanelClient } from "@/lib/supabase/panelClient";
+import { createOfficerPanelClient } from "@/lib/supabase/panelClient";
+import { completeSignIn } from "@/lib/batakaPanel/store";
 import { LockIcon, VisibilityToggle, fieldFull, labelClass, pillPrimary } from "@/components/batakaPanel/authFormShared";
 
 const WAVE_ORDER: OriginWave[] = ["nansangwa", "kintu", "kimera", "later"];
@@ -48,14 +49,15 @@ export function PanelSignIn() {
         return;
       }
       const { access_token, refresh_token } = await res.json();
-      // The panel's own module store (lib/batakaPanel/store.ts) is subscribed
-      // to this client's auth changes and derives PanelState.session from
-      // the real signed-in officer identity — nothing else to call here.
-      const { error: sessionError } = await createPanelClient().auth.setSession({
+      const { error: sessionError } = await createOfficerPanelClient().auth.setSession({
         access_token,
         refresh_token,
       });
       if (sessionError) throw sessionError;
+      // Explicitly pins this tab to the officer role — see completeSignIn's
+      // own header comment for why relying solely on the store's reactive
+      // onAuthStateChange listener isn't enough here.
+      await completeSignIn("officer");
     } catch {
       setError("Something went wrong signing in — please try again.");
     } finally {

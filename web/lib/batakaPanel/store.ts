@@ -6,7 +6,7 @@ import { formatE164 } from "@/lib/phoneCountries";
 import type { AuthChangeEvent, PostgrestError, Session } from "@supabase/supabase-js";
 import { mapLineageRow, type LineageRow } from "@/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
-import { createPanelClient } from "@/lib/supabase/panelClient";
+import { createOfficerPanelClient, createAdminPanelClient } from "@/lib/supabase/panelClient";
 import type {
   PanelMember,
   MemberStatus,
@@ -18,13 +18,20 @@ import type {
 // ── The panel's single data-access layer — real Supabase implementation ─────
 //
 // EVERYTHING the panel reads or writes goes through this file. Components
-// never own panel data (unchanged rule from the mock version). Backed by a
-// SEPARATE Supabase client (lib/supabase/panelClient.ts, its own cookie
-// namespace) than the member-facing one in AuthContext.tsx, so a signed-in
-// member and a signed-in officer/admin can coexist in the same browser.
+// never own panel data (unchanged rule from the mock version). Backed by
+// TWO SEPARATE Supabase clients (lib/supabase/panelClient.ts — one officer
+// cookie, one admin cookie), distinct from the member-facing one in
+// AuthContext.tsx too, so a signed-in member, a signed-in clan officer, and
+// a signed-in admin can all coexist independently in the same browser —
+// signing into one never establishes or reveals a session for either of the
+// other two. Exactly one of the two panel auth states is ever "active" at a
+// time for THIS module's exposed `session` (see `activeRole()` below); if
+// both happen to be signed in in the same browser, admin wins, since it's
+// the strictly broader role and there's no UI here for picking between two
+// simultaneously-open panel identities.
 //
 // Bootstrap is a module-top-level (not a React hook — this is a plain
-// module) subscription to that client's auth changes, guarded by
+// module) subscription to BOTH clients' auth changes, guarded by
 // `typeof window !== "undefined"` (same precaution the old
 // lib/auth/registry.ts used for its own browser-only wiring) — this is what
 // lets `usePanelStore()` stay a simple synchronous useSyncExternalStore hook
@@ -168,8 +175,53 @@ function mapAnnouncementRow(a: AnnouncementRow): Announcement {
 
 // ── Bootstrap + data loading ─────────────────────────────────────────────────
 
-async function loadPanelSession(userId: string): Promise<PanelSession | null> {
-  const { data } = await createPanelClient()
+// Exactly one of these is non-null at a time in the common case (each is
+// only ever set by that role's OWN client's onAuthStateChange, wired to its
+// own cookie) — but both CAN be non-null if the same browser has signed into
+// both doors (e.g. an officer signed in in one tab, admin in another).
+let officerAuthSession: Session | null = null;
+let adminAuthSession: Session | null = null;
+
+type ActiveRole = "officer" | "admin";
+
+// The role THIS tab is currently showing. Deliberately "sticky" — see
+// `reconcile()` below. A real bug this fixes: the two auth clients' session
+// cookies sync live across every tab of the same browser (that's normal,
+// desired persistence — e.g. so the officer's own dashboard survives a
+// reload), which means BOTH auth listeners fire in EVERY tab, including one
+// that's just quietly showing an officer's dashboard when a completely
+// different tab signs into /foundationAdmin as admin. Without stickiness, a
+// naive "admin wins if both exist" rule would swap that officer tab's
+// content over to the admin console the instant the other tab's sign-in
+// completed — exactly the "opening the other door hijacks a tab I already
+// had open" bug this whole file exists to prevent, just reappearing one
+// layer down. Once a tab has picked a role to display, it keeps showing
+// that role as long as that role's OWN session stays valid, full stop — the
+// other role's cookie appearing or disappearing elsewhere is none of this
+// tab's business.
+let currentDisplayRole: ActiveRole | null = null;
+
+function activeRole(): ActiveRole | null {
+  return currentDisplayRole;
+}
+
+// Exported so lib/businesses/store.ts's own officer/admin review queries
+// (fetchListingsForReviewer, decideListing) go through whichever client this
+// module already knows is actually signed in, instead of duplicating the
+// role-resolution logic there.
+export function getActivePanelClient() {
+  const role = activeRole();
+  if (role === "admin") return createAdminPanelClient();
+  if (role === "officer") return createOfficerPanelClient();
+  return null;
+}
+
+function clientForRole(role: ActiveRole) {
+  return role === "admin" ? createAdminPanelClient() : createOfficerPanelClient();
+}
+
+async function loadPanelSession(userId: string, role: ActiveRole): Promise<PanelSession | null> {
+  const { data } = await clientForRole(role)
     .from("panel_officers")
     .select("clan_slug, is_admin")
     .eq("user_id", userId)
@@ -179,7 +231,8 @@ async function loadPanelSession(userId: string): Promise<PanelSession | null> {
 }
 
 async function refreshAll(session: PanelSession) {
-  const supabase = createPanelClient();
+  const supabase = getActivePanelClient();
+  if (!supabase) return;
   const [{ data: profiles }, { data: lineageRows }, { data: auditRows }, { data: announcementRows }] =
     await Promise.all([
       supabase.from("profiles").select("*").not("clan_slug", "is", null),
@@ -223,13 +276,15 @@ async function refreshAll(session: PanelSession) {
   setState({ session, members, audit, announcements });
 }
 
-type RealtimeChannel = ReturnType<ReturnType<typeof createPanelClient>["channel"]>;
+type RealtimeChannel = ReturnType<ReturnType<typeof createOfficerPanelClient>["channel"]>;
 let realtimeChannel: RealtimeChannel | null = null;
+let realtimeChannelRole: ActiveRole | null = null;
 
 function teardownRealtime() {
-  if (realtimeChannel) {
-    createPanelClient().removeChannel(realtimeChannel);
+  if (realtimeChannel && realtimeChannelRole) {
+    clientForRole(realtimeChannelRole).removeChannel(realtimeChannel);
     realtimeChannel = null;
+    realtimeChannelRole = null;
   }
 }
 
@@ -241,9 +296,9 @@ function teardownRealtime() {
 // channel should only ever fire for their own clan's rows — verified live
 // as part of the same clan-scoping isolation check the rest of this file's
 // data access gets.
-function setupRealtime(session: PanelSession) {
+function setupRealtime(session: PanelSession, role: ActiveRole) {
   teardownRealtime();
-  const supabase = createPanelClient();
+  const supabase = clientForRole(role);
   const channel = supabase.channel(`panel-${session.isAdmin ? "admin" : session.clanSlug}`);
   (["profiles", "lineages", "verification_audit", "announcements"] as const).forEach(
     (table) => {
@@ -256,33 +311,163 @@ function setupRealtime(session: PanelSession) {
   );
   channel.subscribe();
   realtimeChannel = channel;
+  realtimeChannelRole = role;
 }
 
-if (typeof window !== "undefined") {
-  createPanelClient().auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-    if (!session) {
+// Re-evaluates which of the two auth states (if either) should currently
+// drive the exposed panel session, then loads/tears down data accordingly.
+// Called from BOTH clients' onAuthStateChange.
+//
+// STICKY by design: if this tab is already displaying a role and that
+// role's own session is still valid, it keeps displaying that role no
+// matter what the OTHER role's session just did (signing in or out
+// elsewhere in the same browser is irrelevant to an already-open tab). Only
+// when there's no current display role yet (first load in this tab) or the
+// CURRENTLY displayed role's own session just ended does this fall through
+// to picking fresh.
+//
+// A brand-new tab opened in a browser that already has BOTH an officer and
+// an admin cookie is a genuinely ambiguous case with no "correct" answer —
+// this tab was never told which identity to use. In practice whichever of
+// the two clients' initial auth check resolves first wins (usually the
+// officer client, since it's registered first below), not necessarily
+// admin — there's no attempt made here to force a deterministic winner for
+// that specific edge case, since nobody has asked for one and forcing it
+// would mean delaying every fresh tab's first render until BOTH clients'
+// checks land. What this function DOES guarantee is the thing that was
+// actually reported as a bug: an explicit sign-in through completeSignIn()
+// (below) always wins for the tab that performed it, and an
+// already-displaying tab is never involuntarily swapped to the other role.
+function reconcile() {
+  let role: ActiveRole | null;
+  if (currentDisplayRole === "officer" && officerAuthSession) {
+    role = "officer";
+  } else if (currentDisplayRole === "admin" && adminAuthSession) {
+    role = "admin";
+  } else if (adminAuthSession) {
+    role = "admin";
+  } else if (officerAuthSession) {
+    role = "officer";
+  } else {
+    role = null;
+  }
+  currentDisplayRole = role;
+
+  if (!role) {
+    teardownRealtime();
+    setState({ session: null, members: [], audit: [], announcements: [] });
+    return;
+  }
+  // Nothing actually changed for THIS tab — the data currently on screen
+  // already belongs to this exact role — most commonly hit when the OTHER
+  // role's session merely changed elsewhere in the same browser and this
+  // reconcile only ran because both auth listeners share this one function.
+  // Skip the refetch/realtime-resubscribe churn rather than redoing it for
+  // no visible reason. Deliberately checked against `state.session` itself
+  // (what's actually loaded) rather than a separately-tracked "previous
+  // role" snapshot — completeSignIn() below sets `currentDisplayRole`
+  // itself before calling this function, which would make a snapshot taken
+  // at the top of this function always equal the new role and wrongly skip
+  // the very first load of that role's real data.
+  if (state.session && state.session.isAdmin === (role === "admin")) return;
+  const supaSession = role === "admin" ? adminAuthSession : officerAuthSession;
+  loadPanelSession(supaSession!.user.id, role).then((panelSession) => {
+    // The active role may have changed again while this lookup was in
+    // flight (e.g. admin signed out mid-request) — bail rather than apply
+    // a now-stale result.
+    if (activeRole() !== role) return;
+    if (!panelSession) {
+      // A session exists but no matching panel_officers row — shouldn't
+      // normally happen (the sign-in route provisions one atomically),
+      // treat as signed out rather than rendering with no scoping.
       teardownRealtime();
       setState({ session: null, members: [], audit: [], announcements: [] });
       return;
     }
-    loadPanelSession(session.user.id).then((panelSession) => {
-      if (!panelSession) {
-        // A session exists but no matching panel_officers row — shouldn't
-        // normally happen (the sign-in route provisions one atomically),
-        // treat as signed out rather than rendering with no scoping.
-        teardownRealtime();
-        setState({ session: null, members: [], audit: [], announcements: [] });
-        return;
-      }
-      setState({ ...state, session: panelSession });
-      void refreshAll(panelSession);
-      setupRealtime(panelSession);
-    });
+    setState({ ...state, session: panelSession });
+    void refreshAll(panelSession);
+    setupRealtime(panelSession, role);
   });
 }
 
-export function panelSignOut() {
-  void createPanelClient().auth.signOut();
+// If the role that just lost its auth session is the one CURRENTLY exposed
+// via `state.session`, clear it synchronously right away rather than
+// leaving the stale (now-invalid) session visible while `reconcile()`'s
+// async fallback lookup is still in flight. Without this, a component that
+// reads `state.session` immediately after a sign-out (PanelShell's exit
+// handler routes based on it, FoundationAdminGate re-checks it on mount
+// after that route change) can briefly see the OLD role as still signed
+// in and make a decision — e.g. an admin exiting could get bounced back
+// into the panel by FoundationAdminGate reading a still-true `isAdmin`
+// from a moment before the officer-fallback lookup resolved.
+function clearIfCurrentlyShowing(isAdminRole: boolean) {
+  if (state.session && state.session.isAdmin === isAdminRole) {
+    teardownRealtime();
+    setState({ ...state, session: null });
+  }
+}
+
+if (typeof window !== "undefined") {
+  createOfficerPanelClient().auth.onAuthStateChange(
+    (_event: AuthChangeEvent, session: Session | null) => {
+      officerAuthSession = session;
+      if (!session) clearIfCurrentlyShowing(false);
+      reconcile();
+    }
+  );
+  createAdminPanelClient().auth.onAuthStateChange(
+    (_event: AuthChangeEvent, session: Session | null) => {
+      adminAuthSession = session;
+      if (!session) clearIfCurrentlyShowing(true);
+      reconcile();
+    }
+  );
+}
+
+// Called by PanelSignIn.tsx / AdminSignIn.tsx right after their own
+// `setSession()` call succeeds, to explicitly PIN this tab to the role that
+// was just actively signed into — rather than leaving it to `reconcile()`'s
+// sticky rule to figure out on its own.
+//
+// This closes a real bug the sticky rule (see `reconcile()` above)
+// otherwise reintroduces: a tab sitting on /foundationAdmin, before the
+// visitor has typed anything, ALREADY passively discovers an unrelated
+// pre-existing officer cookie from another tab (both auth listeners are
+// wired in every tab regardless of which door it's on) and quietly becomes
+// sticky to "officer" — invisibly, since the officer role has no dashboard
+// of its own to show while sitting on the sign-in form. When the visitor
+// then actually submits the admin password, the sticky rule would keep
+// preferring the already-sticky officer role and simply never notice the
+// admin sign-in at all, leaving `signedInAsAdmin` false forever and the
+// sign-in silently going nowhere. Re-fetching the session directly from the
+// role's own client (rather than trusting whatever the reactive
+// onAuthStateChange listener has or hasn't gotten around to yet) also
+// sidesteps any ordering race between that listener firing and this
+// function running right after `setSession()` resolves.
+export async function completeSignIn(role: ActiveRole): Promise<void> {
+  const client = clientForRole(role);
+  const {
+    data: { session },
+  } = await client.auth.getSession();
+  if (!session) return;
+  if (role === "admin") adminAuthSession = session;
+  else officerAuthSession = session;
+  currentDisplayRole = role;
+  reconcile();
+}
+
+// Awaited (not fire-and-forget) on purpose: PanelShell's exit handler
+// navigates the signed-out role back to its own sign-in door right after
+// calling this, and needs the sign-out's SIGNED_OUT auth event to have
+// already reached this module's onAuthStateChange listener (which is what
+// actually clears `state.session`) BEFORE that navigation lands — otherwise
+// the door being navigated to reads a still-stale, still-truthy session and
+// bounces straight back (a real race hit during verification: exiting the
+// admin session used to redirect to /foundationAdmin and then immediately
+// get redirected right back into /batakaPanel).
+export async function panelSignOut(): Promise<void> {
+  const role = activeRole();
+  if (role) await clientForRole(role).auth.signOut();
 }
 
 // ── Actions — optimistic local update, then a background write. The write
@@ -304,8 +489,8 @@ export function verifyMember(id: string) {
     ),
   });
   if (!wasVerified) recordVerification();
-  createPanelClient()
-    .rpc("panel_verify_member", { target_profile_id: id })
+  getActivePanelClient()
+    ?.rpc("panel_verify_member", { target_profile_id: id })
     .then(({ error }: { error: PostgrestError | null }) => {
       if (error) console.error("[batakaPanel/store] verifyMember failed", error);
     });
@@ -321,8 +506,8 @@ export function declineMember(id: string, reason: string) {
         : m
     ),
   });
-  createPanelClient()
-    .rpc("panel_decline_member", { target_profile_id: id, reason })
+  getActivePanelClient()
+    ?.rpc("panel_decline_member", { target_profile_id: id, reason })
     .then(({ error }: { error: PostgrestError | null }) => {
       if (error) console.error("[batakaPanel/store] declineMember failed", error);
     });
@@ -338,8 +523,8 @@ export function requestInfo(id: string, note: string) {
         : m
     ),
   });
-  createPanelClient()
-    .rpc("panel_request_info", { target_profile_id: id, note })
+  getActivePanelClient()
+    ?.rpc("panel_request_info", { target_profile_id: id, note })
     .then(({ error }: { error: PostgrestError | null }) => {
       if (error) console.error("[batakaPanel/store] requestInfo failed", error);
     });
@@ -351,7 +536,8 @@ export function requestInfo(id: string, note: string) {
 // caller already being signed into the panel client (true for every
 // business-listing decision, which is admin-only).
 export async function logExternalAction(clanSlug: string, action: string) {
-  const supabase = createPanelClient();
+  const supabase = getActivePanelClient();
+  if (!supabase) return;
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -385,7 +571,8 @@ export function postAnnouncement(
   setState({ ...state, announcements: [optimistic, ...state.announcements] });
 
   (async () => {
-    const supabase = createPanelClient();
+    const supabase = getActivePanelClient();
+    if (!supabase) return;
     const {
       data: { session },
     } = await supabase.auth.getSession();
