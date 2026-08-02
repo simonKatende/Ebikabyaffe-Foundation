@@ -10,7 +10,7 @@ import {
   type BatakaStatus,
 } from "@/lib/bataka";
 import { Button } from "@/components/ui/Button";
-import { useToast } from "@/components/ui/Toast";
+import { useStats, verifiedTotal, formatCount } from "@/lib/stats";
 
 // Bataka view of the Clans tab (/clans?view=bataka) — the Council of Clan
 // Heads. The grid is led by the OMUTAKA TITLES themselves (Nnamwama, Gabunga,
@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/Toast";
 // of the 56 Ebika" compilation. The section head + view switcher are rendered
 // by app/clans/page.tsx.
 export function BatakaContent() {
-  const { toast } = useToast();
+  const stats = useStats();
   const [query, setQuery]   = useState("");
   const [status, setStatus] = useState<BatakaStatus | "all">("all");
 
@@ -179,16 +179,19 @@ export function BatakaContent() {
           </h3>
           <p className="text-[14px] text-white/70 mb-4 leading-relaxed max-w-[520px] mx-auto">
             Verification links your Foundation profile to your clan&apos;s
-            Omutaka. <strong className="text-gold2">12,847 members</strong>{" "}
+            Omutaka.{" "}
+            <strong className="text-gold2">{formatCount(verifiedTotal(stats))} members</strong>{" "}
             are already verified by Bataka — unlocking priority registration at
             clan gatherings and a voice in clan affairs.
           </p>
-          <Button
-            variant="primary"
-            onClick={() => toast("Bataka verification opens at launch!")}
-          >
-            Start verification →
-          </Button>
+          {/* Verification is a real, live feature (VerificationCard.tsx on
+              /profile, wired to Supabase) — this used to toast "opens at
+              launch!", which had gone stale once that shipped. A signed-out
+              visitor lands on /profile's own "Sign in →" prompt; a signed-in
+              member goes straight to their verification card. */}
+          <Link href="/profile">
+            <Button variant="primary">Start verification →</Button>
+          </Link>
         </div>
       </div>
     </>
