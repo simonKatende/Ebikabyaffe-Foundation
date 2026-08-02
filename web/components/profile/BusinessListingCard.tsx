@@ -9,15 +9,15 @@ import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
 import { BUSINESS_CATEGORIES, type BusinessCategory, type BusinessListing } from "@/lib/businesses/types";
 import { fetchListingForOwner, submitListing, removeOwnListing } from "@/lib/businesses/store";
-import { readPhotoAsDataUrl, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
+import { uploadPhoto, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
 import type { Clan } from "@/lib/clans";
 
 // ── "Advertise your business" — frontend mock ────────────────────────────────
 //
 // Every member gets the option to list one business or organisation against
-// their account: a short description, contacts, and an optional photo (read
-// straight from the chosen file as a data: URL — there's no upload backend
-// yet). A listing is NOT visible in the public /businesses directory the
+// their account: a short description, contacts, and an optional photo
+// (uploaded to Supabase Storage — see lib/photoUpload.ts). A listing is NOT
+// visible in the public /businesses directory the
 // moment it's posted — it first goes to the owner's clan officer (or the
 // Foundation admin) in the Bataka Panel, the same people who verify clan
 // membership, who may contact the owner to confirm details or ask for proof
@@ -68,9 +68,9 @@ export function BusinessListingCard({ clan }: { clan: Clan }) {
   async function handlePhotoChange(file: File | undefined) {
     if (!file) return;
     try {
-      setPhotoDataUrl(await readPhotoAsDataUrl(file));
+      setPhotoDataUrl(await uploadPhoto(file, `businesses/${user.id}/photo`));
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Couldn't read that photo — please try again.");
+      toast(err instanceof Error ? err.message : "Couldn't upload that photo — please try again.");
     }
   }
 

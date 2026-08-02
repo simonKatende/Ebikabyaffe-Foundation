@@ -61,14 +61,12 @@ export function GenericClanDetail({ clan }: { clan: Clan }) {
         </h1>
         <p className="text-[14px] text-white/55 mb-4">{clan.lugandaName}</p>
 
-        {/* Info chips — memberCount is optional so wrapped in a conditional */}
+        {/* Info chips */}
         <div className="flex flex-wrap justify-center gap-2.5 mb-1">
-          {liveCount !== null && (
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3.5 py-1.5 text-[12px] text-white/80">
-              <strong className="text-gold2">{formatCount(liveCount)}</strong>{" "}
-              registered {liveCount === 1 ? "member" : "members"}
-            </div>
-          )}
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3.5 py-1.5 text-[12px] text-white/80">
+            <strong className="text-gold2">{formatCount(liveCount)}</strong>{" "}
+            registered {liveCount === 1 ? "member" : "members"}
+          </div>
           {/* Wave badge — colour dot matches the clan grid dot for visual consistency */}
           <div
             className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold"

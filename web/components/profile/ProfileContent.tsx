@@ -14,7 +14,7 @@ import { LineageArchiveCard } from "@/components/profile/LineageArchiveCard";
 import { cn } from "@/lib/utils";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
 import { useStats, clanMemberCount, formatMembers, recordClanChange } from "@/lib/stats";
-import { readPhotoAsDataUrl, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
+import { uploadPhoto, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
 import { MemberTabs } from "@/components/home/MemberTabs";
 
 // Clan picker groups the 56 clans by origin wave (same grouping used for the
@@ -75,12 +75,12 @@ function ProfileDashboard() {
   async function handlePhotoChange(file: File | undefined) {
     if (!file) return;
     try {
-      const url = await readPhotoAsDataUrl(file);
+      const url = await uploadPhoto(file, `avatars/${user.id}/photo`);
       setAvatarDataUrl(url);
       updateUser({ avatarDataUrl: url });
       toast("Profile picture updated.");
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Couldn't read that photo — please try again.");
+      toast(err instanceof Error ? err.message : "Couldn't upload that photo — please try again.");
     }
   }
 
@@ -244,7 +244,7 @@ function ProfileDashboard() {
               </div>
               <div className="text-right shrink-0">
                 <span className="block text-[13px] text-muted">
-                  {liveCount !== null ? formatMembers(liveCount) : "Member count coming soon"}
+                  {formatMembers(liveCount ?? 0)}
                 </span>
                 <Link href={`/clans/${clan.slug}`} className="text-[11px] text-royal2 no-underline hover:underline">
                   View clan page →

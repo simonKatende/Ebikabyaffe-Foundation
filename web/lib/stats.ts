@@ -1,95 +1,106 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { getClan } from "@/lib/clans";
-import { saveSynced, withCrossTabSync } from "@/lib/crossTabSync";
+import { createClient } from "@/lib/supabase/client";
 
-// ── Live site-wide counters (mock implementation) ────────────────────────────
+// ── Live site-wide counters — real Supabase implementation ──────────────────
 //
 // The single source of truth for the three counters the site displays:
 //   1. Baganda registered   (hero stats bar, footer)
 //   2. Verified by Bataka   (hero stats bar, footer)
 //   3. Per-clan members     (clan grid, clan detail pages, profile, dashboard)
 //
-// Every display reads through the selectors below, and every event that should
-// move a counter calls one of the record* actions — so a new registration, a
-// clan join, or an Omutaka verification updates every reference across the
-// site immediately.
-//
-// Mock mechanics: module store + useSyncExternalStore, the app's standard
-// pattern (see lib/batakaPanel/store.ts) — deltas survive client navigation
-// and reset on a hard reload. The baselines are the same demo figures the
-// UI previously hardcoded. In Phase 2 this file gets reimplemented against
-// Supabase (counts derived from real rows); the displays should not change.
-
-// Baselines — must match the pre-existing demo figures so nothing jumps.
-const REGISTERED_BASE = 847_213; // was hardcoded in Footer ("847,213") / hero ("847K+")
-const VERIFIED_BASE = 12_847;    // was hardcoded in Footer + hero ("12,847")
+// These used to be a hardcoded marketing baseline (847,213 / 12,847 / a
+// handful of large per-clan estimates) with a session-only delta on top —
+// now the baseline itself is a real aggregate fetched once via two
+// SECURITY DEFINER RPCs (public_site_stats/public_clan_member_counts, see
+// the migration) that return counts only, never row data, so no visitor
+// (signed in or not) gains any new visibility into individual members. The
+// existing record* actions still apply an immediate optimistic delta on top
+// of that real baseline for the current user's own action — same instant
+// feedback as before, just against real numbers underneath. No Realtime
+// here: a public counter doesn't need per-second freshness, and Realtime on
+// `profiles` wouldn't reach a signed-out visitor anyway (RLS-scoped, same
+// as any other read).
 
 export interface SiteStats {
+  registeredBase: number;
+  verifiedBase: number;
+  clanBase: Record<string, number>;
   registeredDelta: number;
   verifiedDelta: number;
   clanDeltas: Record<string, number>;
 }
 
 let state: SiteStats = {
+  registeredBase: 0,
+  verifiedBase: 0,
+  clanBase: {},
   registeredDelta: 0,
   verifiedDelta: 0,
   clanDeltas: {},
 };
 
-const SYNC_NAME = "stats";
-
 const listeners = new Set<() => void>();
 
-function applyState(next: SiteStats) {
+function setState(next: SiteStats) {
   state = next;
   listeners.forEach((l) => l());
 }
 
-function setState(next: SiteStats) {
-  applyState(next);
-  saveSynced(SYNC_NAME, next);
+let baselineRequested = false;
+
+async function fetchBaseline() {
+  const supabase = createClient();
+  const [{ data: siteRow }, { data: clanRows }] = await Promise.all([
+    supabase.rpc("public_site_stats").single(),
+    supabase.rpc("public_clan_member_counts"),
+  ]);
+  const clanBase: Record<string, number> = {};
+  for (const row of (clanRows as { clan_slug: string; member_count: number }[] | null) ?? []) {
+    clanBase[row.clan_slug] = row.member_count;
+  }
+  const site = siteRow as { registered: number; verified: number } | null;
+  setState({
+    ...state,
+    registeredBase: site?.registered ?? 0,
+    verifiedBase: site?.verified ?? 0,
+    clanBase,
+  });
 }
-
-function baseSubscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-}
-
-// Cross-tab sync (2026-08, see lib/crossTabSync.ts) — a registration/
-// verification/clan-join in one tab updates the counters everywhere else
-// they're displayed (hero stats bar, footer, clan pages) in other open tabs.
-const subscribe = withCrossTabSync<SiteStats>(SYNC_NAME, baseSubscribe, applyState);
-
-const getSnapshot = () => state;
 
 export function useStats(): SiteStats {
-  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return useSyncExternalStore(
+    (listener) => {
+      listeners.add(listener);
+      // Only the first subscriber anywhere on the page triggers the fetch —
+      // every later subscriber (another component mounting) just reads the
+      // same cached state, same as the rest of this app's module stores.
+      if (!baselineRequested) {
+        baselineRequested = true;
+        void fetchBaseline();
+      }
+      return () => listeners.delete(listener);
+    },
+    () => state,
+    () => state
+  );
 }
 
 // ── Selectors ────────────────────────────────────────────────────────────────
 
 export function registeredTotal(s: SiteStats): number {
-  return REGISTERED_BASE + s.registeredDelta;
+  return s.registeredBase + s.registeredDelta;
 }
 
 export function verifiedTotal(s: SiteStats): number {
-  return VERIFIED_BASE + s.verifiedDelta;
+  return s.verifiedBase + s.verifiedDelta;
 }
 
-// clans.ts stores memberCount as a display string ("23,481") and only 11 of
-// the 56 clans have one. Returns the live numeric count, or null when the
-// clan has no baseline AND nobody joined it this session (the UI keeps its
-// honest "Member count coming soon" state in that case).
-export function clanMemberCount(s: SiteStats, slug: string): number | null {
-  const raw = getClan(slug)?.memberCount;
-  const base = raw ? parseInt(raw.replace(/,/g, ""), 10) : null;
-  const delta = s.clanDeltas[slug] ?? 0;
-  if (base === null && delta <= 0) return null;
-  return (base ?? 0) + delta;
+// Every clan now has a real number (0 if nobody's joined it yet) — no more
+// "no baseline ⇒ null ⇒ show a 'coming soon' placeholder" case.
+export function clanMemberCount(s: SiteStats, slug: string): number {
+  return (s.clanBase[slug] ?? 0) + (s.clanDeltas[slug] ?? 0);
 }
 
 export function formatCount(n: number): string {

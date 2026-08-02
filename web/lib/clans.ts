@@ -25,7 +25,6 @@ export interface Clan {
   originWave: OriginWave;
   amasiga?: Ssiga[];      // documented major branches (Essiga level)
   deep: boolean;
-  memberCount?: string;
 }
 
 export interface Ssaza {
@@ -98,7 +97,6 @@ export const clans: Clan[] = [
       { elder: "Kabala",            seat: "Buduggala, Kyaggwe" },
     ],
     deep: true,
-    memberCount: "12,390",
   },
   {
     slug: "ngonge",
@@ -112,7 +110,6 @@ export const clans: Clan[] = [
     omubala: "Bakyanjankete; Lwajjali",
     originWave: "nansangwa",
     deep: false,
-    memberCount: "3,947",
   },
   {
     slug: "njaza",
@@ -128,7 +125,6 @@ export const clans: Clan[] = [
     // Amasiga now live in lib/clanAmasiga.ts (21 branches per the Amasiga
     // archive, which corrected several seats in the old inline list)
     deep: false,
-    memberCount: "8,301",
   },
   {
     slug: "nnyonyi",
@@ -142,7 +138,6 @@ export const clans: Clan[] = [
     omubala: "Bampe omuggo neewerekeze; Si Mwana Kijjolooto",
     originWave: "nansangwa",
     deep: false,
-    memberCount: "7,203",
   },
   {
     slug: "mmamba",
@@ -160,7 +155,6 @@ export const clans: Clan[] = [
     courtRole: "Gabunga — Admiral and commander of the royal navy of war canoes on Lake Victoria",
     originWave: "nansangwa",
     deep: true,
-    memberCount: "23,481",
   },
   {
     slug: "ngeye",
@@ -203,7 +197,6 @@ export const clans: Clan[] = [
     omubala: "Kakube akamenye, abayunga tunnakayunga, yunga, yunga.",
     originWave: "nansangwa",
     deep: false,
-    memberCount: "18,209",
   },
   {
     slug: "mbuzi",
@@ -408,7 +401,6 @@ export const clans: Clan[] = [
     courtRole: "Mugema — senior kingmaker, 'father of the kingdom', hereditary chief of Busiro where the royal tombs lie",
     originWave: "kimera",
     deep: false,
-    memberCount: "21,044",
   },
   {
     slug: "butiko",
@@ -485,7 +477,6 @@ export const clans: Clan[] = [
     omubala: "Kadagado kaagwa, aka Namagembe tonkwatako ng'olidde embogo…",
     originWave: "kimera",
     deep: false,
-    memberCount: "15,774",
   },
   {
     slug: "musu",
@@ -500,7 +491,6 @@ export const clans: Clan[] = [
     omubala: "Kivu kivu, Kivu kyajja okuluma n'okutwaalana.",
     originWave: "kimera",
     deep: false,
-    memberCount: "4,812",
   },
   {
     slug: "ngabi-nsamba",
@@ -551,7 +541,6 @@ export const clans: Clan[] = [
     omubala: "Ggwe mpagi, ggwe luwaga…",
     originWave: "kimera",
     deep: false,
-    memberCount: "5,129",
   },
 
   // ── Later and recognised clans ────────────────────────────────────────────
@@ -599,7 +588,6 @@ export const clans: Clan[] = [
     omubala: "Nyabo Nabbosa, Mpaawo alimuliisa endiga.",
     originWave: "later",
     deep: false,
-    memberCount: "9,811",
   },
   {
     slug: "ndiisa",

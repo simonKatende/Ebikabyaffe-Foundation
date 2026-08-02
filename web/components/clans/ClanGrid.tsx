@@ -137,11 +137,9 @@ export function ClanGrid() {
                     {clan.clanHead}
                   </p>
                 )}
-                {clanMemberCount(stats, clan.slug) !== null && (
-                  <p className="text-[11px] text-muted mt-auto">
-                    {formatMembers(clanMemberCount(stats, clan.slug)!)}
-                  </p>
-                )}
+                <p className="text-[11px] text-muted mt-auto">
+                  {formatMembers(clanMemberCount(stats, clan.slug))}
+                </p>
               </div>
             </Link>
           );

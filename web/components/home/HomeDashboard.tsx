@@ -141,7 +141,7 @@ export function HomeDashboard() {
             </div>
             <div className="ml-auto shrink-0 text-right">
               <span className="block text-[13px] text-muted">
-                {liveCount !== null ? formatMembers(liveCount) : "Member count coming soon"}
+                {formatMembers(liveCount ?? 0)}
               </span>
               <Link href="/profile" className="text-[11px] text-royal2 no-underline hover:underline">
                 Manage in profile →
