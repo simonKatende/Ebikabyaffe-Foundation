@@ -221,13 +221,20 @@ export function HomeDashboard() {
             Committee. Add your voice as a registered clan member.
           </p>
           <div className="flex gap-2.5">
-            {/* toast() gives instant feedback before real RSVP backend is wired up */}
+            {/* toast() gives instant feedback before real RSVP backend is
+                wired up — nudges toward a real, usable email instead of a
+                hollow "recorded" toast when there'd be nowhere to send
+                anything */}
             <Button
               variant="gold"
               size="sm"
-              onClick={() =>
-                toast("RSVP recorded! You'll receive details by SMS.")
-              }
+              onClick={() => {
+                if (!user.email.trim()) {
+                  toast("Add your email on your profile so we can send you event details.");
+                } else {
+                  toast(`RSVP recorded! We'll send details to ${user.email}.`);
+                }
+              }}
             >
               RSVP — I&apos;ll attend
             </Button>

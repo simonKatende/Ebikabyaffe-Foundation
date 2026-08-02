@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/Toast";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 
 // Calculates how much time remains until the next Empango (31 July each year).
@@ -23,6 +24,9 @@ export function EmpangoCountdown() {
   // not on every render during the useState initialisation phase.
   const [time, setTime] = useState(getTimeLeft);
   const { toast } = useToast();
+  // Only ever rendered inside HomeDashboard (a signed-in-only view), so
+  // `user` is always a real signed-in member here.
+  const { user } = useAuth();
 
   // Refresh the countdown every 60 seconds.
   // The cleanup function cancels the interval when the component unmounts.
@@ -80,7 +84,16 @@ export function EmpangoCountdown() {
       <Button
         variant="gold"
         size="sm"
-        onClick={() => toast("You're signed up for Empango 2026 updates!")}
+        onClick={() => {
+          // No real Empango-updates backend yet — nudge toward a real,
+          // usable email instead of a hollow "you're signed up" toast when
+          // there'd be nowhere to actually send anything.
+          if (!user.email.trim()) {
+            toast("Add your email on your profile so we can send you Empango updates.");
+          } else {
+            toast(`You're signed up! Empango updates will go to ${user.email}.`);
+          }
+        }}
       >
         Get Empango updates →
       </Button>
