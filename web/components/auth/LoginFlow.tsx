@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
-import { isPhoneRegistered, getRegisteredName, registerPhone } from "@/lib/auth/registry";
 import { recordRegistration, recordClanChange } from "@/lib/stats";
 import { getClan } from "@/lib/clans";
 import { cn } from "@/lib/utils";
+import { COUNTRIES, formatNational, type Country } from "@/lib/phoneCountries";
 
 // ── Frontend mock of the planned phone-first OTP sign-in ────────────────────
 //
@@ -54,50 +54,13 @@ import { cn } from "@/lib/utils";
 export type LoginMode = "create" | "signin";
 
 // Countries offered in the picker — Uganda first (the default), then the
-// East African region and the common diaspora destinations. Extending this
-// list is safe. minDigits/maxDigits are the national significant number's
-// length (after the leading 0 and any typed country code are stripped) —
-// real mobile-number lengths per country, e.g. Uganda's 9 (07XX XXX XXX).
-// This is a UI-level sanity bound, not authoritative validation — the real
-// per-country check happens at the provider (Twilio Lookup) in Phase 2.
-interface Country {
-  iso: string;
-  name: string;
-  flag: string;
-  dial: string; // dial code without the leading +
-  minDigits: number;
-  maxDigits: number;
-}
-
-const COUNTRIES: Country[] = [
-  { iso: "UG", name: "Uganda", flag: "🇺🇬", dial: "256", minDigits: 9, maxDigits: 9 },
-  { iso: "KE", name: "Kenya", flag: "🇰🇪", dial: "254", minDigits: 9, maxDigits: 9 },
-  { iso: "TZ", name: "Tanzania", flag: "🇹🇿", dial: "255", minDigits: 9, maxDigits: 9 },
-  { iso: "RW", name: "Rwanda", flag: "🇷🇼", dial: "250", minDigits: 9, maxDigits: 9 },
-  { iso: "SS", name: "South Sudan", flag: "🇸🇸", dial: "211", minDigits: 9, maxDigits: 9 },
-  { iso: "ZA", name: "South Africa", flag: "🇿🇦", dial: "27", minDigits: 9, maxDigits: 9 },
-  { iso: "GB", name: "United Kingdom", flag: "🇬🇧", dial: "44", minDigits: 10, maxDigits: 10 },
-  { iso: "IE", name: "Ireland", flag: "🇮🇪", dial: "353", minDigits: 9, maxDigits: 9 },
-  { iso: "US", name: "USA / Canada", flag: "🇺🇸", dial: "1", minDigits: 10, maxDigits: 10 },
-  { iso: "DE", name: "Germany", flag: "🇩🇪", dial: "49", minDigits: 10, maxDigits: 11 },
-  { iso: "FR", name: "France", flag: "🇫🇷", dial: "33", minDigits: 9, maxDigits: 9 },
-  { iso: "NL", name: "Netherlands", flag: "🇳🇱", dial: "31", minDigits: 9, maxDigits: 9 },
-  { iso: "BE", name: "Belgium", flag: "🇧🇪", dial: "32", minDigits: 9, maxDigits: 9 },
-  { iso: "SE", name: "Sweden", flag: "🇸🇪", dial: "46", minDigits: 7, maxDigits: 9 },
-  { iso: "NO", name: "Norway", flag: "🇳🇴", dial: "47", minDigits: 8, maxDigits: 8 },
-  { iso: "DK", name: "Denmark", flag: "🇩🇰", dial: "45", minDigits: 8, maxDigits: 8 },
-  { iso: "IT", name: "Italy", flag: "🇮🇹", dial: "39", minDigits: 9, maxDigits: 10 },
-  { iso: "ES", name: "Spain", flag: "🇪🇸", dial: "34", minDigits: 9, maxDigits: 9 },
-  { iso: "AE", name: "United Arab Emirates", flag: "🇦🇪", dial: "971", minDigits: 9, maxDigits: 9 },
-  { iso: "QA", name: "Qatar", flag: "🇶🇦", dial: "974", minDigits: 8, maxDigits: 8 },
-  { iso: "SA", name: "Saudi Arabia", flag: "🇸🇦", dial: "966", minDigits: 9, maxDigits: 9 },
-  { iso: "KW", name: "Kuwait", flag: "🇰🇼", dial: "965", minDigits: 8, maxDigits: 8 },
-  { iso: "AU", name: "Australia", flag: "🇦🇺", dial: "61", minDigits: 9, maxDigits: 9 },
-  { iso: "NZ", name: "New Zealand", flag: "🇳🇿", dial: "64", minDigits: 8, maxDigits: 9 },
-  { iso: "IN", name: "India", flag: "🇮🇳", dial: "91", minDigits: 10, maxDigits: 10 },
-  { iso: "CN", name: "China", flag: "🇨🇳", dial: "86", minDigits: 11, maxDigits: 11 },
-  { iso: "JP", name: "Japan", flag: "🇯🇵", dial: "81", minDigits: 10, maxDigits: 10 },
-];
+// East African region and the common diaspora destinations. minDigits/
+// maxDigits are the national significant number's length (after the leading
+// 0 and any typed country code are stripped) — real mobile-number lengths
+// per country, e.g. Uganda's 9 (07XX XXX XXX). This is a UI-level sanity
+// bound, not authoritative validation — the real per-country check happens
+// at the provider (Twilio Lookup) in Phase 2. Shared with AuthContext.tsx
+// via lib/phoneCountries.ts so the two never drift.
 
 // Demo-only prefix → network mapping for UGANDAN numbers (national form,
 // leading 0 stripped). The real network (and registered name) will come from
@@ -142,12 +105,6 @@ function toE164(national: string, c: Country): string {
 // surname/first-name split the rest of the app relies on for display order.
 function stripSpaces(value: string): string {
   return value.replace(/\s+/g, "");
-}
-
-// Human-friendly international display: "+256 772 345 678"
-function displayPhone(national: string, c: Country): string {
-  const groups = national.match(/.{1,3}/g) ?? [national];
-  return `+${c.dial} ${groups.join(" ")}`;
 }
 
 // ── Small inline line-icons for the pill inputs below ───────────────────────
@@ -242,12 +199,48 @@ export function LoginFlow({
   const [otpInput, setOtpInput] = useState("");
   const [otpError, setOtpError] = useState(false);
 
+  // Whether a given phone already has a real account, checked against the
+  // live Supabase `profiles` table via /api/auth/check-phone (a service-role
+  // lookup — RLS only allows a signed-in member to read their own row, and
+  // this needs to work before anyone is signed in). Debounced from the
+  // phone/country change handlers below rather than a useEffect, since this
+  // repo's react-hooks/set-state-in-effect rule rejects an effect body that
+  // fetches then calls setState — driving it from a real event-handler
+  // callback boundary sidesteps that entirely.
+  const [phoneCheck, setPhoneCheck] = useState<{
+    phone: string;
+    registered: boolean;
+    name: string | null;
+  } | null>(null);
+  const phoneCheckTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function schedulePhoneCheck(nextPhone: string | null) {
+    if (phoneCheckTimeout.current) clearTimeout(phoneCheckTimeout.current);
+    if (!nextPhone) {
+      setPhoneCheck(null);
+      return;
+    }
+    phoneCheckTimeout.current = setTimeout(() => {
+      fetch(`/api/auth/check-phone?phone=${encodeURIComponent(nextPhone)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { registered?: boolean; name?: string | null } | null) => {
+          setPhoneCheck({
+            phone: nextPhone,
+            registered: Boolean(data?.registered),
+            name: data?.name ?? null,
+          });
+        })
+        .catch(() => setPhoneCheck(null));
+    }, 400);
+  }
+
   function switchMode(next: LoginMode) {
     setMode(next);
     setPhoneRaw("");
     setOtpCode(null);
     setOtpInput("");
     setOtpError(false);
+    setPhoneCheck(null);
     router.replace(next === "signin" ? "/login?mode=signin" : "/login", { scroll: false });
   }
 
@@ -257,13 +250,17 @@ export function LoginFlow({
   const national = normalizeNational(phoneRaw, country);
   // Canonical E.164 identity — the "one phone = one account" key
   const phone = national ? toE164(national, country) : null;
-  const phoneDisplay = national ? displayPhone(national, country) : "";
+  const phoneDisplay = national ? formatNational(national, country) : "";
   // Network detection is a Uganda-only enrichment (MoMo-style); the code
   // itself travels by SMS in Uganda and on WhatsApp for the diaspora
   const network = national && isUganda ? detectNetwork(national) : null;
 
-  const alreadyRegistered = mode === "create" && phone ? isPhoneRegistered(phone) : false;
-  const registeredName = mode === "signin" && phone ? getRegisteredName(phone) : null;
+  // True once phoneCheck's result is actually for the currently-typed
+  // number — false while debouncing/in flight, so the UI can tell "unknown
+  // yet" apart from "checked, and not registered" (see canSendCode below).
+  const checkMatches = Boolean(phoneCheck && phone && phoneCheck.phone === phone);
+  const alreadyRegistered = mode === "create" && checkMatches ? phoneCheck!.registered : false;
+  const registeredName = mode === "signin" && checkMatches ? phoneCheck!.name : null;
 
   // Simulated registered-SIM name — the real one comes from the MoMo lookup.
   const simName =
@@ -272,7 +269,9 @@ export function LoginFlow({
       : `${surname} ${firstName}`.trim().toUpperCase();
 
   const canSendCode =
-    mode === "create" ? Boolean(phone && !alreadyRegistered) : Boolean(phone && registeredName);
+    mode === "create"
+      ? Boolean(phone && checkMatches && !alreadyRegistered)
+      : Boolean(phone && checkMatches && registeredName);
 
   function handleSendOtp() {
     const code = String(Math.floor(100000 + Math.random() * 900000));
@@ -281,39 +280,42 @@ export function LoginFlow({
     setOtpError(false);
   }
 
-  function handleOtpChange(value: string) {
+  async function handleOtpChange(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 6);
     setOtpInput(digits);
     setOtpError(false);
     if (digits.length === 6 && otpCode) {
       if (digits === otpCode) {
         // Correct code — sign in immediately, no extra "Login" click needed.
-        if (mode === "create") {
-          const name = [surname.trim(), firstName.trim(), givenName.trim()]
-            .filter(Boolean)
-            .join(" ");
-          // Registry key is the E.164 form; the profile stores the pretty form
-          registerPhone(phone!, name);
-          loginWithPhone({ name, phone: phoneDisplay, clanSlug: clan!.slug });
-          // A genuinely new account — tick the site-wide "Baganda registered"
-          // counter everywhere it is displayed. Sign-in (below) does not.
-          recordRegistration();
-          // The clan is joined at the same moment the account is created —
-          // bump that clan's live member count immediately.
-          recordClanChange(null, clan!.slug);
-          toast(
-            `Welcome, ${firstName.trim()}! You've joined the ${clan!.name} clan. ` +
-              `Got a business or organisation? You can advertise it from your profile.`
-          );
-        } else {
-          loginWithPhone({ name: registeredName!, phone: phoneDisplay });
-          toast(`Welcome back, ${registeredName!.split(" ")[0]}!`);
+        try {
+          if (mode === "create") {
+            const name = [surname.trim(), firstName.trim(), givenName.trim()]
+              .filter(Boolean)
+              .join(" ");
+            await loginWithPhone({ name, phoneE164: phone!, clanSlug: clan!.slug });
+            // A genuinely new account — tick the site-wide "Baganda registered"
+            // counter everywhere it is displayed. Sign-in (below) does not.
+            recordRegistration();
+            // The clan is joined at the same moment the account is created —
+            // bump that clan's live member count immediately.
+            recordClanChange(null, clan!.slug);
+            toast(
+              `Welcome, ${firstName.trim()}! You've joined the ${clan!.name} clan. ` +
+                `Got a business or organisation? You can advertise it from your profile.`
+            );
+          } else {
+            await loginWithPhone({ name: registeredName!, phoneE164: phone! });
+            toast(`Welcome back, ${registeredName!.split(" ")[0]}!`);
+          }
+          // Both a brand-new account and a returning sign-in land on the home
+          // dashboard (2026-08 — sign-in used to go to /profile instead, which
+          // felt inconsistent: create-mode already landed on the dashboard, and
+          // a returning member expects the same "front door" every time).
+          router.push("/");
+        } catch {
+          setOtpError(true);
+          toast("Something went wrong signing you in — please try again.");
         }
-        // Both a brand-new account and a returning sign-in land on the home
-        // dashboard (2026-08 — sign-in used to go to /profile instead, which
-        // felt inconsistent: create-mode already landed on the dashboard, and
-        // a returning member expects the same "front door" every time).
-        router.push("/");
       } else {
         setOtpError(true);
       }
@@ -544,6 +546,7 @@ export function LoginFlow({
                               setOtpInput("");
                               setOtpError(false);
                               setCountryPickerOpen(false);
+                              schedulePhoneCheck(null);
                             }}
                             className={cn(
                               "w-full flex items-center gap-2.5 px-3 py-2 text-left text-[13.5px] cursor-pointer hover:bg-cream2 transition-colors bg-transparent border-0",
@@ -573,6 +576,8 @@ export function LoginFlow({
                         setOtpCode(null);
                         setOtpInput("");
                         setOtpError(false);
+                        const nextNational = normalizeNational(e.target.value, country);
+                        schedulePhoneCheck(nextNational ? toE164(nextNational, country) : null);
                       }}
                       // A little slack over maxDigits for an optional leading
                       // 0 plus a couple of spacing characters, since the
@@ -594,7 +599,7 @@ export function LoginFlow({
               </div>
 
               {/* Create mode: flag a number that already has an account */}
-              {mode === "create" && alreadyRegistered && !otpCode && (
+              {mode === "create" && checkMatches && alreadyRegistered && !otpCode && (
                 <div className="bg-cream2 border border-gold/40 rounded-2xl px-4 py-3 mb-3">
                   <p className="text-[13px] text-gd leading-relaxed">
                     This contact already has an account with us.
@@ -610,7 +615,7 @@ export function LoginFlow({
               )}
 
               {/* Sign-in mode: flag a number with no account yet */}
-              {mode === "signin" && phone && !registeredName && !otpCode && (
+              {mode === "signin" && phone && checkMatches && !registeredName && !otpCode && (
                 <div className="bg-cream2 border border-gold/40 rounded-2xl px-4 py-3 mb-3">
                   <p className="text-[13px] text-gd leading-relaxed">
                     We don&apos;t recognize that number yet.

@@ -53,9 +53,11 @@ function ProfileDashboard() {
   const { toast } = useToast();
 
   // Identity form — local draft state, only written back to AuthContext on Save.
+  // Phone is NOT editable here: it's the fixed real-account identity (the
+  // synthetic-email/session-minting in /api/auth/phone-session is keyed off
+  // it), so it renders read-only below rather than as a draft field.
   const [name,  setName]  = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  const [phone, setPhone] = useState(user.phone);
   const [avatarDataUrl, setAvatarDataUrl] = useState(user.avatarDataUrl);
 
   // See lib/photoUpload.ts — rejects unsupported formats (e.g. iPhone HEIC
@@ -101,7 +103,7 @@ function ProfileDashboard() {
 
   function handleSaveIdentity() {
     if (!name.trim()) return;
-    updateUser({ name: name.trim(), email: email.trim(), phone: phone.trim(), avatarDataUrl });
+    updateUser({ name: name.trim(), email: email.trim(), avatarDataUrl });
     toast("Profile updated.");
   }
 
@@ -184,13 +186,12 @@ function ProfileDashboard() {
             </label>
             <label className="block">
               <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">Phone</span>
-              <input
-                type="tel"
-                placeholder="e.g. 0771 234 567"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full border border-eborder rounded px-3 py-2 text-[14px] outline-none focus:border-gold"
-              />
+              <div className="w-full border border-eborder bg-cream2 rounded px-3 py-2 text-[14px] text-muted">
+                {user.phone}
+              </div>
+              <span className="block text-[10.5px] text-muted mt-1">
+                Your phone number is your account — it can&apos;t be changed here.
+              </span>
             </label>
             <label className="block">
               <span className="block text-[11px] uppercase tracking-wide text-muted mb-1">Profile picture</span>
