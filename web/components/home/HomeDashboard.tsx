@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
@@ -8,9 +9,11 @@ import { Card, CardHeader, CardBody, DarkCard } from "@/components/ui/Card";
 import { EmpangoCountdown } from "@/components/home/EmpangoCountdown";
 import { getClan } from "@/lib/clans";
 import { useStats, clanMemberCount, formatMembers } from "@/lib/stats";
-import { useBusinessStore, listingForPhone } from "@/lib/businesses/store";
+import { fetchListingForOwner } from "@/lib/businesses/store";
+import type { BusinessListing } from "@/lib/businesses/types";
 import { ContactFoundationCard } from "@/components/home/ContactFoundationCard";
-import { usePanelStore, announcementsForClan } from "@/lib/batakaPanel/store";
+import { fetchClanAnnouncements } from "@/lib/batakaPanel/store";
+import type { Announcement } from "@/lib/batakaPanel/types";
 import { MemberTabs } from "@/components/home/MemberTabs";
 
 // Time-of-day greeting — computed from the visitor's local clock. Coarse
@@ -34,13 +37,27 @@ export function HomeDashboard() {
   const stats = useStats();
   const liveCount = clan ? clanMemberCount(stats, clan.slug) : null;
   // Whether this member already has a business listing posted
-  const businessState = useBusinessStore();
-  const myListing = listingForPhone(businessState, user.phone);
+  const [myListing, setMyListing] = useState<BusinessListing | null>(null);
+  useEffect(() => {
+    if (!user.id) return;
+    void fetchListingForOwner(user.id).then(setMyListing);
+  }, [user.id]);
   // Announcements from THIS member's own clan office only — posted via the
   // Bataka Panel (app/batakaPanel/announcements). A clan's news must never
-  // leak to members of other clans, so this is filtered strictly by clanSlug.
-  const panelState = usePanelStore();
-  const clanAnnouncements = clan ? announcementsForClan(panelState, clan.slug) : [];
+  // leak to members of other clans, so this is fetched strictly by clanSlug,
+  // via the member's own client (RLS: announcements_select_by_clan_member) —
+  // deliberately independent of any Bataka Panel session, which a plain
+  // member never has.
+  const [clanAnnouncements, setClanAnnouncements] = useState<Announcement[]>([]);
+  useEffect(() => {
+    // A signed-in member's clan is permanently locked once set (see
+    // AuthContext), so `clan` only goes from null to set, never back — no
+    // need to clear stale announcements here, the [] default already covers
+    // "no clan yet".
+    if (!clan) return;
+    void fetchClanAnnouncements(clan.slug).then(setClanAnnouncements);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clan?.slug]);
 
   // Greeting text switches between English and Luganda based on the user's
   // language preference. The English greeting is time-of-day aware (Good

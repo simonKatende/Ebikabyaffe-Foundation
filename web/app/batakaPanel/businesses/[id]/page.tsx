@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { usePanelStore } from "@/lib/batakaPanel/store";
 import {
-  useBusinessStore,
-  listingsForReviewer,
+  fetchListingsForReviewer,
   verifyListing,
   declineListing,
   requestListingInfo,
 } from "@/lib/businesses/store";
+import type { BusinessListing } from "@/lib/businesses/types";
 import { getClan } from "@/lib/clans";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
@@ -30,14 +30,22 @@ import { useToast } from "@/components/ui/Toast";
 export default function BusinessListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const panelState = usePanelStore();
-  const businessState = useBusinessStore();
   const { toast } = useToast();
 
   const isAdmin = panelState.session?.isAdmin ?? false;
-  // Scoped lookup — an officer can only ever open listings from their own clan.
-  const listing = listingsForReviewer(businessState, panelState.session?.clanSlug ?? null, isAdmin).find(
-    (l) => l.id === id
-  );
+
+  // Scoped lookup — RLS already only ever returns listings from the
+  // officer's own clan (or every clan for the admin), refetched after every
+  // decision so this page reflects its own writes immediately.
+  const [all, setAll] = useState<BusinessListing[] | null>(null);
+  useEffect(() => {
+    if (!panelState.session) return;
+    void fetchListingsForReviewer().then(setAll);
+  }, [panelState.session]);
+  function refetch() {
+    void fetchListingsForReviewer().then(setAll);
+  }
+  const listing = all?.find((l) => l.id === id);
 
   const [mode, setMode] = useState<"none" | "info" | "decline">("none");
   const [note, setNote] = useState("");
@@ -119,7 +127,7 @@ export default function BusinessListingDetailPage() {
             className="grid gap-3 bg-cream2 border border-eborder rounded-[6px] px-4 py-3"
             style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}
           >
-            <Field label="Owner" value={`${listing.ownerName} · ${listing.ownerPhone}`} />
+            <Field label="Owner" value={`${listing.ownerName} · ${listing.contactPhone}`} />
             <Field label="Contact phone" value={listing.contactPhone} />
             {listing.contactEmail && <Field label="Contact email" value={listing.contactEmail} />}
             {listing.location && <Field label="Location" value={listing.location} />}
@@ -155,7 +163,7 @@ export default function BusinessListingDetailPage() {
             <p className="text-[13px] text-muted leading-relaxed mb-3">
               More information was requested on {listing.decidedAt}:{" "}
               <em>{listing.decisionNote}</em> — contact {listing.ownerName} at{" "}
-              {listing.ownerPhone} if they haven&apos;t already responded.
+              {listing.contactPhone} if they haven&apos;t already responded.
             </p>
           )}
 
@@ -178,8 +186,9 @@ export default function BusinessListingDetailPage() {
               <Button
                 variant="green"
                 size="sm"
-                onClick={() => {
-                  verifyListing(listing.id);
+                onClick={async () => {
+                  await verifyListing(listing.id);
+                  refetch();
                   toast(`${listing.businessName} is now live in the Business Owners directory.`);
                 }}
               >
@@ -222,8 +231,9 @@ export default function BusinessListingDetailPage() {
                     variant="gold"
                     size="sm"
                     disabled={!note.trim()}
-                    onClick={() => {
-                      requestListingInfo(listing.id, note.trim());
+                    onClick={async () => {
+                      await requestListingInfo(listing.id, note.trim());
+                      refetch();
                       toast("Request for more information sent to the owner.");
                       setMode("none");
                     }}
@@ -233,8 +243,9 @@ export default function BusinessListingDetailPage() {
                 ) : (
                   <button
                     disabled={!note.trim()}
-                    onClick={() => {
-                      declineListing(listing.id, note.trim());
+                    onClick={async () => {
+                      await declineListing(listing.id, note.trim());
+                      refetch();
                       toast("Listing declined — reason recorded.");
                       setMode("none");
                     }}

@@ -34,6 +34,11 @@ export interface Lineage {
 // stores a raw data: URL in Postgres rather than object storage — moving it
 // to Supabase Storage is separate follow-up work, not this pass.
 export interface AppUser {
+  // The real Supabase auth/profiles id — empty string while signed out.
+  // Used as the stable per-account key wherever something needs to be
+  // looked up by "this exact member" (e.g. business listings), replacing
+  // the old phone-string key now that real accounts exist.
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -59,6 +64,7 @@ export interface AppUser {
 // Placeholder shown while signed out / before the session bootstrap
 // resolves. Components should gate on `isLoggedIn`, not on this shape.
 const SIGNED_OUT_USER: AppUser = {
+  id: "",
   name: "",
   email: "",
   phone: "",
@@ -114,7 +120,11 @@ interface ProfileRow {
   avatar_data_url: string | null;
 }
 
-interface LineageRow {
+// Exported so lib/batakaPanel/store.ts's real Supabase reimplementation can
+// map the same `lineages` row shape into a `Lineage` without duplicating
+// this mapping — the panel needs it for the exact same rows, just fetched
+// clan-wide by an officer instead of one-at-a-time by the owning member.
+export interface LineageRow {
   father_name: string;
   father_clan_slug: string;
   mother_name: string;
@@ -125,26 +135,33 @@ interface LineageRow {
   village: string | null;
 }
 
-function mapToAppUser(profile: ProfileRow, lineageRow: LineageRow | null): AppUser {
+export function mapLineageRow(lineageRow: LineageRow): Lineage {
   return {
+    fatherName: lineageRow.father_name,
+    fatherClanSlug: lineageRow.father_clan_slug,
+    motherName: lineageRow.mother_name,
+    motherClanSlug: lineageRow.mother_clan_slug,
+    grandfatherName: lineageRow.grandfather_name ?? undefined,
+    grandmotherName: lineageRow.grandmother_name ?? undefined,
+    ssiga: lineageRow.ssiga ?? undefined,
+    village: lineageRow.village ?? undefined,
+  };
+}
+
+function mapToAppUser(
+  id: string,
+  profile: ProfileRow,
+  lineageRow: LineageRow | null
+): AppUser {
+  return {
+    id,
     name: profile.name,
     email: profile.email ?? "",
     phone: formatE164(profile.phone),
     clanSlug: profile.clan_slug,
     clanVerified: profile.clan_verified,
     verification: (profile.verification_status as VerificationStatus) ?? "none",
-    lineage: lineageRow
-      ? {
-          fatherName: lineageRow.father_name,
-          fatherClanSlug: lineageRow.father_clan_slug,
-          motherName: lineageRow.mother_name,
-          motherClanSlug: lineageRow.mother_clan_slug,
-          grandfatherName: lineageRow.grandfather_name ?? undefined,
-          grandmotherName: lineageRow.grandmother_name ?? undefined,
-          ssiga: lineageRow.ssiga ?? undefined,
-          village: lineageRow.village ?? undefined,
-        }
-      : null,
+    lineage: lineageRow ? mapLineageRow(lineageRow) : null,
     saccoMember: profile.sacco_member,
     memberSince: new Date(profile.member_since).toLocaleDateString("en-UG", {
       month: "long",
@@ -261,7 +278,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setIsLoggedIn(false);
           return;
         }
-        setUser(mapToAppUser(profile as ProfileRow, lineageRow as LineageRow | null));
+        setUser(mapToAppUser(session.user.id, profile as ProfileRow, lineageRow as LineageRow | null));
         setIsLoggedIn(true);
       });
     });

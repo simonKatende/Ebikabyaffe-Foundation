@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { EmailOtpType } from "@supabase/supabase-js";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { mintSession } from "@/lib/supabase/mintSession";
 
 // Mints a real Supabase Auth session for a phone number without ever
 // sending a real SMS/WhatsApp message — the on-screen demo OTP in
 // LoginFlow.tsx is what actually gates entry; once it matches, the client
-// calls this route to get a real session.
-//
-// Phone numbers aren't a native Supabase Auth identity, so a deterministic
-// synthetic email stands in for one. admin.generateLink({type:"magiclink"})
-// mints a one-time link (creating the auth user if it doesn't exist yet),
-// which is immediately redeemed server-side via verifyOtp — nothing is ever
-// emailed. See .claude/handoff-2026-07-17-s20.md for why this shape:
-// verifyOtp must be called with ONLY {type, token_hash}, never `email`
-// alongside it, or it throws.
+// calls this route to get a real session. See lib/supabase/mintSession.ts
+// for how the session itself gets minted with nothing ever emailed/texted.
 
 interface CreateBody {
   mode: "create";
@@ -29,35 +22,6 @@ interface SigninBody {
 
 function syntheticEmail(phoneE164: string): string {
   return `${phoneE164.replace(/^\+/, "")}@members.ebikabyaffe.internal`;
-}
-
-async function mintSession(
-  admin: ReturnType<typeof createServiceRoleClient>,
-  email: string
-) {
-  const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-    type: "magiclink",
-    email,
-  });
-  if (linkError || !linkData) {
-    console.error("[phone-session] generateLink failed", linkError);
-    return { error: "auth_error" as const };
-  }
-  // generateLink({type:"magiclink"}) actually issues a "signup"-typed link
-  // the first time it creates a brand-new auth user, and only a genuine
-  // "magiclink" link on subsequent calls for an existing user — verifyOtp
-  // matches its `type` against the token's *stored* type (via
-  // `verification_type` on the response), so hardcoding "magiclink" here
-  // fails for every first-time account creation.
-  const { data: verifyData, error: verifyError } = await admin.auth.verifyOtp({
-    type: linkData.properties.verification_type as EmailOtpType,
-    token_hash: linkData.properties.hashed_token,
-  });
-  if (verifyError || !verifyData.session) {
-    console.error("[phone-session] verifyOtp failed", verifyError);
-    return { error: "auth_error" as const };
-  }
-  return { session: verifyData.session };
 }
 
 export async function POST(req: NextRequest) {
@@ -79,7 +43,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "already_registered" }, { status: 409 });
     }
 
-    const minted = await mintSession(admin, email);
+    const minted = await mintSession(email);
     if ("error" in minted) {
       return NextResponse.json({ error: minted.error }, { status: 500 });
     }
@@ -110,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "not_registered" }, { status: 404 });
   }
 
-  const minted = await mintSession(admin, email);
+  const minted = await mintSession(email);
   if ("error" in minted) {
     return NextResponse.json({ error: minted.error }, { status: 500 });
   }

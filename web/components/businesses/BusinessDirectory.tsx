@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { cn } from "@/lib/utils";
-import { useBusinessStore, visibleListings } from "@/lib/businesses/store";
+import { fetchVisibleListings } from "@/lib/businesses/store";
 import { getClan } from "@/lib/clans";
-import { BUSINESS_CATEGORIES } from "@/lib/businesses/types";
+import { BUSINESS_CATEGORIES, type BusinessListing } from "@/lib/businesses/types";
 
 // ── Business Owners directory — public browse page ──────────────────────────
 //
@@ -19,9 +19,14 @@ import { BUSINESS_CATEGORIES } from "@/lib/businesses/types";
 const CATEGORY_FILTERS = ["All", ...BUSINESS_CATEGORIES] as const;
 
 export function BusinessDirectory() {
-  const state = useBusinessStore();
-  // Only officer-verified listings ever reach the public directory.
-  const listings = visibleListings(state);
+  // Only officer-verified listings ever reach the public directory — this
+  // page needs no login, so it fetches via the anon-key-capable public RLS
+  // policy (business_listings_select_public_verified) rather than any
+  // session-gated store.
+  const [listings, setListings] = useState<BusinessListing[]>([]);
+  useEffect(() => {
+    void fetchVisibleListings().then(setListings);
+  }, []);
 
   const [category, setCategory] = useState<(typeof CATEGORY_FILTERS)[number]>("All");
   const [query, setQuery] = useState("");

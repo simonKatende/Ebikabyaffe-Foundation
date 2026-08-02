@@ -1,12 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   usePanelStore,
   membersForSession,
   auditForSession,
 } from "@/lib/batakaPanel/store";
-import { useBusinessStore, listingsForReviewer } from "@/lib/businesses/store";
+import { fetchListingsForReviewer } from "@/lib/businesses/store";
+import type { BusinessListing } from "@/lib/businesses/types";
 import { getClan } from "@/lib/clans";
 import { StatusBadge } from "@/components/batakaPanel/StatusBadge";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
@@ -18,9 +20,12 @@ export default function PanelDashboard() {
   const members = membersForSession(state);
   const audit = auditForSession(state);
 
-  const businessState = useBusinessStore();
   const isAdmin = state.session?.isAdmin ?? false;
-  const listings = listingsForReviewer(businessState, state.session?.clanSlug ?? null, isAdmin);
+  const [listings, setListings] = useState<BusinessListing[]>([]);
+  useEffect(() => {
+    if (!state.session) return;
+    void fetchListingsForReviewer().then(setListings);
+  }, [state.session]);
   const pendingListings = listings.filter(
     (l) => l.status === "pending" || l.status === "info_requested"
   );

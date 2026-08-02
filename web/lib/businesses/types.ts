@@ -34,9 +34,11 @@ export type ListingStatus = "pending" | "info_requested" | "verified" | "decline
 
 export interface BusinessListing {
   id: string;
-  // Owner identity — phone is this app's one stable per-account key (see
-  // lib/auth/registry.ts), so a listing is looked up/replaced by owner phone.
-  ownerPhone: string;
+  // Owner identity — the real Supabase profile id (AppUser.id), the stable
+  // per-account key. ownerName is denormalized alongside it (not joined at
+  // read time) since neither an anonymous public-directory visitor nor
+  // another clan's officer has RLS access to read an arbitrary profiles row.
+  ownerId: string;
   ownerName: string;
   clanSlug: string;
   businessName: string;

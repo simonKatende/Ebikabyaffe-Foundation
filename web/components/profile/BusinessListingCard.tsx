@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
-import { BUSINESS_CATEGORIES, type BusinessCategory } from "@/lib/businesses/types";
-import { useBusinessStore, listingForPhone, upsertListing, removeListingForPhone } from "@/lib/businesses/store";
+import { BUSINESS_CATEGORIES, type BusinessCategory, type BusinessListing } from "@/lib/businesses/types";
+import { fetchListingForOwner, submitListing, removeOwnListing } from "@/lib/businesses/store";
 import { readPhotoAsDataUrl, PHOTO_ACCEPT_ATTR } from "@/lib/photoUpload";
 import type { Clan } from "@/lib/clans";
 
@@ -27,22 +27,38 @@ import type { Clan } from "@/lib/clans";
 export function BusinessListingCard({ clan }: { clan: Clan }) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const businessState = useBusinessStore();
-  const listing = listingForPhone(businessState, user.phone);
+
+  const [listing, setListing] = useState<BusinessListing | null>(null);
 
   const [formOpen, setFormOpen] = useState(false);
 
-  const [businessName, setBusinessName] = useState(listing?.businessName ?? "");
-  const [category, setCategory] = useState<BusinessCategory>(listing?.category ?? "Retail & Shops");
-  const [description, setDescription] = useState(listing?.description ?? "");
-  const [contactPhone, setContactPhone] = useState(listing?.contactPhone ?? user.phone);
-  const [contactEmail, setContactEmail] = useState(listing?.contactEmail ?? "");
-  const [location, setLocation] = useState(listing?.location ?? "");
-  const [photoDataUrl, setPhotoDataUrl] = useState(listing?.photoDataUrl);
+  const [businessName, setBusinessName] = useState("");
+  const [category, setCategory] = useState<BusinessCategory>("Retail & Shops");
+  const [description, setDescription] = useState("");
+  const [contactPhone, setContactPhone] = useState(user.phone);
+  const [contactEmail, setContactEmail] = useState("");
+  const [location, setLocation] = useState("");
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>(undefined);
   // Belt-and-braces fallback to the 🏪 placeholder if a saved listing's photo
   // (from before the format guard in lib/photoUpload.ts existed, or from a
   // browser that fails to decode it) can't actually be displayed.
   const [photoLoadFailed, setPhotoLoadFailed] = useState(false);
+
+  useEffect(() => {
+    if (!user.id) return;
+    fetchListingForOwner(user.id).then((l) => {
+      setListing(l);
+      if (l) {
+        setBusinessName(l.businessName);
+        setCategory(l.category);
+        setDescription(l.description);
+        setContactPhone(l.contactPhone);
+        setContactEmail(l.contactEmail ?? "");
+        setLocation(l.location ?? "");
+        setPhotoDataUrl(l.photoDataUrl);
+      }
+    });
+  }, [user.id]);
 
   const canSubmit = businessName.trim() !== "" && description.trim() !== "" && contactPhone.trim() !== "";
 
@@ -58,10 +74,10 @@ export function BusinessListingCard({ clan }: { clan: Clan }) {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!canSubmit) return;
-    upsertListing({
-      ownerPhone: user.phone,
+    const { error } = await submitListing({
+      ownerId: user.id,
       ownerName: user.name,
       clanSlug: clan.slug,
       businessName: businessName.trim(),
@@ -72,14 +88,20 @@ export function BusinessListingCard({ clan }: { clan: Clan }) {
       location: location.trim() || undefined,
       photoDataUrl,
     });
+    if (error) {
+      toast("Something went wrong submitting your listing — please try again.");
+      return;
+    }
     setFormOpen(false);
+    setListing(await fetchListingForOwner(user.id));
     toast(
       `${businessName.trim()} has been submitted for review by your clan's office — you'll be notified once it's approved.`
     );
   }
 
-  function handleRemove() {
-    removeListingForPhone(user.phone);
+  async function handleRemove() {
+    await removeOwnListing(user.id);
+    setListing(null);
     toast("Your business listing has been removed.");
   }
 

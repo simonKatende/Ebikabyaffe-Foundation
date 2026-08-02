@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { panelSignIn } from "@/lib/batakaPanel/store";
-import { checkAdminPassword } from "@/lib/batakaPanel/passwords";
+import { createPanelClient } from "@/lib/supabase/panelClient";
 import { LockIcon, VisibilityToggle, fieldFull, labelClass, pillPrimary } from "@/components/batakaPanel/authFormShared";
 
 // The FOUNDATION ADMIN's own dedicated entry point — /foundationAdmin.
@@ -18,15 +17,34 @@ export function AdminSignIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submitAdmin = () => {
-    if (!checkAdminPassword(password.trim())) {
-      setError(
-        "Incorrect Foundation admin password. Check the password issued by the Foundation and try again."
-      );
-      return;
+  const submitAdmin = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/batakaPanel/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isAdmin: true, password: password.trim() }),
+      });
+      if (!res.ok) {
+        setError(
+          "Incorrect Foundation admin password. Check the password issued by the Foundation and try again."
+        );
+        return;
+      }
+      const { access_token, refresh_token } = await res.json();
+      const { error: sessionError } = await createPanelClient().auth.setSession({
+        access_token,
+        refresh_token,
+      });
+      if (sessionError) throw sessionError;
+    } catch {
+      setError("Something went wrong signing in — please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    panelSignIn({ clanSlug: null, isAdmin: true });
   };
 
   return (
@@ -127,11 +145,11 @@ export function AdminSignIn() {
 
           <button
             type="button"
-            disabled={!password.trim()}
+            disabled={!password.trim() || submitting}
             onClick={submitAdmin}
             className={`${pillPrimary} w-full`}
           >
-            Login as Foundation admin →
+            {submitting ? "Signing in…" : "Login as Foundation admin →"}
           </button>
 
           <p className="text-[11px] text-muted text-center mt-6 leading-relaxed">

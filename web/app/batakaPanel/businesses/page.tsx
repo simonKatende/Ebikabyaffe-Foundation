@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePanelStore } from "@/lib/batakaPanel/store";
-import { useBusinessStore, listingsForReviewer } from "@/lib/businesses/store";
+import { fetchListingsForReviewer } from "@/lib/businesses/store";
 import { getClan } from "@/lib/clans";
 import { BusinessStatusBadge } from "@/components/businesses/BusinessStatusBadge";
-import type { ListingStatus } from "@/lib/businesses/types";
+import type { BusinessListing, ListingStatus } from "@/lib/businesses/types";
 import { cn } from "@/lib/utils";
 
 const FILTERS: { key: ListingStatus | "all"; label: string }[] = [
@@ -21,9 +21,17 @@ const FILTERS: { key: ListingStatus | "all"; label: string }[] = [
 // clan-scoping rule as app/batakaPanel/members/page.tsx.
 export default function BusinessListingsPage() {
   const panelState = usePanelStore();
-  const businessState = useBusinessStore();
   const isAdmin = panelState.session?.isAdmin ?? false;
-  const all = listingsForReviewer(businessState, panelState.session?.clanSlug ?? null, isAdmin);
+
+  // Fetched fresh each time a real panel session is present — business
+  // listings change far less often than member verifications, so this
+  // isn't kept live via Realtime the way lib/batakaPanel/store.ts's own
+  // data is; re-opening this page picks up any change.
+  const [all, setAll] = useState<BusinessListing[]>([]);
+  useEffect(() => {
+    if (!panelState.session) return;
+    fetchListingsForReviewer().then(setAll);
+  }, [panelState.session]);
 
   const [filter, setFilter] = useState<ListingStatus | "all">("all");
   const [query, setQuery] = useState("");

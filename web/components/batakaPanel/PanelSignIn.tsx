@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { clans, getClan, WAVE_LABELS, type OriginWave } from "@/lib/clans";
-import { panelSignIn } from "@/lib/batakaPanel/store";
-import { checkClanPassword } from "@/lib/batakaPanel/passwords";
+import { createPanelClient } from "@/lib/supabase/panelClient";
 import { LockIcon, VisibilityToggle, fieldFull, labelClass, pillPrimary } from "@/components/batakaPanel/authFormShared";
 
 const WAVE_ORDER: OriginWave[] = ["nansangwa", "kintu", "kimera", "later"];
@@ -28,18 +27,40 @@ export function PanelSignIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const clanName = clanSlug ? getClan(clanSlug)?.name ?? clanSlug : "";
   const clan = clanSlug ? getClan(clanSlug) : undefined;
 
-  const submitOfficer = () => {
-    if (!checkClanPassword(clanSlug, password.trim())) {
-      setError(
-        `Incorrect password for the ${clanName} clan. Check the access password issued to your clan by the Foundation and try again.`
-      );
-      return;
+  const submitOfficer = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/batakaPanel/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clanSlug, password: password.trim() }),
+      });
+      if (!res.ok) {
+        setError(
+          `Incorrect password for the ${clanName} clan. Check the access password issued to your clan by the Foundation and try again.`
+        );
+        return;
+      }
+      const { access_token, refresh_token } = await res.json();
+      // The panel's own module store (lib/batakaPanel/store.ts) is subscribed
+      // to this client's auth changes and derives PanelState.session from
+      // the real signed-in officer identity — nothing else to call here.
+      const { error: sessionError } = await createPanelClient().auth.setSession({
+        access_token,
+        refresh_token,
+      });
+      if (sessionError) throw sessionError;
+    } catch {
+      setError("Something went wrong signing in — please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    panelSignIn({ clanSlug, isAdmin: false });
   };
 
   return (
@@ -187,11 +208,11 @@ export function PanelSignIn() {
 
           <button
             type="button"
-            disabled={!clanSlug || !password.trim()}
+            disabled={!clanSlug || !password.trim() || submitting}
             onClick={submitOfficer}
             className={`${pillPrimary} w-full`}
           >
-            Login as this clan&apos;s officer →
+            {submitting ? "Signing in…" : "Login as this clan's officer →"}
           </button>
 
           <p className="text-[11px] text-muted text-center mt-6 leading-relaxed">
