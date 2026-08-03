@@ -2,7 +2,22 @@
   "permissions": {
     "allow": [
       "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); node --version; npm --version)",
-      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); Set-Location \"c:\\\\Users\\\\EBIKABYAFFE\\\\Dev Projects\\\\Ebikabyaffe-Foundation\\\\web\"; npm run dev 2>&1)"
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); Set-Location \"c:\\\\Users\\\\EBIKABYAFFE\\\\Dev Projects\\\\Ebikabyaffe-Foundation\\\\web\"; npm run dev 2>&1)",
+      "Bash(node _verify_redesign.js)",
+      "Bash(node _verify_otp_step.js)",
+      "Bash(node _verify_business.js)",
+      "Bash(node _debug_business.js)",
+      "Bash(node _shots.js)",
+      "Bash(node _verify_review.js)",
+      "Bash(node _verify_decline.js)",
+      "Bash(node _verify_contact.js)",
+      "Bash(node -e ' *)",
+      "Bash(node _verify_all.js)",
+      "Bash(node _verify_all2.js)",
+      "Bash(npm audit *)",
+      "Bash(curl -s -X POST http://localhost:3000/api/contact -H \"Content-Type: application/json\" -d '{\"subject\":\"Test\",\"message\":\"Hello\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(node _verify_resend.js)",
+      "Bash(node _verify_announcements.js)"
     ]
   },
   "enabledPlugins": {
