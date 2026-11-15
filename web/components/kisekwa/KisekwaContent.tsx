@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { HierarchyChain } from "@/components/ui/HierarchyChain";
 
 // The /clans?view=kisekwa page — Kooti ya Kisekwa, Buganda's traditional
 // apex court for clan (Ekika) affairs. Condensed from "Kooti ya Kisekwa —
@@ -126,34 +127,17 @@ export function KisekwaContent() {
             <p className="text-[10px] tracking-[2px] text-gold2 uppercase mb-3">
               Where disputes escalate
             </p>
-            <div className="flex flex-col gap-1.5">
-              {[
-                ["Ennyumba / Oluggya", "Household or homestead disputes, settled internally by family elders"],
-                ["Omutuba / Olunyiriri", "Sub-clan and lineage disputes, handled by the Ow'omutuba / Ow'olunyiriri"],
-                ["Essiga", "Major lineage disputes, adjudicated by the Ow'Essiga"],
-                ["Akasolya (clan-wide)", "Matters affecting the whole clan, handled by the Omutaka and Olukiiko lw'Ekika"],
-                ["Kooti ya Kisekwa", "The apex traditional court — contested clan headships and succession to the Akasolya"],
-                ["The Kabaka", "Final and supreme authority on cultural and clan matters, on appeal"],
-              ].map(([level, desc], i, arr) => (
-                <div
-                  key={level}
-                  className="flex items-start gap-3"
-                  style={{ marginLeft: i * 14 }}
-                >
-                  <span className="text-gold2 text-[12px] mt-0.5 shrink-0">
-                    {i === 0 ? "◆" : "└"}
-                  </span>
-                  <p className="text-[13px] text-white/85 leading-snug">
-                    <strong
-                      className={i >= arr.length - 2 ? "text-gold" : "text-gold2"}
-                    >
-                      {level}
-                    </strong>
-                    <span className="text-white/60"> — {desc}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
+            <HierarchyChain
+              apexIndex={5}
+              levels={[
+                { title: "Ennyumba / Oluggya", desc: "Household or homestead disputes, settled internally by family elders." },
+                { title: "Omutuba / Olunyiriri", desc: "Sub-clan and lineage disputes, handled by the Ow'omutuba / Ow'olunyiriri." },
+                { title: "Essiga", desc: "Major lineage disputes, adjudicated by the Ow'Essiga." },
+                { title: "Akasolya (clan-wide)", desc: "Matters affecting the whole clan, handled by the Omutaka and Olukiiko lw'Ekika." },
+                { title: "Kooti ya Kisekwa", desc: "The apex traditional court — contested clan headships and succession to the Akasolya." },
+                { title: "The Kabaka", desc: "Final and supreme authority on cultural and clan matters, on appeal." },
+              ]}
+            />
             <p className="text-[12px] text-white/55 leading-relaxed mt-4">
               Because Kisekwa&apos;s authority is customary rather than
               constitutional, parties who remain dissatisfied may also

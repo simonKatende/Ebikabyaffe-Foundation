@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AmasazaGrid } from "@/components/clans/AmasazaGrid";
+import { HierarchyChain } from "@/components/ui/HierarchyChain";
 
 // The /abakungu page — "Abakungu ba Ssaabasajja," the Kabaka's network of
 // personal representative chiefs. Replaces two former standalone tabs:
@@ -85,30 +86,18 @@ export function AbakunguContent() {
           <p className="text-[10px] tracking-[2px] text-gold2 uppercase mb-3">
             Where the Katikkiro Fits — the Working Hierarchy
           </p>
-          <div className="flex flex-col gap-1.5 mb-4">
-            {[
-              ["Kabaka (Ssaabasajja)", "the ultimate authority these chiefs act under and in whose name they are installed"],
-              ["Katikkiro", "holds the Ddamula; presides over the Lukiiko/Cabinet; heads the civil service — the office that actually manages, confirms, and directs the chiefs month to month"],
-              ["Ssaza (county) chiefs — Owessaza", "the 18 Amasaza — Ssekiboobo, Ppookino, Kaggo, Ssebwana, and the rest — each an “Omwami wa Ssaabasajja Kabaka”"],
-              ["Gombolola (sub-county) chiefs", "installed and confirmed through the Katikkiro's office and its ministers"],
-              ["Muluka (parish) chiefs", "kingdom ministers — Information, Culture, Gender, Youth — coordinate day to day in between"],
-              ["Kyalo (village) headmen", "the base of the structure, reaching every household in the kingdom"],
-            ].map(([title, desc], i) => (
-              <div
-                key={title}
-                className="flex items-start gap-3"
-                style={{ marginLeft: i * 16 }}
-              >
-                <span className="text-gold2 text-[12px] mt-0.5 shrink-0">
-                  {i === 0 ? "◆" : "└"}
-                </span>
-                <p className="text-[13px] text-white/85 leading-snug">
-                  <strong className="text-gold2">{title}</strong>
-                  <span className="text-white/60"> — {desc}</span>
-                </p>
-              </div>
-            ))}
-          </div>
+          <HierarchyChain
+            className="mb-4"
+            apexIndex={0}
+            levels={[
+              { title: "Kabaka (Ssaabasajja)", desc: "The ultimate authority these chiefs act under and in whose name they are installed." },
+              { title: "Katikkiro", desc: "Holds the Ddamula; presides over the Lukiiko/Cabinet; heads the civil service — the office that actually manages, confirms, and directs the chiefs month to month." },
+              { title: "Ssaza (county) chiefs — Owessaza", desc: "The 18 Amasaza — Ssekiboobo, Ppookino, Kaggo, Ssebwana, and the rest — each an “Omwami wa Ssaabasajja Kabaka.”" },
+              { title: "Gombolola (sub-county) chiefs", desc: "Installed and confirmed through the Katikkiro's office and its ministers." },
+              { title: "Muluka (parish) chiefs", desc: "Kingdom ministers — Information, Culture, Gender, Youth — coordinate day to day in between." },
+              { title: "Kyalo (village) headmen", desc: "The base of the structure, reaching every household in the kingdom." },
+            ]}
+          />
           <p className="text-[12px] text-white/55 leading-relaxed">
             One clarification worth stating plainly: while these chiefs are
             described in the honorific sense as serving &quot;Ssaabasajja&quot;

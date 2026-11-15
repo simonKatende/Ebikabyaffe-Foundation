@@ -10,6 +10,7 @@ import {
   type BatakaStatus,
 } from "@/lib/bataka";
 import { Button } from "@/components/ui/Button";
+import { HierarchyChain } from "@/components/ui/HierarchyChain";
 import { useStats, verifiedTotal, formatCount } from "@/lib/stats";
 
 // Bataka view of the Clans tab (/clans?view=bataka) — the Council of Clan
@@ -107,29 +108,17 @@ export function BatakaContent() {
             How the Bataka fit in the Kingdom
           </p>
 
-          {/* Descending hierarchy — each level indents to visualise rank */}
-          <div className="flex flex-col gap-1.5 mb-4">
-            {[
-              ["Ssaabasajja Kabaka", "Ronald Muwenda Mutebi II — as Ssabataka, 'chief of the Bataka', the monarchy sits atop the older clan structure it draws legitimacy from"],
-              ["Katikkiro of Buganda", "Owek. Charles Peter Mayiga — the Kingdom's prime minister at Mmengo"],
-              ["Olukiiko lw'Abataka", "The Council of Clan Heads — guardians of ennono (tradition), clan lands and succession"],
-              ["56 Abataka b'Obusolya", "One hereditary titleholder per clan, each at the top of his clan's Akasolya ('roof')"],
-            ].map(([title, desc], i) => (
-              <div
-                key={title}
-                className="flex items-start gap-3"
-                style={{ marginLeft: i * 16 }}
-              >
-                <span className="text-gold2 text-[12px] mt-0.5 shrink-0">
-                  {i === 0 ? "◆" : "└"}
-                </span>
-                <p className="text-[13px] text-white/85 leading-snug">
-                  <strong className="text-gold2">{title}</strong>
-                  <span className="text-white/60"> — {desc}</span>
-                </p>
-              </div>
-            ))}
-          </div>
+          {/* Descending hierarchy — a connected trunk, apex marked in gold */}
+          <HierarchyChain
+            className="mb-4"
+            apexIndex={0}
+            levels={[
+              { title: "Ssaabasajja Kabaka", desc: "Ronald Muwenda Mutebi II — as Ssabataka, 'chief of the Bataka', the monarchy sits atop the older clan structure it draws legitimacy from." },
+              { title: "Katikkiro of Buganda", desc: "Owek. Charles Peter Mayiga — the Kingdom's prime minister at Mmengo." },
+              { title: "Olukiiko lw'Abataka", desc: "The Council of Clan Heads — guardians of ennono (tradition), clan lands and succession." },
+              { title: "56 Abataka b'Obusolya", desc: "One hereditary titleholder per clan, each at the top of his clan's Akasolya ('roof')." },
+            ]}
+          />
 
           <p className="text-[12px] text-white/55 leading-relaxed">
             An Omutaka&apos;s authority is personal and follows clan membership
